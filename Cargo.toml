@@ -8,3 +8,9 @@ edition = "2021"
 [dependencies]
 serde = {version = "1.0.200", features = ["derive"]}
 serde_json = "1.0.116"
+sea-orm = { version = "^0.12.15", features = [ "sqlx-postgres", "runtime-tokio-rustls", "macros" ] }
+chrono = {version = "0.4.38", features = ["alloc", "std", "clock", "now"]}
+lazy_static = "1.4.0"
+poem = "3.0.0"
+tokio = {version = "1.37.0", features = ["rt-multi-thread"]}
+lofty = "0.19.2"

@@ -2,9 +2,10 @@ use std::{fs::File, io::Read};
 
 use serde::{Serialize, Deserialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct AppConfig {
     pub server_address: String,
+    pub server_port: u16,
     pub database_address: String,
     pub files: Vec<String>
 }

@@ -1,6 +1,7 @@
 {
     "serverAddress": "localhost",
-    "databaseAddress": "localhost",
+    "server_port": 8080,
+    "databaseAddress": "postgres://postgres:example@localhost:5432/osse",
     "files": [
         "/some/dir/", "c://Users/me/myMusic/"
     ]

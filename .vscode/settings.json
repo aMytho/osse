@@ -1,0 +1,10 @@
+{
+    "cSpell.words": [
+        "actix",
+        "Osse"
+    ],
+    "rust-analyzer.linkedProjects": [
+        "./Cargo.toml",
+        "migration/Cargo.toml"
+    ]
+}
