@@ -27,6 +27,9 @@ impl MigrationTrait for Migration {
                             .from(Track::Table, Track::ArtistId)
                             .to(Artist::Table, Artist::Id)
                     )
+                    .col(ColumnDef::new(Track::Duration).integer().not_null())
+                    .col(ColumnDef::new(Track::Size).big_integer().not_null())
+                    .col(ColumnDef::new(Track::Bitrate).integer().null())
                     .to_owned(),
             )
             .await
@@ -45,4 +48,7 @@ enum Track {
     Id,
     Title,
     ArtistId,
+    Duration,
+    Size,
+    Bitrate
 }

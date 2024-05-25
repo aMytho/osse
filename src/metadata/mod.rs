@@ -6,7 +6,7 @@ use metadata::FileMetadata;
 use std::{fs::{DirEntry, File}, io::Read, path::PathBuf};
 use sea_orm::entity::prelude::DateTime;
 use chrono::{DateTime as ChronoTime, Utc};
-use lofty::{file::TaggedFileExt, probe::read_from_path, tag::Tag};
+use lofty::{file::{AudioFile, TaggedFileExt}, probe::read_from_path, properties::FileProperties, tag::Tag};
 
 use crate::files::get_file_directory;
 
@@ -26,14 +26,15 @@ pub async fn scan_files(files: Vec<DirEntry>) -> Vec<FileMetadata> {
         };
 
         let tags = tagged_file.tags();
+        let properties = tagged_file.properties();
 
-        scanned_files.push(extract_metadata(&file, tags).await);
+        scanned_files.push(extract_metadata(&file, tags, properties).await);
     }
 
     scanned_files
 }
 
-async fn extract_metadata(file: &DirEntry, tags: &[Tag]) -> FileMetadata {
+async fn extract_metadata(file: &DirEntry, tags: &[Tag], properties: &FileProperties) -> FileMetadata {
     let mut meta = FileMetadata::new();
 
     // The title is the filename by default, a later title tag will override this
@@ -67,6 +68,14 @@ async fn extract_metadata(file: &DirEntry, tags: &[Tag]) -> FileMetadata {
     }
 
     meta.path = file.path().to_str().unwrap().to_string();
+
+    // Get size and duration info
+    meta.duration = properties.duration().as_secs();
+    meta.bitrate = match properties.audio_bitrate() {
+        Some(b) => Some(b as i32),
+        None => None
+    };
+    meta.size = file.metadata().unwrap().len();
 
     meta
 }

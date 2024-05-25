@@ -18,6 +18,9 @@ pub async fn scan_files(files: Vec<String>) {
                 title: sea_orm::ActiveValue::Set(f.title.unwrap()),
                 updated_at: sea_orm::ActiveValue::Set(f.updated_at.unwrap()),
                 artist_id: sea_orm::ActiveValue::Set(f.artist),
+                size: sea_orm::ActiveValue::Set(f.size as i64),
+                bitrate: sea_orm::ActiveValue::Set(f.bitrate),
+                duration: sea_orm::ActiveValue::Set(f.duration as i32),
                 ..Default::default()
             }
         });

@@ -10,6 +10,9 @@ pub struct Model {
     pub id: i32,
     pub title: String,
     pub artist_id: Option<i32>,
+    pub duration: i32,
+    pub size: i64,
+    pub bitrate: Option<i32>,
     #[sea_orm(column_type = "Text")]
     pub location: String,
     pub updated_at: DateTime,

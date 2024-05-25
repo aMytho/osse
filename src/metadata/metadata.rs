@@ -8,7 +8,10 @@ pub struct FileMetadata {
     pub artist: Option<i32>,
     pub title: Option<String>,
     pub updated_at: Option<DateTime>,
-    pub path: String
+    pub path: String,
+    pub size: u64,
+    pub bitrate: Option<i32>,
+    pub duration: u64,
 }
 
 impl FileMetadata {
@@ -18,7 +21,10 @@ impl FileMetadata {
             album: None,
             title: None,
             updated_at: None,
-            path: String::from("")
+            path: String::from(""),
+            size: 0,
+            bitrate: None,
+            duration: 0
         }
     }
 }
