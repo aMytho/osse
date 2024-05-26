@@ -12,7 +12,7 @@ use crate::api::album::album_controller::get_all_albums;
 use crate::api::shared::middleware::validate_track_header;
 use crate::api::stream::middleware::validate_range;
 use crate::api::stream::stream_controller::stream_file;
-use crate::api::artists::artist_controller::get_all_artists;
+use crate::api::artists::artist_controller::{get_artist, get_all_artists};
 use crate::api::tracks::track_controller::{get_all_tracks, scan, get_cover_art_for_track};
 
 use api::server::ping;
@@ -36,6 +36,7 @@ async fn main() -> std::io::Result<()> {
         .at("/tracks/all", get_all_tracks)
         .at("/tracks/scan", post(scan))
         .at("/tracks/cover", get_cover_art_for_track)
+        .at("/artists", get_artist)
         .at("/artists/all", get_all_artists)
         .at("/albums/all", get_all_albums)
         .at("/stream", stream_file.around(validate_range).around(validate_track_header))
