@@ -3,6 +3,7 @@ use sea_orm::entity::prelude::DateTime;
 /**
  * The info we need to write a track to the DB
  */
+#[derive(Debug)]
 pub struct FileMetadata {
     pub album: Option<String>,
     pub artist: Option<i32>,

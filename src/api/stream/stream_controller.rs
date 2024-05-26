@@ -18,7 +18,6 @@ pub fn stream_file(
 
     // Parse the range header value to get the range requested by the client
     // For simplicity, this example assumes a single range is requested
-    println!("{:?}", range);
 
     // Open the audio file
     if let Ok(mut file) = File::open(track.0.location.to_owned()) {
