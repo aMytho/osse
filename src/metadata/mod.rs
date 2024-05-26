@@ -10,7 +10,7 @@ use lofty::{file::{AudioFile, TaggedFileExt}, probe::read_from_path, properties:
 
 use crate::files::get_file_directory;
 
-use self::{formats::{target::get_possible_tags, id3v1, id3v2}, metadata::CoverArt};
+use self::{formats::{id3v1, id3v2, riff, target::get_possible_tags}, metadata::CoverArt};
 
 
 pub async fn scan_files(files: Vec<DirEntry>) -> Vec<FileMetadata> {
@@ -64,7 +64,7 @@ async fn extract_metadata(file: &DirEntry, tags: &[Tag], properties: &FileProper
             lofty::tag::TagType::Id3v2 => meta = id3v2::get_supported_tag(&tag, meta, &mut target_tags).await,
             lofty::tag::TagType::Mp4Ilst => todo!(),
             lofty::tag::TagType::VorbisComments => todo!(),
-            lofty::tag::TagType::RiffInfo => todo!(),
+            lofty::tag::TagType::RiffInfo => meta = riff::get_supported_tag(&tag, meta, &mut target_tags).await,
             lofty::tag::TagType::AiffText => todo!(),
             _ => todo!(),
         }
