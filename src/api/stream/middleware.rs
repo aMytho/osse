@@ -1,11 +1,13 @@
-use std::ops::Range;
 use poem::{http::StatusCode, Endpoint, Request};
 use super::stream_service::parse_range;
 
 const RANGE_HEADER: &str = "Range";
 
-#[derive(Clone)]
-pub struct RangeMiddleware(pub Range<u64>);
+#[derive(Clone, Debug)]
+pub struct RangeMiddleware {
+    pub start: u64,
+    pub end: Option<u64>
+}
 
 pub async fn validate_range<E: Endpoint>(next: E, mut req: Request) -> Result<E::Output, poem::Error> {
     if let Some(value) = req
@@ -17,7 +19,7 @@ pub async fn validate_range<E: Endpoint>(next: E, mut req: Request) -> Result<E:
         let range = value.to_string();
         match parse_range(range) {
             Ok(range) => {
-                req.extensions_mut().insert(RangeMiddleware(range));
+                req.extensions_mut().insert(range);
             },
             Err(_) => return Err(poem::Error::from_status(StatusCode::BAD_REQUEST))
         }

@@ -6,12 +6,14 @@ mod metadata;
 mod entities;
 mod api;
 
+use poem::http::Method;
+use poem::RouteMethod;
 use poem::{post, EndpointExt, middleware::Cors};
 use poem::{listener::TcpListener, Route, Server};
 use crate::api::album::album_controller::get_all_albums;
-use crate::api::shared::middleware::validate_track_header;
+use crate::api::shared::middleware::{validate_track_header, validate_track_query};
 use crate::api::stream::middleware::validate_range;
-use crate::api::stream::stream_controller::stream_file;
+use crate::api::stream::stream_controller::{stream_file, stream_file_header};
 use crate::api::artists::artist_controller::{get_artist, get_all_artists};
 use crate::api::tracks::track_controller::{get_all_tracks, scan, get_cover_art_for_track};
 
@@ -29,7 +31,8 @@ async fn main() -> std::io::Result<()> {
 
     println!("Starting HTTP server");
     
-    let cors = Cors::new().allow_origin("http://localhost:4200");
+    let cors = Cors::new()
+    .allow_methods([Method::POST, Method::GET, Method::OPTIONS, Method::HEAD]);
     
     let app = Route::new()
         .at("/ping", ping)
@@ -39,7 +42,10 @@ async fn main() -> std::io::Result<()> {
         .at("/artists", get_artist)
         .at("/artists/all", get_all_artists)
         .at("/albums/all", get_all_albums)
-        .at("/stream", stream_file.around(validate_range).around(validate_track_header))
+        .at("/stream",
+            RouteMethod::new()
+                .get(stream_file.around(validate_range).around(validate_track_query))
+                .head(stream_file_header.around(validate_track_query)))
         .with(cors);
     
     Server::new(TcpListener::bind(format!("{}:{}", config.server_address.clone(), config.server_port)))
