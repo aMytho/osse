@@ -97,7 +97,7 @@ pub fn get_cover_art(file_path: String) -> Option<CoverArt> {
                 data: tag.pictures()[0].data().into(),
                 mime_type: util::get_mime_type(
                     tag.pictures()[0].mime_type().unwrap_or(
-                        &lofty::picture::MimeType::Unknown("".to_owned()
+                        &lofty::picture::MimeType::Unknown(String::new()
                     ))
                 )
             })
@@ -137,7 +137,7 @@ pub fn get_cover_art(file_path: String) -> Option<CoverArt> {
                             } else if file_name.ends_with(".jpg") {
                                 "image/jpeg".to_owned()
                             } else {
-                                "image/unknown".to_owned()
+                                "application/octet-stream".to_owned()
                             }
                         })
                     }

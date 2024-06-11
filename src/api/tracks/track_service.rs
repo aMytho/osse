@@ -28,11 +28,3 @@ pub async fn scan_files(files: Vec<String>) {
         let _ = track::Entity::insert_many(files).exec(&db).await;
     }
 }
-
-pub fn get_cover_art(track: track::Model) -> Option<Vec<u8>> {
-    // Get art for the file, falls back to dir
-    match metadata::get_cover_art(track.location) {
-        Some(cover) => Some((*cover.data).to_vec()),
-        None => None
-    }
-}
