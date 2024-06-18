@@ -3,17 +3,17 @@ mod formats;
 mod util;
 
 use metadata::FileMetadata;
-use std::{fs::{DirEntry, File}, io::Read, path::PathBuf};
+use std::{fs::{DirEntry, File}, io::Read, path::PathBuf, time::UNIX_EPOCH};
 use sea_orm::entity::prelude::DateTime;
-use chrono::{DateTime as ChronoTime, Utc};
-use lofty::{file::{AudioFile, TaggedFileExt}, probe::read_from_path, properties::FileProperties, tag::Tag};
+use chrono::NaiveDateTime;
+use lofty::{file::{AudioFile, TaggedFileExt}, probe::read_from_path, tag::Tag};
 
-use crate::files::get_file_directory;
+use crate::{api::artists::artist_service::ArtistService, files::get_file_directory};
 
-use self::{formats::{id3v1, id3v2, riff, target::get_possible_tags}, metadata::CoverArt};
+use self::{formats::tag_extractor::TagExtractor, metadata::{CoverArt, TagMetadata}};
 
 
-pub async fn scan_files(files: Vec<DirEntry>) -> Vec<FileMetadata> {
+pub async fn scan_files(files: Vec<DirEntry>, artist_service: &ArtistService<'_>) -> Vec<FileMetadata> {
     let mut scanned_files: Vec<FileMetadata> = Vec::with_capacity(files.len());
 
     for file in files {
@@ -27,60 +27,53 @@ pub async fn scan_files(files: Vec<DirEntry>) -> Vec<FileMetadata> {
 
         let tags = tagged_file.tags();
         let properties = tagged_file.properties();
+        let mut meta = FileMetadata::new();
 
-        scanned_files.push(extract_metadata(&file, tags, properties).await);
+        meta.path = file.path().to_str().unwrap().to_string();
+
+        // Set size, duration, and bitrate
+        meta.size = file.metadata().unwrap().len();
+        meta.duration = properties.duration().as_secs();
+        meta.bitrate = match properties.audio_bitrate() {
+            Some(b) => Some(b as i32),
+            None => None
+        };
+
+        // Set updated at (used for rescans)
+        meta.updated_at = Some(match file.metadata() {
+            Ok(file_meta) => match file_meta.modified() {
+                Ok(file_date_modified) => {
+                    let duration = file_date_modified.duration_since(UNIX_EPOCH).expect("Time went backwards");
+                    NaiveDateTime::from_timestamp(duration.as_secs() as i64, duration.subsec_nanos())
+                }
+                Err(_err) => DateTime::default()
+            },
+            Err(_err) => DateTime::default()
+        });
+
+        let tag_meta = extract_metadata(tags, artist_service).await;
+
+        // The title is the filename by default, a later title tag will override this
+        meta.title = match tag_meta.title {
+            Some(t) => Some(t),
+            None => {
+                Some(file.file_name().to_os_string().into_string()
+                .unwrap_or("Default".to_owned()))
+            }
+        };
+
+        meta.artist = tag_meta.artist;
+        meta.album = tag_meta.album;
+
+        scanned_files.push(meta);
     }
 
     scanned_files
 }
 
-async fn extract_metadata(file: &DirEntry, tags: &[Tag], properties: &FileProperties) -> FileMetadata {
-    let mut meta = FileMetadata::new();
-
-    // The title is the filename by default, a later title tag will override this
-    meta.title = Some(file.file_name().to_os_string().into_string()
-        .unwrap_or("Default".to_owned()));
-
-    // Get the last date the file was modified (used to see if we need to re-scan)
-    meta.updated_at = Some(match file.metadata() {
-        Ok(file_meta) => match file_meta.modified() {
-            Ok(file_date_modified) => {
-                let date_time: ChronoTime<Utc> = file_date_modified.into();
-                DateTime::parse_from_str(date_time.to_rfc3339().as_str(), "%Y-%m-%d %H:%M:%S")
-                    .unwrap_or(DateTime::default())
-            }
-            Err(_err) => DateTime::default()
-        },
-        Err(_err) => DateTime::default()
-    });
-
-    // Get all possible tag entries we use
-    let mut target_tags = get_possible_tags();
-
-    for tag in tags {
-        match tag.tag_type() {
-            lofty::tag::TagType::Ape => todo!(),
-            lofty::tag::TagType::Id3v1 => meta = id3v1::get_supported_tag(&tag, meta, &mut target_tags).await,
-            lofty::tag::TagType::Id3v2 => meta = id3v2::get_supported_tag(&tag, meta, &mut target_tags).await,
-            lofty::tag::TagType::Mp4Ilst => todo!(),
-            lofty::tag::TagType::VorbisComments => todo!(),
-            lofty::tag::TagType::RiffInfo => meta = riff::get_supported_tag(&tag, meta, &mut target_tags).await,
-            lofty::tag::TagType::AiffText => todo!(),
-            _ => todo!(),
-        }
-    }
-
-    meta.path = file.path().to_str().unwrap().to_string();
-
-    // Get size and duration info
-    meta.duration = properties.duration().as_secs();
-    meta.bitrate = match properties.audio_bitrate() {
-        Some(b) => Some(b as i32),
-        None => None
-    };
-    meta.size = file.metadata().unwrap().len();
-
-    meta
+async fn extract_metadata(tags: &[Tag], artist_service: &ArtistService<'_>) -> TagMetadata {
+    let tag_extractor = TagExtractor::new(artist_service);
+    tag_extractor.extract(tags).await
 }
 
 pub fn get_cover_art(file_path: String) -> Option<CoverArt> {

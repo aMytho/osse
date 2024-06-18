@@ -9,6 +9,9 @@ pub enum TagTarget {
     // Comment,
 }
 
+/**
+ * Returns a vec of all the tags we look for.
+ */
 pub fn get_possible_tags() -> Vec<TagTarget> {
     vec![TagTarget::Title, TagTarget::AlbumTitle, TagTarget::Artist]
 }

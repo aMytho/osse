@@ -30,7 +30,19 @@ impl FileMetadata {
     }
 }
 
+pub struct TagMetadata {
+    pub album: Option<String>,
+    pub artist: Option<i32>,
+    pub title: Option<String>,
+}
+
+impl TagMetadata {
+    pub fn new() -> TagMetadata {
+        TagMetadata {album: None, artist: None, title: None}
+    }
+}
+
 pub struct CoverArt {
     pub mime_type: String,
-    pub data: Box<[u8]>
+    pub data: Box<[u8]>,
 }

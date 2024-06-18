@@ -1,24 +1,17 @@
-use crate::{entities::{prelude::*, track::Model}, global::{self, CONFIG}, metadata};
-use poem::{handler, http::{header, StatusCode}, web::{Json, Query}, Error, IntoResponse, Response};
+use crate::{entities::{prelude::*, track::Model}, metadata, AppState};
+use poem::{handler, http::{header, StatusCode}, web::{Data, Json, Query}, Error, IntoResponse, Response};
 use sea_orm::EntityTrait;
 
-use super::{dto::GetCoverArtById, track_service::scan_files};
+use super::{dto::GetCoverArtById, track_service::TrackService};
 
 #[handler]
-pub async fn get_all_tracks() -> Json<Vec<Model>> {
-    let db = global::get_db().await;
-
-    match Track::find().all(&db.clone()).await {
-        Ok(tracks) => Json(tracks),
-        Err(_err) => Json(vec![])
-    }
+pub async fn get_all_tracks(state: Data<&AppState>) -> Json<Vec<Model>> {
+    Json(TrackService::new(&state.db).get_all_tracks().await)
 }
 
 #[handler]
-pub async fn get_cover_art_for_track(Query(GetCoverArtById {id}): Query<GetCoverArtById>) -> Result<impl IntoResponse, Error>{
-    let db = global::get_db().await;
-
-    match Track::find_by_id::<i32>(id.into()).one(&db).await {
+pub async fn get_cover_art_for_track(state: Data<&AppState>, Query(GetCoverArtById {id}): Query<GetCoverArtById>) -> Result<impl IntoResponse, Error>{
+    match Track::find_by_id::<i32>(id.into()).one(&state.db).await {
         Ok(track) => {
             match track {
                 Some(track) => {
@@ -41,7 +34,7 @@ pub async fn get_cover_art_for_track(Query(GetCoverArtById {id}): Query<GetCover
 }
 
 #[handler]
-pub async fn scan() -> &'static str {
-    scan_files(CONFIG.files.clone()).await;
+pub async fn scan(state: Data<&AppState>) -> &'static str {
+    TrackService::new(&state.db).scan_files(&state.config.files).await;
     "Scan Complete!"
 }

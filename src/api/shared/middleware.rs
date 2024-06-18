@@ -2,10 +2,7 @@ use poem::{http::StatusCode, Endpoint, Error, Request};
 use sea_orm::EntityTrait;
 use serde::Deserialize;
 
-use crate::{
-    entities::{prelude::*, track::Model},
-    global,
-};
+use crate::{entities::{prelude::Track, track::Model}, AppState};
 
 const TRACK_HEADER: &str = "Track";
 
@@ -30,11 +27,11 @@ pub async fn validate_track_header<E: Endpoint>(
         return Err(Error::from_status(StatusCode::BAD_REQUEST));
     };
 
+    let state: &AppState = req.data().unwrap();
+
     match header.unwrap().parse::<i32>() {
         Ok(id) => {
-            let db = global::get_db().await;
-
-            let track = Track::find_by_id(id).one(&db).await;
+            let track = Track::find_by_id(id).one(&state.db).await;
             if let Ok(track) = track {
                 if let Some(track) = track {
                     req.extensions_mut().insert(TrackMiddleware(track));
@@ -57,9 +54,9 @@ pub async fn validate_track_query<E: Endpoint>(
 ) -> Result<E::Output, poem::Error> {
     let query = req.params::<TrackId>();
     if let Ok(id) = query {
-        let db = global::get_db().await;
+        let state: &AppState = req.data().unwrap();
 
-        let track = Track::find_by_id(id.id).one(&db).await;
+        let track = Track::find_by_id(id.id).one(&state.db).await;
         if let Ok(track) = track {
             if let Some(track) = track {
                 req.extensions_mut().insert(TrackMiddleware(track));

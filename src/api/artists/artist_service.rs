@@ -1,29 +1,29 @@
-use sea_orm::{ActiveModelTrait, ColumnTrait, DbErr, EntityTrait, QueryFilter};
+use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, DbErr, EntityTrait, QueryFilter};
 
-use crate::{entities::{artist::{self, Model}, prelude::Artist}, global};
+use crate::entities::{artist::{self, Model}, prelude::Artist};
 
-
-pub async fn get_artist_by_name(name: String) -> Option<Model> {
-    let db = global::get_db().await;
-
-    let artist = Artist::find().filter(artist::Column::Name.eq(name)).one(&db).await;
-    if let Ok(artist) = artist {
-        match artist {
-            Some(artist) => Some(artist),
-            None => None
-        }
-    } else {
-        None
-    }
+pub struct ArtistService<'a> {
+    pub db: &'a DatabaseConnection
 }
 
-pub async fn create_artist(name: String) -> Result<Model, DbErr> {
-    let db = global::get_db().await;
+impl ArtistService<'_> {
+    pub fn new(db: &DatabaseConnection) -> ArtistService {
+        ArtistService {db}
+    }
 
-    let model = artist::ActiveModel {
-        name: sea_orm::ActiveValue::Set(name),
-        ..Default::default()
-    };
-
-    model.insert(&db).await
+    pub async fn get_artist_by_name(&self, name: String) -> Option<Model> {
+        match Artist::find().filter(artist::Column::Name.eq(name)).one(self.db).await {
+            Ok(artist) => artist,
+            Err(_) => None
+        }
+    }
+    
+    pub async fn create_artist(&self, name: String) -> Result<Model, DbErr> {
+        let model = artist::ActiveModel {
+            name: sea_orm::ActiveValue::Set(name),
+            ..Default::default()
+        };
+    
+        model.insert(self.db).await
+    }
 }

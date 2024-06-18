@@ -6,8 +6,8 @@ pub enum FileError {
     DirectoryError
 }
 
-pub fn load_directory(dir: String) -> Result<Vec<DirEntry>, FileError> {
-    let files = match fs::read_dir(dir) {
+pub fn load_directory(dir: &String) -> Result<Vec<DirEntry>, FileError> {
+    let files = match fs::read_dir(&dir) {
         Ok(files) => files,
         Err(_err) => return Err(FileError::DirectoryError)
     };
