@@ -9,7 +9,7 @@ pub struct Migration;
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
 
-        manager
+        let _ = manager
             .create_table(
                 Table::create()
                     .table(Album::Table)
@@ -31,12 +31,42 @@ impl MigrationTrait for Migration {
                     )
                     .to_owned(),
             )
-            .await
+            .await;
+        manager.alter_table(
+            Table::alter()
+                .table(Track::Table)
+                .add_column(
+                    ColumnDef::new(Track::AlbumId)
+                        .integer()
+                        .null()
+                )
+                .add_foreign_key(
+                    ForeignKey::create()
+                        .name("fk-track-album_id")
+                        .from(Track::Table, Track::AlbumId)
+                        .to(Album::Table, Album::Id)
+                        .get_foreign_key()
+                )
+                .to_owned()
+        ).await
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        manager
+        let _ = manager.
+            drop_foreign_key(ForeignKey::drop()
+                .name("fk-track-album_id").table(Track::Table).to_owned()
+            )
+            .await?;
+        let _ = manager
             .drop_table(Table::drop().table(Album::Table).to_owned())
+            .await?;
+        manager
+            .alter_table(
+                Table::alter()
+                    .table(Track::Table)
+                    .drop_column(Alias::new("album_id"))
+                    .to_owned()
+            )
             .await
     }
 }
@@ -47,4 +77,10 @@ enum Album {
     Id,
     Name,
     ArtistId,
+}
+
+#[derive(DeriveIden)]
+enum Track {
+    Table,
+    AlbumId
 }

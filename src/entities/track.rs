@@ -16,10 +16,19 @@ pub struct Model {
     #[sea_orm(column_type = "Text")]
     pub location: String,
     pub updated_at: DateTime,
+    pub album_id: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(
+        belongs_to = "super::album::Entity",
+        from = "Column::AlbumId",
+        to = "super::album::Column::Id",
+        on_update = "NoAction",
+        on_delete = "NoAction"
+    )]
+    Album,
     #[sea_orm(
         belongs_to = "super::artist::Entity",
         from = "Column::ArtistId",
@@ -28,6 +37,12 @@ pub enum Relation {
         on_delete = "NoAction"
     )]
     Artist,
+}
+
+impl Related<super::album::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Album.def()
+    }
 }
 
 impl Related<super::artist::Entity> for Entity {

@@ -22,11 +22,19 @@ pub enum Relation {
         on_delete = "NoAction"
     )]
     Artist,
+    #[sea_orm(has_many = "super::track::Entity")]
+    Track,
 }
 
 impl Related<super::artist::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Artist.def()
+    }
+}
+
+impl Related<super::track::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Track.def()
     }
 }
 
