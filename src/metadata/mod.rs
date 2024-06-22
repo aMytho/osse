@@ -1,14 +1,16 @@
 mod metadata;
 mod formats;
 mod util;
+mod db;
 
+use db::album::init_albums_for_tracks;
 use metadata::FileMetadata;
 use std::{fs::{DirEntry, File}, io::Read, path::PathBuf, time::UNIX_EPOCH};
 use sea_orm::entity::prelude::DateTime;
 use chrono::NaiveDateTime;
 use lofty::{file::{AudioFile, TaggedFileExt}, probe::read_from_path, tag::Tag};
 
-use crate::{api::artists::artist_service::ArtistService, files::get_file_directory};
+use crate::{api::{album::album_service, artists::artist_service::ArtistService}, files::get_file_directory};
 
 use self::{formats::tag_extractor::TagExtractor, metadata::{CoverArt, TagMetadata}};
 
@@ -67,6 +69,10 @@ pub async fn scan_files(files: Vec<DirEntry>, artist_service: &ArtistService<'_>
 
         scanned_files.push(meta);
     }
+
+    // Link album titles to albums in the DB
+    let album_service = album_service::AlbumService::new(artist_service.db);
+    init_albums_for_tracks(&mut scanned_files, &album_service).await;
 
     scanned_files
 }

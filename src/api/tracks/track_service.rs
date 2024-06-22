@@ -38,6 +38,7 @@ impl TrackService<'_> {
                     size: sea_orm::ActiveValue::Set(f.size as i64),
                     bitrate: sea_orm::ActiveValue::Set(f.bitrate),
                     duration: sea_orm::ActiveValue::Set(f.duration as i32),
+                    album_id: sea_orm::ActiveValue::Set(f.album_id),
                     ..Default::default()
                 }
             });
