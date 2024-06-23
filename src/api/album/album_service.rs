@@ -29,24 +29,14 @@ impl AlbumService<'_> {
         }
     }
 
-    pub async fn get_albums_with_id_less_than(&self, id: i32) -> Vec<Model> {
-        match Album::find()
-            .filter(album::Column::Id.lte(id))
-            .all(self.db)
-            .await
-        {
-            Ok(result) => result,
-            Err(_) => Vec::new(),
-        }
-    }
-
     /**
-     * Creates albums and returns the ID of the last album inserted
+     * Creates albums and returns the ID of the last album inserted.
+     * Names is a vec of tuples where the first item is the album name and second is artist id (nullable)
      */
-    pub async fn create_albums(&self, names: &Vec<String>) -> i32 {
+    pub async fn create_albums(&self, names: &Vec<(String, Option<i32>)>) -> i32 {
         Album::insert_many(names.iter().map(|f| ActiveModel {
-            name: sea_orm::ActiveValue::Set(f.to_string()),
-            artist_id: sea_orm::ActiveValue::NotSet,
+            name: sea_orm::ActiveValue::Set(f.0.to_string()),
+            artist_id: sea_orm::ActiveValue::Set(f.1),
             ..Default::default()
         })).exec(self.db).await.unwrap().last_insert_id
     }

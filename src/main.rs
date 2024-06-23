@@ -5,6 +5,7 @@ mod metadata;
 mod entities;
 mod api;
 
+use api::album::album_controller::get_album;
 use config::AppConfig;
 use poem::http::Method;
 use poem::RouteMethod;
@@ -55,6 +56,7 @@ async fn main() -> std::io::Result<()> {
         .at("/tracks/cover", get_cover_art_for_track)
         .at("/artists", get_artist)
         .at("/artists/all", get_all_artists)
+        .at("/albums", get_album)
         .at("/albums/all", get_all_albums)
         .at("/stream",
             RouteMethod::new()
