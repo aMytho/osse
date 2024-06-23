@@ -49,6 +49,18 @@ impl TagExtractor<'_> {
                         continue;
                     }
                 },
+                TagTarget::AlbumArtist => {
+                    let result = self.get_custom_tag(tag, target);
+                    match result {
+                        Some(r) => {
+                            self.targets.remove(index);
+                            self.meta.album_artist = Some(r);
+                            continue;
+                        },
+                        _ => ()
+                    }
+                    
+                }
                 TagTarget::Artist => {
                     if let Some(artist) = tag.artist() {
                         // Insert the artist if its a new one, else return the id
@@ -70,6 +82,27 @@ impl TagExtractor<'_> {
             }
 
             index += 1;
+        }
+    }
+
+    /**
+     * Stores tag data for a tag property that isn't covered by lofty (different in each implementation)
+     */
+    fn get_custom_tag(&self, tag: &Tag, target: &TagTarget) -> Option<String> {
+        match target {
+            TagTarget::AlbumArtist => {
+                match tag.tag_type() {
+                    lofty::tag::TagType::Ape => todo!(),
+                    lofty::tag::TagType::Id3v2 => self.get_id3v2_data(tag, target),
+                    lofty::tag::TagType::Mp4Ilst => todo!(),
+                    lofty::tag::TagType::VorbisComments => self.get_vorbis_data(tag, target),
+                    lofty::tag::TagType::RiffInfo => self.get_riff_info_data(tag, target),
+                    lofty::tag::TagType::AiffText => todo!(),
+                    // The generic tag covers all fields in ID3v1. Doesn't need custom implementation
+                    _ => None,
+                }
+            },
+            _ => None
         }
     }
 }

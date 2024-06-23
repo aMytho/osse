@@ -24,12 +24,13 @@ pub async fn init_albums_for_tracks(files: &mut Vec<FileMetadata>, album_service
                 // If the album matches, set the id
                 if file_album_name.eq(&album.name) {
                     file.album_id = Some(album.id);
+                    file.album_artist_id = album.artist_id
                 }
             }
 
             // If no match was found, queue album to be added
             if file.album_id == None {
-                albums_to_add.push(file_album_name.to_string());
+                albums_to_add.push((file_album_name.to_string(), file.album_artist_id));
             }
         }
     }
@@ -40,7 +41,7 @@ pub async fn init_albums_for_tracks(files: &mut Vec<FileMetadata>, album_service
 
     // Add each album that isn't already in the db
     let _ = album_service.create_albums(&albums_to_add).await;
-    let new_albums = album_service.get_albums_by_name(albums_to_add).await;
+    let new_albums = album_service.get_albums_by_name(albums_to_add.iter().map(|f| f.0.clone()).collect()).await;
     
     // Link new ids to files
     for file in &mut *files {
