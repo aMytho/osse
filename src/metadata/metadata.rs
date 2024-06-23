@@ -7,6 +7,8 @@ use sea_orm::entity::prelude::DateTime;
 pub struct FileMetadata {
     pub album: Option<String>,
     pub album_id: Option<i32>,
+    pub album_artist: Option<String>,
+    pub album_artist_id: Option<i32>,
     pub artist: Option<i32>,
     pub title: Option<String>,
     pub updated_at: Option<DateTime>,
@@ -22,6 +24,8 @@ impl FileMetadata {
             artist: None,
             album: None,
             album_id: None,
+            album_artist: None,
+            album_artist_id: None,
             title: None,
             updated_at: None,
             path: String::from(""),
@@ -34,13 +38,14 @@ impl FileMetadata {
 
 pub struct TagMetadata {
     pub album: Option<String>,
+    pub album_artist: Option<String>,
     pub artist: Option<i32>,
     pub title: Option<String>,
 }
 
 impl TagMetadata {
     pub fn new() -> TagMetadata {
-        TagMetadata {album: None, artist: None, title: None}
+        TagMetadata {album: None, album_artist: None, artist: None, title: None}
     }
 }
 

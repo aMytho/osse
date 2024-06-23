@@ -3,7 +3,7 @@ mod formats;
 mod util;
 mod db;
 
-use db::album::init_albums_for_tracks;
+use db::{album::init_albums_for_tracks, album_artist::init_album_artists_for_tracks};
 use metadata::FileMetadata;
 use std::{fs::{DirEntry, File}, io::Read, path::PathBuf, time::UNIX_EPOCH};
 use sea_orm::entity::prelude::DateTime;
@@ -55,7 +55,7 @@ pub async fn scan_files(files: Vec<DirEntry>, artist_service: &ArtistService<'_>
 
         let tag_meta = extract_metadata(tags, artist_service).await;
 
-        // The title is the filename by default, a later title tag will override this
+        // The title is the filename, unless a tag was provided
         meta.title = match tag_meta.title {
             Some(t) => Some(t),
             None => {
@@ -66,12 +66,14 @@ pub async fn scan_files(files: Vec<DirEntry>, artist_service: &ArtistService<'_>
 
         meta.artist = tag_meta.artist;
         meta.album = tag_meta.album;
+        meta.album_artist = tag_meta.album_artist;
 
         scanned_files.push(meta);
     }
 
     // Link album titles to albums in the DB
     let album_service = album_service::AlbumService::new(artist_service.db);
+    init_album_artists_for_tracks(&mut scanned_files, &artist_service).await;
     init_albums_for_tracks(&mut scanned_files, &album_service).await;
 
     scanned_files

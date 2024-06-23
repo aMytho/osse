@@ -17,6 +17,15 @@ impl ArtistService<'_> {
             Err(_) => None
         }
     }
+
+    pub async fn get_artists_by_name(&self, names: Vec<String>) -> Vec<Model> {
+        match Artist::find().filter(artist::Column::Name.is_in(names))
+            .all(self.db)
+            .await {
+                Ok(result) => result,
+                Err(_) => Vec::new()
+            }
+    }
     
     pub async fn create_artist(&self, name: String) -> Result<Model, DbErr> {
         let model = artist::ActiveModel {
