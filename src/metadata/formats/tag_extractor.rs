@@ -8,13 +8,13 @@ use super::target::{get_possible_tags, TagTarget};
  * Contains logic to extract any type of supported tag
  */
 pub struct TagExtractor<'a> {
-    pub artist_service: &'a ArtistService<'a>,
+    pub artist_service: &'a ArtistService,
     pub meta: TagMetadata,
     pub targets: Vec<TagTarget>
 }
 
 impl TagExtractor<'_> {
-    pub fn new<'a>(artist_service: &'a ArtistService<'a>) -> TagExtractor<'a> {
+    pub fn new(artist_service: &ArtistService) -> TagExtractor {
         TagExtractor {artist_service, meta: TagMetadata::new(), targets: get_possible_tags()}
     }
 
@@ -69,7 +69,7 @@ impl TagExtractor<'_> {
                         if let None = existing_artist {
                             let new_artist = self.artist_service.create_artist(artist.to_string()).await;
                             if let Ok(new_artist) = new_artist {
-                                self.meta.artist = Some(new_artist.id);
+                                self.meta.artist = Some(new_artist);
                             }
                         } else {
                             self.meta.artist = Some(existing_artist.unwrap().id);

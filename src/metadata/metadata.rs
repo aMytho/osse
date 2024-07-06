@@ -1,4 +1,4 @@
-use sea_orm::entity::prelude::DateTime;
+use time::PrimitiveDateTime;
 
 /**
  * The info we need to write a track to the DB
@@ -11,7 +11,7 @@ pub struct FileMetadata {
     pub album_artist_id: Option<i32>,
     pub artist: Option<i32>,
     pub title: Option<String>,
-    pub updated_at: Option<DateTime>,
+    pub updated_at: Option<PrimitiveDateTime>,
     pub path: String,
     pub size: u64,
     pub bitrate: Option<i32>,

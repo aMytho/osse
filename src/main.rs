@@ -1,17 +1,19 @@
 mod args;
 mod config;
+mod schema;
 mod files;
 mod metadata;
 mod entities;
 mod api;
 
+use diesel::sqlite::SqliteConnection;
 use api::album::album_controller::get_album;
 use config::AppConfig;
+use diesel::r2d2::{ConnectionManager, Pool};
 use poem::http::Method;
 use poem::RouteMethod;
 use poem::{post, EndpointExt, middleware::Cors};
 use poem::{listener::TcpListener, Route, Server};
-use sea_orm::{Database, DatabaseConnection};
 use crate::api::album::album_controller::get_all_albums;
 use crate::api::shared::middleware::validate_track_query;
 use crate::api::stream::middleware::validate_range;
@@ -23,7 +25,7 @@ use api::server::ping;
 
 #[derive(Debug, Clone)]
 pub struct AppState {
-    pub db: DatabaseConnection,
+    pub db: Pool<ConnectionManager<SqliteConnection>>,
     pub config: AppConfig
 }
 
@@ -37,7 +39,8 @@ async fn main() -> std::io::Result<()> {
 
     println!("Config: {:?}", config);
 
-    let db = match Database::connect(&config.database_address).await {
+    let pool = ConnectionManager::<SqliteConnection>::new(&config.database_address);
+    let db = match Pool::builder().test_on_check_out(true).build(pool) {
         Ok(c) => c,
         Err(_) => panic!("Failed to connect to DB.")
     };

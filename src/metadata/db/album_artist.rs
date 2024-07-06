@@ -1,7 +1,7 @@
 use crate::{api::artists::artist_service::ArtistService, metadata::metadata::FileMetadata};
 
 
-pub async fn init_album_artists_for_tracks(files: &mut Vec<FileMetadata>, artist_service: &ArtistService<'_>) {
+pub async fn init_album_artists_for_tracks(files: &mut Vec<FileMetadata>, artist_service: &ArtistService) {
     // Get a list of album artists, remove duplicates
     let mut artist_list: Vec<String> = files.into_iter()
         .filter_map(|f| f.album_artist.to_owned())

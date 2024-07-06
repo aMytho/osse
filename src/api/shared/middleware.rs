@@ -1,13 +1,12 @@
 use poem::{http::StatusCode, Endpoint, Error, Request};
-use sea_orm::EntityTrait;
 use serde::Deserialize;
 
-use crate::{entities::{prelude::Track, track::Model}, AppState};
+use crate::{api::tracks::track_service::TrackService, entities::track::Track, AppState};
 
 const TRACK_HEADER: &str = "Track";
 
 #[derive(Clone)]
-pub struct TrackMiddleware(pub Model);
+pub struct TrackMiddleware(pub Track);
 
 #[derive(Deserialize)]
 pub struct TrackId {
@@ -28,16 +27,13 @@ pub async fn validate_track_header<E: Endpoint>(
     };
 
     let state: &AppState = req.data().unwrap();
+    let track_service = TrackService::new(state.db.clone());
 
     match header.unwrap().parse::<i32>() {
         Ok(id) => {
-            let track = Track::find_by_id(id).one(&state.db).await;
-            if let Ok(track) = track {
-                if let Some(track) = track {
-                    req.extensions_mut().insert(TrackMiddleware(track));
-                } else {
-                    return Err(Error::from_status(StatusCode::NOT_FOUND));
-                }
+            let track = track_service.get_track_by_id(id);
+            if let Some(track) = track {
+                req.extensions_mut().insert(TrackMiddleware(track));
             } else {
                 return Err(Error::from_status(StatusCode::NOT_FOUND));
             }
@@ -55,15 +51,12 @@ pub async fn validate_track_query<E: Endpoint>(
     let query = req.params::<TrackId>();
     if let Ok(id) = query {
         let state: &AppState = req.data().unwrap();
+        let track_service = TrackService::new(state.db.clone());
 
-        let track = Track::find_by_id(id.id).one(&state.db).await;
-        if let Ok(track) = track {
-            if let Some(track) = track {
-                req.extensions_mut().insert(TrackMiddleware(track));
-                return next.call(req).await
-            } else {
-                return Err(Error::from_status(StatusCode::NOT_FOUND));
-            }
+        let track = track_service.get_track_by_id(id.id);
+        if let Some(track) = track {
+            req.extensions_mut().insert(TrackMiddleware(track));
+            return next.call(req).await
         } else {
             return Err(Error::from_status(StatusCode::NOT_FOUND));
         }

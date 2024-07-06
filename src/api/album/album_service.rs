@@ -1,43 +1,63 @@
-use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
+use diesel::{associations::HasTable, insert_into, r2d2::{ConnectionManager, Pool, PooledConnection}, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper, SqliteConnection};
+use crate::{api::shared::service::DbConn, entities::{album::Album, track::Track}, schema::tracks};
+use crate::schema::albums::dsl::*;
 
-use crate::entities::{
-    album::{self, ActiveModel, Model},
-    prelude::Album,
-};
-
-pub struct AlbumService<'a> {
-    pub db: &'a DatabaseConnection,
+pub struct AlbumService {
+    pub db: Pool<ConnectionManager<SqliteConnection>>
 }
 
-impl AlbumService<'_> {
-    pub fn new(db: &DatabaseConnection) -> AlbumService {
+impl AlbumService {
+    pub fn new(db: Pool<ConnectionManager<SqliteConnection>>) -> AlbumService {
         AlbumService { db }
     }
 
-    pub async fn get_album_by_id(&self, id: i32) -> Option<Model> {
-        Album::find_by_id(id).one(self.db).await.ok()?
+    pub async fn get_album_by_id(&self, album_id: i32) -> Option<Album> {
+        albums
+            .select(Album::as_select())
+            .filter(id.eq(album_id))
+            .first(&mut self.conn())
+            .ok()
     }
 
-    pub async fn get_albums_by_name(&self, names: Vec<String>) -> Vec<Model> {
-        match Album::find()
-            .filter(album::Column::Name.is_in(names))
-            .all(self.db)
-            .await
-        {
-            Ok(result) => result,
-            Err(_) => Vec::new(),
-        }
+    pub async fn get_albums_by_name(&self, names: Vec<String>) -> Vec<Album> {
+        albums
+            .select(Album::as_select())
+            .filter(name.eq_any(names))
+            .load(&mut self.conn())
+            .unwrap_or(Vec::new())
+    }
+
+    pub async fn get_all(&self) -> Vec<Album> {
+        albums
+            .select(Album::as_select())
+            .load(&mut self.conn())
+            .unwrap_or(Vec::new())
+    }
+
+    pub async fn get_all_with_tracks(&self) -> Vec<(Album, Track)> {
+        albums::table()
+            .inner_join(tracks::table)
+            .select((Album::as_select(), Track::as_select()))
+            .load::<(Album, Track)>(&mut self.conn())
+            .unwrap_or(Vec::new())
     }
 
     /**
      * Creates albums and returns the ID of the last album inserted.
      * Names is a vec of tuples where the first item is the album name and second is artist id (nullable)
      */
-    pub async fn create_albums(&self, names: &Vec<(String, Option<i32>)>) -> i32 {
-        Album::insert_many(names.iter().map(|f| ActiveModel {
-            name: sea_orm::ActiveValue::Set(f.0.to_string()),
-            artist_id: sea_orm::ActiveValue::Set(f.1),
-            ..Default::default()
-        })).exec(self.db).await.unwrap().last_insert_id
+    pub async fn create_albums(&self, data: &Vec<(String, Option<i32>)>) -> Result<usize, diesel::result::Error> {
+        let names: Vec<String> = data.iter().map(|f| f.0.clone()).collect();
+        let artists: Vec<Option<i32>> = data.iter().map(|f| f.1).collect();
+        
+        insert_into(albums).values(
+        names.iter().zip(artists.iter()).map(|(n, a)| (name.eq(n), artist_id.eq(a))).collect::<Vec<_>>()
+        ).execute(&mut self.conn())
+    }
+}
+
+impl DbConn for AlbumService {
+    fn conn(&self) -> PooledConnection<ConnectionManager<SqliteConnection>> {
+        self.db.get().unwrap()
     }
 }

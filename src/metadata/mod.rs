@@ -1,21 +1,20 @@
-mod metadata;
+pub mod metadata;
 mod formats;
 mod util;
 mod db;
 
 use db::{album::init_albums_for_tracks, album_artist::init_album_artists_for_tracks};
 use metadata::FileMetadata;
-use std::{fs::{DirEntry, File}, io::Read, path::PathBuf, time::UNIX_EPOCH};
-use sea_orm::entity::prelude::DateTime;
-use chrono::NaiveDateTime;
+use time::{OffsetDateTime, PrimitiveDateTime};
+use std::{fs::{DirEntry, File}, io::Read, path::PathBuf, time::{SystemTime, UNIX_EPOCH}};
 use lofty::{file::{AudioFile, TaggedFileExt}, probe::read_from_path, tag::Tag};
 
-use crate::{api::{album::album_service, artists::artist_service::ArtistService}, files::get_file_directory};
+use crate::{api::{album::album_service::AlbumService, artists::artist_service::ArtistService}, files::get_file_directory};
 
 use self::{formats::tag_extractor::TagExtractor, metadata::{CoverArt, TagMetadata}};
 
 
-pub async fn scan_files(files: Vec<DirEntry>, artist_service: &ArtistService<'_>) -> Vec<FileMetadata> {
+pub async fn scan_files(files: Vec<DirEntry>, artist_service: &ArtistService, album_service: &AlbumService) -> Vec<FileMetadata> {
     let mut scanned_files: Vec<FileMetadata> = Vec::with_capacity(files.len());
 
     for file in files {
@@ -45,12 +44,11 @@ pub async fn scan_files(files: Vec<DirEntry>, artist_service: &ArtistService<'_>
         meta.updated_at = Some(match file.metadata() {
             Ok(file_meta) => match file_meta.modified() {
                 Ok(file_date_modified) => {
-                    let duration = file_date_modified.duration_since(UNIX_EPOCH).expect("Time went backwards");
-                    NaiveDateTime::from_timestamp(duration.as_secs() as i64, duration.subsec_nanos())
-                }
-                Err(_err) => DateTime::default()
+                    system_time_to_primitive_datetime(file_date_modified)
+                },
+                Err(_err) => system_time_to_primitive_datetime(UNIX_EPOCH)
             },
-            Err(_err) => DateTime::default()
+            Err(_err) => system_time_to_primitive_datetime(UNIX_EPOCH)
         });
 
         let tag_meta = extract_metadata(tags, artist_service).await;
@@ -72,14 +70,13 @@ pub async fn scan_files(files: Vec<DirEntry>, artist_service: &ArtistService<'_>
     }
 
     // Link album titles to albums in the DB
-    let album_service = album_service::AlbumService::new(artist_service.db);
-    init_album_artists_for_tracks(&mut scanned_files, &artist_service).await;
-    init_albums_for_tracks(&mut scanned_files, &album_service).await;
+    init_album_artists_for_tracks(&mut scanned_files, artist_service).await;
+    init_albums_for_tracks(&mut scanned_files, album_service).await;
 
     scanned_files
 }
 
-async fn extract_metadata(tags: &[Tag], artist_service: &ArtistService<'_>) -> TagMetadata {
+async fn extract_metadata(tags: &[Tag], artist_service: &ArtistService) -> TagMetadata {
     let tag_extractor = TagExtractor::new(artist_service);
     tag_extractor.extract(tags).await
 }
@@ -149,4 +146,9 @@ pub fn get_cover_art(file_path: String) -> Option<CoverArt> {
     }
 
     return None;
+}
+
+fn system_time_to_primitive_datetime(system_time: SystemTime) -> PrimitiveDateTime {
+    let dt: OffsetDateTime = system_time.into();
+    PrimitiveDateTime::new(dt.date(), dt.time())
 }

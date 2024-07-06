@@ -4,7 +4,7 @@ use crate::{api::album::album_service::AlbumService, metadata::metadata::FileMet
  * Creates a new album for each track if it doesn't already exist.
  * If it does, the existing album is used
  */
-pub async fn init_albums_for_tracks(files: &mut Vec<FileMetadata>, album_service: &AlbumService<'_>) {
+pub async fn init_albums_for_tracks(files: &mut Vec<FileMetadata>, album_service: &AlbumService) {
     // Get a list of albums, remove duplicates
     let mut album_list: Vec<String> = files.into_iter()
         .filter_map(|f| f.album.to_owned())
