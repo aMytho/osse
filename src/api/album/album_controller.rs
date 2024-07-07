@@ -1,14 +1,11 @@
 use crate::{
-    api::{
-        album::dto::{AlbumResponse, AllAlbumsQuery, Dto},
-        shared::dto::GetById,
-    },
+    api::album::dto::{AlbumResponse, AllAlbumsQuery, Dto},
     AppState,
 };
 use poem::{
     handler,
     http::StatusCode,
-    web::{Data, Json, Query},
+    web::{Data, Json, Path, Query},
     Error, IntoResponse,
 };
 
@@ -29,10 +26,22 @@ pub async fn get_all_albums(
 #[handler]
 pub async fn get_album(
     state: Data<&AppState>,
-    query: Query<GetById>,
+    Path(album_id): Path<i32>
 ) -> Result<impl IntoResponse, Error> {
     let album_service = AlbumService::new(state.db.clone());
-    match album_service.get_album_by_id(query.id).await {
+    match album_service.get_album_by_id(album_id).await {
+        Some(album) => Ok(Json(album)),
+        None => Err(Error::from_status(StatusCode::NOT_FOUND)),
+    }
+}
+
+#[handler]
+pub async fn get_album_tracks(
+    state: Data<&AppState>,
+    Path(album_id): Path<i32>
+) -> Result<impl IntoResponse, Error> {
+    let album_service = AlbumService::new(state.db.clone());
+    match album_service.get_album_with_tracks(album_id) {
         Some(album) => Ok(Json(album)),
         None => Err(Error::from_status(StatusCode::NOT_FOUND)),
     }

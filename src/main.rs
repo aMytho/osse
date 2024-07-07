@@ -7,7 +7,7 @@ mod entities;
 mod api;
 
 use diesel::sqlite::SqliteConnection;
-use api::album::album_controller::get_album;
+use api::album::album_controller::{get_album, get_album_tracks};
 use config::AppConfig;
 use diesel::r2d2::{ConnectionManager, Pool};
 use poem::http::Method;
@@ -59,8 +59,9 @@ async fn main() -> std::io::Result<()> {
         .at("/tracks/cover", get_cover_art_for_track)
         .at("/artists", get_artist)
         .at("/artists/all", get_all_artists)
-        .at("/albums", get_album)
-        .at("/albums/all", get_all_albums)
+        .at("/albums", get_all_albums)
+        .at("/albums/:album_id", get_album)
+        .at("/albums/:album_id/tracks", get_album_tracks)
         .at("/stream",
             RouteMethod::new()
                 .get(stream_file.around(validate_range).around(validate_track_query))

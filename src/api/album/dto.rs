@@ -11,7 +11,7 @@ pub struct AllAlbumsQuery {
 }
 
 
-#[derive(Serialize)]
+#[derive(Clone, Serialize)]
 pub struct AlbumResponse {
     pub id: i32,
     pub name: String,

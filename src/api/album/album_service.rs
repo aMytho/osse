@@ -1,6 +1,9 @@
 use diesel::{associations::HasTable, insert_into, r2d2::{ConnectionManager, Pool, PooledConnection}, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper, SqliteConnection};
 use crate::{api::shared::service::DbConn, entities::{album::Album, track::Track}, schema::tracks};
 use crate::schema::albums::dsl::*;
+use crate::api::album::dto::Dto;
+
+use super::dto::AlbumResponse;
 
 pub struct AlbumService {
     pub db: Pool<ConnectionManager<SqliteConnection>>
@@ -40,6 +43,18 @@ impl AlbumService {
             .select((Album::as_select(), Track::as_select()))
             .load::<(Album, Track)>(&mut self.conn())
             .unwrap_or(Vec::new())
+    }
+
+    pub fn get_album_with_tracks(&self, album_id: i32) -> Option<AlbumResponse> {
+        albums::table()
+            .filter(id.eq(album_id))
+            .inner_join(tracks::table)
+            .select((Album::as_select(), Track::as_select()))
+            .load::<(Album, Track)>(&mut self.conn())
+            .ok()?
+            .to_models()
+            .into_iter()
+            .next()
     }
 
     /**
