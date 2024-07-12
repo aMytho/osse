@@ -1,4 +1,4 @@
-use std::{fs::{self, read_dir, DirEntry, ReadDir}, path::PathBuf};
+use std::{fs::{self, DirEntry, ReadDir}, path::PathBuf};
 
 pub const ALLOWED_EXTENSIONS: [&str; 3] = [".mp3", ".wav", ".ogg"];
 
@@ -33,17 +33,10 @@ pub fn load_directory(dir: &String) -> Result<Vec<DirEntry>, FileError> {
     Ok(valid_files)
 }
 
-pub fn get_file_directory(file: PathBuf) -> Result<ReadDir, ()>{
+pub fn get_file_directory(file: PathBuf) -> Result<ReadDir, std::io::Error>{
     // Get the path of the file
-    let path = PathBuf::from(file);
-    if let Some(path) = path.parent() {
-        let dir = read_dir(path);
-        if let Ok(dir) = dir {
-            Ok(dir)
-        } else {
-            Err(())
-        }
-    } else {
-        Err(())
-    }
+    PathBuf::from(file)
+        .parent()
+        .ok_or(std::io::Error::new(std::io::ErrorKind::NotFound, "Not Found"))?
+        .read_dir()
 }

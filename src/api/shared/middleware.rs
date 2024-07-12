@@ -1,4 +1,4 @@
-use poem::{http::StatusCode, Endpoint, Error, Request};
+use poem::{http::{header::CACHE_CONTROL, StatusCode}, Endpoint, Error, Request};
 use serde::Deserialize;
 
 use crate::{api::tracks::track_service::TrackService, entities::track::Track, AppState};
@@ -63,4 +63,12 @@ pub async fn validate_track_query<E: Endpoint>(
     }
 
     return Err(Error::from_status(StatusCode::BAD_REQUEST));
+}
+
+pub async fn cache_result<E: Endpoint>(
+    next: E,
+    mut req: Request,
+) -> Result<E::Output, poem::Error>  {
+    req.headers_mut().insert(CACHE_CONTROL, "public, max-age=3600".parse().unwrap());
+    next.call(req).await
 }

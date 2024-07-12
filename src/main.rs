@@ -29,7 +29,7 @@ pub struct AppState {
     pub config: AppConfig
 }
 
-#[tokio::main]
+#[tokio::main(flavor = "multi_thread")]
 async fn main() -> std::io::Result<()> {
     let config_path = args::get_config_path();
     let config = match config::load_config(config_path) {
