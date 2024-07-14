@@ -3,10 +3,9 @@ use poem::http::StatusCode;
 use poem::web::{Data, Json, Query};
 use poem::Error;
 use crate::api::artists::artist_service::ArtistService;
+use crate::api::shared::dto::GetById;
 use crate::entities::artist::Artist;
 use crate::AppState;
-
-use super::dto::GetArtistByid;
 
 #[handler]
 pub async fn get_all_artists(state: Data<&AppState>) -> Json<Vec<Artist>> {
@@ -17,7 +16,7 @@ pub async fn get_all_artists(state: Data<&AppState>) -> Json<Vec<Artist>> {
 #[handler]
 pub async fn get_artist(
     state: Data<&AppState>,
-    Query(GetArtistByid {id}): Query<GetArtistByid>
+    Query(GetById {id}): Query<GetById>
 ) -> Result<impl IntoResponse, Error> {
     let artist_service = ArtistService::new(state.db.clone());
     match artist_service.get_artist_by_id(id).await {
