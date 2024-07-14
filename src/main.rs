@@ -21,7 +21,7 @@ use crate::api::stream::stream_controller::{stream_file, stream_file_header};
 use crate::api::artists::artist_controller::{get_artist, get_all_artists};
 use crate::api::tracks::track_controller::{get_all_tracks, scan, get_cover_art_for_track};
 
-use api::server::ping;
+use api::server::{ping, stats};
 
 #[derive(Debug, Clone)]
 pub struct AppState {
@@ -54,6 +54,7 @@ async fn main() -> std::io::Result<()> {
     
     let app = Route::new()
         .at("/ping", ping)
+        .at("/stats", stats)
         .at("/tracks/all", get_all_tracks)
         .at("/tracks/scan", post(scan))
         .at("/tracks/cover", get_cover_art_for_track)

@@ -1,4 +1,4 @@
-use diesel::{insert_into, r2d2::{ConnectionManager, Pool, PooledConnection}, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper, SqliteConnection};
+use diesel::{associations::HasTable, insert_into, r2d2::{ConnectionManager, Pool, PooledConnection}, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper, SqliteConnection};
 use crate::{api::{album::album_service, shared::service::DbConn}, entities::track::TrackForm, schema::tracks::dsl::*};
 
 use crate::api::artists::artist_service;
@@ -48,6 +48,13 @@ impl TrackService {
                 .values(&files)
                 .execute(&mut self.conn());
         }
+    }
+
+    pub fn count(&self) -> Option<i64> {
+        tracks::table()
+            .count()
+            .get_result(&mut self.conn())
+            .ok()
     }
 }
 

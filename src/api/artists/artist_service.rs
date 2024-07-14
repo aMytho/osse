@@ -1,4 +1,4 @@
-use diesel::{r2d2::{ConnectionManager, Pool, PooledConnection}, ExpressionMethods, SqliteConnection, QueryDsl, RunQueryDsl, SelectableHelper};
+use diesel::{associations::HasTable, r2d2::{ConnectionManager, Pool, PooledConnection}, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper, SqliteConnection};
 use crate::{api::shared::service::DbConn, entities::artist::Artist};
 use crate::schema::artists::dsl::*;
 
@@ -49,6 +49,13 @@ impl ArtistService {
             .returning(Artist::as_returning())
             .get_result(&mut self.conn())
             .map(|a| a.id)
+    }
+
+    pub fn count(&self) -> Option<i64> {
+        artists::table()
+            .count()
+            .get_result(&mut self.conn())
+            .ok()
     }
 }
 

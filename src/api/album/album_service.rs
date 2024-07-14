@@ -57,6 +57,13 @@ impl AlbumService {
             .next()
     }
 
+    pub fn count(&self) -> Option<i64> {
+        albums::table()
+            .count()
+            .get_result(&mut self.conn())
+            .ok()
+    }
+
     /**
      * Creates albums and returns the ID of the last album inserted.
      * Names is a vec of tuples where the first item is the album name and second is artist id (nullable)
