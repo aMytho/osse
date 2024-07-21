@@ -6,6 +6,7 @@ mod metadata;
 mod entities;
 mod api;
 
+use api::shared::middleware::cache_control;
 use diesel::sqlite::SqliteConnection;
 use api::album::album_controller::{get_album, get_album_tracks};
 use config::AppConfig;
@@ -53,15 +54,15 @@ async fn main() -> std::io::Result<()> {
     .allow_methods([Method::POST, Method::GET, Method::OPTIONS, Method::HEAD]);
     
     let app = Route::new()
-        .at("/ping", ping)
+        .at("/ping", ping.around(cache_control))
         .at("/stats", stats)
         .at("/tracks/all", get_all_tracks)
         .at("/tracks/scan", post(scan))
-        .at("/tracks/cover", get_cover_art_for_track)
-        .at("/artists", get_artist)
+        .at("/tracks/cover", get_cover_art_for_track.around(cache_control))
+        .at("/artists", get_artist.around(cache_control))
         .at("/artists/all", get_all_artists)
         .at("/albums", get_all_albums)
-        .at("/albums/:album_id", get_album)
+        .at("/albums/:album_id", get_album.around(cache_control))
         .at("/albums/:album_id/tracks", get_album_tracks)
         .at("/stream",
             RouteMethod::new()

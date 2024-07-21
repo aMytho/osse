@@ -1,5 +1,5 @@
 use crate::{entities::track::Track, metadata, AppState};
-use poem::{handler, http::{header, StatusCode}, web::{Data, Json, Query}, Error, IntoResponse, Response};
+use poem::{handler, http::StatusCode, web::{Data, Json, Query}, Error, IntoResponse, Response};
 
 use super::{dto::GetCoverArtById, track_service::TrackService};
 
@@ -14,8 +14,6 @@ pub fn get_cover_art_for_track(state: Data<&AppState>, Query(GetCoverArtById {id
         Some(track) => {
             match metadata::get_cover_art(track.location) {
                 Some(data) => Ok(Response::builder()
-                    .header(header::CACHE_CONTROL, "max-age=31536000")
-                    // to-do: Add last modified and etag information to update if file has been changed
                     .content_type(data.mime_type)
                     .body(data.data.to_vec()
                 )),
