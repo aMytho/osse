@@ -1,7 +1,7 @@
 use poem::{handler, web::{Data, Json}};
 use serde::Serialize;
 
-use crate::{api::{album::album_service::AlbumService, tracks::track_service::TrackService}, AppState};
+use crate::{api::{albums::album_service::AlbumService, tracks::track_service::TrackService}, AppState};
 
 use super::artists::artist_service::ArtistService;
 

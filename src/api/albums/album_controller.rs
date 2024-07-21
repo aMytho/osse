@@ -1,5 +1,5 @@
 use crate::{
-    api::album::dto::{AlbumResponse, AllAlbumsQuery, Dto},
+    api::albums::dto::{AlbumResponse, AllAlbumsQuery, Dto},
     AppState,
 };
 use poem::{

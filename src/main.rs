@@ -8,14 +8,14 @@ mod api;
 
 use api::shared::middleware::cache_control;
 use diesel::sqlite::SqliteConnection;
-use api::album::album_controller::{get_album, get_album_tracks};
+use api::albums::album_controller::{get_album, get_album_tracks};
 use config::AppConfig;
 use diesel::r2d2::{ConnectionManager, Pool};
 use poem::http::Method;
 use poem::RouteMethod;
 use poem::{post, EndpointExt, middleware::Cors};
 use poem::{listener::TcpListener, Route, Server};
-use crate::api::album::album_controller::get_all_albums;
+use crate::api::albums::album_controller::get_all_albums;
 use crate::api::shared::middleware::validate_track_query;
 use crate::api::stream::middleware::validate_range;
 use crate::api::stream::stream_controller::{stream_file, stream_file_header};

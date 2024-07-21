@@ -1,4 +1,4 @@
-use crate::{api::album::album_service::AlbumService, metadata::metadata::FileMetadata};
+use crate::{api::albums::album_service::AlbumService, metadata::metadata::FileMetadata};
 
 /**
  * Creates a new album for each track if it doesn't already exist.

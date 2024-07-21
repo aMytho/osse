@@ -1,7 +1,7 @@
 use diesel::{associations::HasTable, insert_into, r2d2::{ConnectionManager, Pool, PooledConnection}, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper, SqliteConnection};
 use crate::{api::shared::service::DbConn, entities::{album::Album, track::Track}, schema::tracks};
 use crate::schema::albums::dsl::*;
-use crate::api::album::dto::Dto;
+use crate::api::albums::dto::Dto;
 
 use super::dto::AlbumResponse;
 

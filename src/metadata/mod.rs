@@ -9,7 +9,7 @@ use time::{OffsetDateTime, PrimitiveDateTime};
 use std::{fs::{DirEntry, File}, io::Read, path::PathBuf, time::{SystemTime, UNIX_EPOCH}};
 use lofty::{file::{AudioFile, TaggedFileExt}, probe::read_from_path, tag::Tag};
 
-use crate::{api::{album::album_service::AlbumService, artists::artist_service::ArtistService}, files::get_file_directory};
+use crate::{api::{albums::album_service::AlbumService, artists::artist_service::ArtistService}, files::get_file_directory};
 
 use self::{formats::tag_extractor::TagExtractor, metadata::{CoverArt, TagMetadata}};
 
