@@ -6,6 +6,7 @@ use crate::api::playlists::playlist_service::PlaylistService;
 use crate::api::shared::dto::GetByName;
 use crate::entities::playlist::Playlist;
 use crate::AppState;
+use super::dto::CreatePlaylist;
 
 #[handler]
 pub async fn get_all_playlists(state: Data<&AppState>) -> Json<Vec<Playlist>> {
@@ -35,5 +36,17 @@ pub async fn create_playlist(
     match playlist_service.create_playlist(req.name).await {
         Ok(_c) => Ok(()),
         Err(e) => Err(Error::from_string("Failed to create playlist", StatusCode::INTERNAL_SERVER_ERROR))
+    }
+}
+
+#[handler]
+pub async fn add_track_to_playlist(
+    state: Data<&AppState>,
+    req: CreatePlaylist
+) -> Result<impl IntoResponse, Error>{
+    let playlist_service = PlaylistService::new(state.db.clone());
+    match playlist_service.add_track_to_playlist(req.track_id, req.playlist_id) {
+        Ok(_) => Ok(()),
+        Err(_) => Err(Error::from_string("Failed to add track to playlist", StatusCode::INTERNAL_SERVER_ERROR))
     }
 }

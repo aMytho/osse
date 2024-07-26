@@ -6,7 +6,8 @@ mod metadata;
 mod entities;
 mod api;
 
-use api::playlists::playlist_controller::{create_playlist, get_all_playlists, get_playlist};
+use api::playlists::middleware::valid_playlist;
+use api::playlists::playlist_controller::{add_track_to_playlist, create_playlist, get_all_playlists, get_playlist};
 use api::shared::middleware::cache_control;
 use diesel::sqlite::SqliteConnection;
 use api::albums::album_controller::{get_album, get_album_tracks};
@@ -71,6 +72,7 @@ async fn main() -> std::io::Result<()> {
                 .post(create_playlist)
         ) 
         .at("/playlists/:playlist_id", get_playlist.around(cache_control))
+        .at("/playlists-tracks", post(add_track_to_playlist).around(valid_playlist))
         .at("/stream",
             RouteMethod::new()
                 .get(stream_file.around(validate_range).around(validate_track_query))
