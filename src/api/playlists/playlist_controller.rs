@@ -65,3 +65,28 @@ pub async fn get_playlist_tracks(
        }
    }
 }
+
+#[handler]
+pub async fn remove_playlist(
+    state: Data<&AppState>,
+    Path(id): Path<i32>
+) -> Result<impl IntoResponse, Error> {
+    let playlist_service = PlaylistService::new(state.db.clone());
+    match playlist_service.remove_playlist(id) {
+        Ok(_) => Ok(()),
+        Err(_) => Err(Error::from_status(StatusCode::NOT_FOUND))
+    }
+}
+
+#[handler]
+pub async fn remove_playlist_tracks(
+    state: Data<&AppState>,
+    Path((playlist_id, track_id)): Path<(i32, i32)>
+) -> Result<impl IntoResponse, Error> {
+    let playlist_service = PlaylistService::new(state.db.clone());
+    match playlist_service.remove_playlist_tracks(playlist_id, track_id) {
+        Ok(_) => Ok(()),
+        Err(_) => Err(Error::from_status(StatusCode::NOT_FOUND))
+    }
+}
+

@@ -1,5 +1,5 @@
 use diesel::{BelongingToDsl, r2d2::{ConnectionManager, Pool, PooledConnection}, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper, SqliteConnection};
-use crate::{api::shared::service::DbConn, entities::{playlist::{Playlist, PlaylistTrack}, track::Track}, schema::{playlists, tracks}};
+use crate::{api::shared::service::DbConn, entities::{playlist::{Playlist, PlaylistTrack}, track::Track}, schema::{playlist_tracks, playlists, tracks}};
 use crate::schema::playlists::dsl::*;
 use crate::schema::playlist_tracks::dsl::*;
 
@@ -62,6 +62,20 @@ impl PlaylistService {
                    .into_iter()
                    .map(|(_t, t2)| t2)
                    .collect())
+    }
+
+    pub fn remove_playlist(&self, playlist: i32) -> Result<usize, diesel::result::Error> {
+        diesel::delete(playlists.filter(id.eq(playlist)))
+            .execute(&mut self.conn())
+    }
+
+    pub fn remove_playlist_tracks(&self, playlist: i32, track: i32) -> Result<usize, diesel::result::Error> {
+        diesel::delete(
+            playlist_tracks
+                .filter(playlist_id.eq(playlist))
+                .filter(track_id.eq(track))
+                )
+            .execute(&mut self.conn())
     }
 }
 
