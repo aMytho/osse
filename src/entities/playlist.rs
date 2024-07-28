@@ -21,9 +21,9 @@ impl Playlist {
 #[derive(Identifiable, Selectable, Queryable, Associations, Debug)]
 #[diesel(belongs_to(Track))]
 #[diesel(belongs_to(Playlist))]
-#[diesel(table_name = crate::schema::tracks_playlists)]
+#[diesel(table_name = crate::schema::playlist_tracks)]
 #[diesel(primary_key(track_id, playlist_id))]
-pub struct TrackPlaylist {
+pub struct PlaylistTrack {
     pub track_id: i32,
     pub playlist_id: i32
 }

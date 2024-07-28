@@ -16,6 +16,13 @@ diesel::table! {
 }
 
 diesel::table! {
+    playlist_tracks (track_id, playlist_id) {
+        track_id -> Integer,
+        playlist_id -> Integer,
+    }
+}
+
+diesel::table! {
     playlists (id) {
         id -> Integer,
         name -> Text,
@@ -36,24 +43,16 @@ diesel::table! {
     }
 }
 
-diesel::table! {
-    tracks_playlists (id) {
-        id -> Integer,
-        track_id -> Integer,
-        playlist_id -> Integer,
-    }
-}
-
 diesel::joinable!(albums -> artists (artist_id));
+diesel::joinable!(playlist_tracks -> playlists (playlist_id));
+diesel::joinable!(playlist_tracks -> tracks (track_id));
 diesel::joinable!(tracks -> albums (album_id));
 diesel::joinable!(tracks -> artists (artist_id));
-diesel::joinable!(tracks_playlists -> playlists (playlist_id));
-diesel::joinable!(tracks_playlists -> tracks (track_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     albums,
     artists,
+    playlist_tracks,
     playlists,
     tracks,
-    tracks_playlists,
 );

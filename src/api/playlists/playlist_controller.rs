@@ -35,18 +35,33 @@ pub async fn create_playlist(
     let playlist_service = PlaylistService::new(state.db.clone());
     match playlist_service.create_playlist(req.name).await {
         Ok(_c) => Ok(()),
-        Err(e) => Err(Error::from_string("Failed to create playlist", StatusCode::INTERNAL_SERVER_ERROR))
+        Err(_e) => Err(Error::from_string("Failed to create playlist", StatusCode::INTERNAL_SERVER_ERROR))
     }
 }
 
 #[handler]
 pub async fn add_track_to_playlist(
     state: Data<&AppState>,
-    req: CreatePlaylist
+    Json(req): Json<CreatePlaylist>
 ) -> Result<impl IntoResponse, Error>{
     let playlist_service = PlaylistService::new(state.db.clone());
     match playlist_service.add_track_to_playlist(req.track_id, req.playlist_id) {
         Ok(_) => Ok(()),
         Err(_) => Err(Error::from_string("Failed to add track to playlist", StatusCode::INTERNAL_SERVER_ERROR))
     }
+}
+
+#[handler]
+pub async fn get_playlist_tracks(
+    state: Data<&AppState>,
+    Path(id): Path<i32>
+) -> Result<impl IntoResponse, Error> {
+    let playlist_service = PlaylistService::new(state.db.clone());
+    match playlist_service.playlist_tracks(id) {
+       Ok(t) => Ok(Json(t)),
+       Err(e) => {
+            println!("{}", e);
+            Err(Error::from_string("Playlist not found", StatusCode::NOT_FOUND))
+       }
+   }
 }

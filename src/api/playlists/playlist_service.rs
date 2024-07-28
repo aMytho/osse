@@ -1,7 +1,7 @@
-use diesel::{r2d2::{ConnectionManager, Pool, PooledConnection}, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper, SqliteConnection};
-use crate::{api::shared::service::DbConn, entities::{playlist::Playlist, track::Track}, schema::{playlists, tracks, tracks_playlists}};
+use diesel::{BelongingToDsl, r2d2::{ConnectionManager, Pool, PooledConnection}, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper, SqliteConnection};
+use crate::{api::shared::service::DbConn, entities::{playlist::{Playlist, PlaylistTrack}, track::Track}, schema::{playlists, tracks}};
 use crate::schema::playlists::dsl::*;
-use crate::schema::tracks_playlists::dsl::*;
+use crate::schema::playlist_tracks::dsl::*;
 
 
 pub struct PlaylistService {
@@ -44,32 +44,24 @@ impl PlaylistService {
     }
     
     pub fn add_track_to_playlist(&self, track: i32, playlist: i32) -> Result<usize, diesel::result::Error>{
-        diesel::insert_into(tracks_playlists)
+        diesel::insert_into(playlist_tracks)
             .values((track_id.eq(track), playlist_id.eq(playlist)))
             .execute(&mut self.conn())
     }
 
-    pub fn playlist_tracks(&self, playlist: i32) -> Option<Vec<Track>> {
-        // let playlist = playlists
-        //     .select(Playlist::as_select())
-        //     .filter(playlists::id.eq(playlist))
-        //     .first(&mut self.conn())
-        //     .ok()?;
-            
-        // playlists::table()
-        //     .filter(id.eq(playlist))
-        //     .inner_join(tracks_playlists::table)
-        //     .inner_join(tracks::table)
-        //     .select((Album::as_select(), tracks_playlists::all_columns, Track::as_select()))
-        //     .load::<(Album, Track)>(&mut self.conn())
-        //     .ok()?
-        //     .to_models()
-        //     .into_iter()
-        //     .next()
+    pub fn playlist_tracks(&self, playlist: i32) -> Result<Vec<Track>, diesel::result::Error> {
+        let playlist = playlists::table
+            .select(Playlist::as_select())
+            .filter(playlists::id.eq(playlist))
+            .first(&mut self.conn())?;
 
-        None
-        
-            
+        Ok(PlaylistTrack::belonging_to(&playlist)
+                   .inner_join(tracks::table)
+                   .select((PlaylistTrack::as_select(), Track::as_select()))
+                   .load(&mut self.conn())?
+                   .into_iter()
+                   .map(|(_t, t2)| t2)
+                   .collect())
     }
 }
 
