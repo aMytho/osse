@@ -47,3 +47,23 @@ CREATE TABLE "tracks" (
     FOREIGN KEY ("artist_id") REFERENCES "artists" ("id") ON DELETE CASCADE,
     FOREIGN KEY ("album_id") REFERENCES "albums" ("id") ON DELETE CASCADE
 );
+
+
+DROP TABLE IF EXISTS "playlists";
+
+-- Create playlists
+CREATE TABLE "playlists" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    "name" TEXT NOT NULL
+);
+
+DROP TABLE IF EXISTS "track_playlists";
+
+-- Link tracks to playlists
+CREATE TABLE "playlist_tracks" (
+    "track_id" INTEGER NOT NULL,
+    "playlist_id" INTEGER NOT NULL,
+    PRIMARY KEY ("track_id", "playlist_id")
+    FOREIGN KEY ("track_id") REFERENCES "tracks" ("id") ON DELETE CASCADE,
+    FOREIGN KEY ("playlist_id") REFERENCES "playlists" ("id") ON DELETE CASCADE
+);

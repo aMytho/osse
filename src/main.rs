@@ -6,6 +6,8 @@ mod metadata;
 mod entities;
 mod api;
 
+use api::playlists::middleware::valid_playlist;
+use api::playlists::playlist_controller::{add_track_to_playlist, create_playlist, get_all_playlists, get_playlist, get_playlist_tracks, remove_playlist, remove_playlist_tracks};
 use api::shared::middleware::cache_control;
 use diesel::sqlite::SqliteConnection;
 use api::albums::album_controller::{get_album, get_album_tracks};
@@ -13,7 +15,7 @@ use config::AppConfig;
 use diesel::r2d2::{ConnectionManager, Pool};
 use poem::http::Method;
 use poem::RouteMethod;
-use poem::{post, EndpointExt, middleware::Cors};
+use poem::{delete, post, EndpointExt, middleware::Cors};
 use poem::{listener::TcpListener, Route, Server};
 use crate::api::albums::album_controller::get_all_albums;
 use crate::api::shared::middleware::validate_track_query;
@@ -64,6 +66,19 @@ async fn main() -> std::io::Result<()> {
         .at("/albums", get_all_albums)
         .at("/albums/:album_id", get_album.around(cache_control))
         .at("/albums/:album_id/tracks", get_album_tracks)
+        .at("/playlists",
+            RouteMethod::new()
+                .get(get_all_playlists)
+                .post(create_playlist)
+        ) 
+        .at("/playlists/:playlist_id",
+            RouteMethod::new()
+                .get(get_playlist.around(cache_control))
+                .delete(remove_playlist)
+        )
+        .at("/playlists/:playlist_id/tracks", get_playlist_tracks)
+        .at("/playlists/:playlist_id/tracks/:track_id", delete(remove_playlist_tracks))
+        .at("/playlists-tracks", post(add_track_to_playlist).around(valid_playlist))
         .at("/stream",
             RouteMethod::new()
                 .get(stream_file.around(validate_range).around(validate_track_query))
