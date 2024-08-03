@@ -7,7 +7,7 @@ mod entities;
 mod api;
 
 use api::playlists::middleware::valid_playlist;
-use api::playlists::playlist_controller::{add_track_to_playlist, create_playlist, get_all_playlists, get_playlist, get_playlist_tracks, remove_playlist, remove_playlist_tracks};
+use api::playlists::playlist_controller::{add_track_to_playlist, create_playlist, edit_playlist, get_all_playlists, get_playlist, get_playlist_tracks, remove_playlist, remove_playlist_tracks};
 use api::shared::middleware::cache_control;
 use diesel::sqlite::SqliteConnection;
 use api::albums::album_controller::{get_album, get_album_tracks};
@@ -53,7 +53,9 @@ async fn main() -> std::io::Result<()> {
     let connection_string = format!("{}:{}", config.server_address.clone(), config.server_port);
     
     let cors = Cors::new()
-    .allow_methods([Method::POST, Method::GET, Method::OPTIONS, Method::HEAD]);
+        .allow_methods([
+            Method::POST, Method::GET, Method::PATCH, Method::DELETE, Method::OPTIONS, Method::HEAD
+    ]);
     
     let app = Route::new()
         .at("/ping", ping.around(cache_control))
@@ -75,6 +77,7 @@ async fn main() -> std::io::Result<()> {
             RouteMethod::new()
                 .get(get_playlist.around(cache_control))
                 .delete(remove_playlist)
+                .patch(edit_playlist)
         )
         .at("/playlists/:playlist_id/tracks", get_playlist_tracks)
         .at("/playlists/:playlist_id/tracks/:track_id", delete(remove_playlist_tracks))
