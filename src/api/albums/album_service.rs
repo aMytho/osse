@@ -1,5 +1,5 @@
 use diesel::{associations::HasTable, insert_into, r2d2::{ConnectionManager, Pool, PooledConnection}, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper, SqliteConnection};
-use crate::{api::shared::service::DbConn, entities::{album::Album, track::Track}, schema::tracks};
+use crate::{api::shared::service::DbConn, entities::{album::Album, track::Track, util::Pagination}, schema::tracks};
 use crate::schema::albums::dsl::*;
 use crate::api::albums::dto::Dto;
 
@@ -55,6 +55,15 @@ impl AlbumService {
             .to_models()
             .into_iter()
             .next()
+    }
+    
+    pub fn get_album_tracks(&self, album_id: i32, pagination: Pagination) -> Vec<Track> {
+        albums
+            .filter(id.eq(album_id))
+            .inner_join(tracks::table)
+            .select(Track::as_select())
+            .load::<Track>(&mut self.conn())
+            .unwrap_or(Vec::new())
     }
 
     pub fn count(&self) -> Option<i64> {

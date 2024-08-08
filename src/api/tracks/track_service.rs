@@ -1,5 +1,5 @@
-use diesel::{associations::HasTable, insert_into, r2d2::{ConnectionManager, Pool, PooledConnection}, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper, SqliteConnection};
-use crate::{api::{albums::album_service, shared::service::DbConn}, entities::track::TrackForm, schema::tracks::dsl::*};
+use diesel::{associations::HasTable, insert_into, r2d2::{ConnectionManager, Pool, PooledConnection}, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper, SqliteConnection, TextExpressionMethods};
+use crate::{api::{albums::album_service, shared::service::DbConn}, entities::{track::TrackForm, util::Pagination}, schema::tracks::dsl::*};
 
 use crate::api::artists::artist_service;
 use crate::{entities::track::Track, files, metadata};
@@ -26,6 +26,25 @@ impl TrackService {
             .filter(id.eq(track_id))
             .first(&mut self.conn())
             .ok()
+    }
+    
+    pub fn get_tracks_by_name(&self, track: String, pagination: Pagination) -> Vec<Track> {
+        tracks
+            .select(Track::as_select())
+            .offset(pagination.0)
+            .limit(pagination.1)
+            .filter(title.like("%".to_owned() + &track + &"%"))
+            .load(&mut self.conn())
+            .unwrap_or(Vec::new())
+    }
+    
+    pub fn get_tracks(&self, pagination: Pagination) -> Vec<Track> {
+        tracks
+            .select(Track::as_select())
+            .offset(pagination.0)
+            .limit(pagination.1)
+            .load(&mut self.conn())
+            .unwrap_or(Vec::new())
     }
 
     pub async fn scan_files(&self, files: &Vec<String>) {

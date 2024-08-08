@@ -9,6 +9,7 @@ mod api;
 use api::playlists::middleware::valid_playlist;
 use api::playlists::playlist_controller::{add_track_to_playlist, create_playlist, edit_playlist, get_all_playlists, get_playlist, get_playlist_tracks, remove_playlist, remove_playlist_tracks};
 use api::shared::middleware::cache_control;
+use api::tracks::track_controller::search_for_track;
 use diesel::sqlite::SqliteConnection;
 use api::albums::album_controller::{get_album, get_album_tracks};
 use config::AppConfig;
@@ -61,6 +62,7 @@ async fn main() -> std::io::Result<()> {
         .at("/ping", ping.around(cache_control))
         .at("/stats", stats)
         .at("/tracks/all", get_all_tracks)
+        .at("/tracks/search", search_for_track)
         .at("/tracks/scan", post(scan))
         .at("/tracks/cover", get_cover_art_for_track.around(cache_control))
         .at("/artists", get_artist.around(cache_control))
