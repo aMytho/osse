@@ -1,6 +1,6 @@
 use std::{fs::{self, DirEntry, ReadDir}, path::PathBuf};
 
-pub const ALLOWED_EXTENSIONS: [&str; 3] = [".mp3", ".wav", ".ogg"];
+pub const ALLOWED_EXTENSIONS: [&str; 3] = [".mp3", ".wav", ".ogg", ".ogg"];
 
 pub enum FileError {
     DirectoryError
@@ -40,3 +40,4 @@ pub fn get_file_directory(file: PathBuf) -> Result<ReadDir, std::io::Error>{
         .ok_or(std::io::Error::new(std::io::ErrorKind::NotFound, "Not Found"))?
         .read_dir()
 }
+
