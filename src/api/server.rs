@@ -27,3 +27,9 @@ pub fn stats(state: Data<&AppState>) -> Json<Stats> {
         playlists: PlaylistService::new(state.db.clone()).count().unwrap(),
     })
 }
+
+#[handler]
+pub fn directories(state: Data<&AppState>) -> Json<Vec<String>> {
+    Json(state.0.config.files.clone())
+}
+
