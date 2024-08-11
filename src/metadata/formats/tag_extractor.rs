@@ -79,6 +79,13 @@ impl TagExtractor<'_> {
                         continue;
                     }
                 },
+                TagTarget::Year => {
+                    if let Some(year) = tag.year() {
+                        self.meta.year = Some(year);
+                        self.targets.remove(index);
+                        continue;
+                    }
+                }
             }
 
             index += 1;

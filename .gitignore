@@ -2,3 +2,5 @@
 migration/target
 
 config.json
+osse.db
+.env

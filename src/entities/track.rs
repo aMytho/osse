@@ -20,6 +20,7 @@ pub struct Track {
     pub location: String,
     pub updated_at: PrimitiveDateTime,
     pub album_id: Option<i32>,
+    pub year: Option<i32>
 }
 
 #[derive(Insertable)]
@@ -33,6 +34,7 @@ pub struct TrackForm {
     pub location: String,
     pub updated_at: PrimitiveDateTime,
     pub album_id: Option<i32>,
+    pub year: Option<i32>
 }
 
 impl TrackForm {
@@ -45,7 +47,9 @@ impl TrackForm {
             location: file.path.clone(),
             size: file.size as i64,
             title: file.title.clone().unwrap(),
-            updated_at: file.updated_at.unwrap()
+            updated_at: file.updated_at.unwrap(),
+            year: file.year 
         }
     }
 }
+

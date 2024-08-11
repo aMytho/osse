@@ -62,7 +62,7 @@ impl TrackService {
                 .await
                 .iter()
                 .map(|f| TrackForm::from(f))
-                .collect::<Vec<_>>();
+                .collect::<Vec<TrackForm>>();
             let _ = insert_into(tracks)
                 .values(&files)
                 .execute(&mut self.conn());

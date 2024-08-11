@@ -40,6 +40,7 @@ diesel::table! {
         location -> Text,
         updated_at -> Timestamp,
         album_id -> Nullable<Integer>,
+        year -> Nullable<Integer>,
     }
 }
 

@@ -16,6 +16,7 @@ pub struct FileMetadata {
     pub size: u64,
     pub bitrate: Option<i32>,
     pub duration: u64,
+    pub year: Option<i32>
 }
 
 impl FileMetadata {
@@ -31,7 +32,8 @@ impl FileMetadata {
             path: String::from(""),
             size: 0,
             bitrate: None,
-            duration: 0
+            duration: 0,
+            year: None
         }
     }
 }
@@ -41,11 +43,12 @@ pub struct TagMetadata {
     pub album_artist: Option<String>,
     pub artist: Option<i32>,
     pub title: Option<String>,
+    pub year: Option<u32>
 }
 
 impl TagMetadata {
     pub fn new() -> TagMetadata {
-        TagMetadata {album: None, album_artist: None, artist: None, title: None}
+        TagMetadata {album: None, album_artist: None, artist: None, title: None, year: None}
     }
 }
 

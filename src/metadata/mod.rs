@@ -65,6 +65,8 @@ pub async fn scan_files(files: Vec<DirEntry>, artist_service: &ArtistService, al
         meta.artist = tag_meta.artist;
         meta.album = tag_meta.album;
         meta.album_artist = tag_meta.album_artist;
+        
+        meta.year = tag_meta.year.map(|f| f.try_into().unwrap_or_default());
 
         scanned_files.push(meta);
     }
