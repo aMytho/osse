@@ -55,8 +55,8 @@ pub async fn scan_files(files: Vec<DirEntry>, artist_service: &ArtistService, al
 
         // The title is the filename, unless a tag was provided
         meta.title = match tag_meta.title {
-            Some(t) => Some(t),
-            None => {
+            Some(t) if t.is_empty() => Some(t),
+            _ => {
                 Some(file.file_name().to_os_string().into_string()
                 .unwrap_or("Default".to_owned()))
             }

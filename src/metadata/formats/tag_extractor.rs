@@ -30,12 +30,12 @@ impl TagExtractor<'_> {
         let mut index: usize = 0;
         for _i in 0..self.targets.len() {
             let target = &self.targets[index];
-            
+
             match target {
                 TagTarget::Title => {
                     if let Some(title) = tag.title() {
                         self.meta.title = Some(title.to_string());
-    
+
                         self.targets.remove(index);
                         continue;
                     }
@@ -44,7 +44,7 @@ impl TagExtractor<'_> {
                     if let Some(album) = tag.album() {
                         // Check for other album fields
                         self.meta.album = Some(album.to_string());
-    
+
                         self.targets.remove(index);
                         continue;
                     }
@@ -59,24 +59,27 @@ impl TagExtractor<'_> {
                         },
                         _ => ()
                     }
-                    
+
                 }
                 TagTarget::Artist => {
                     if let Some(artist) = tag.artist() {
-                        // Insert the artist if its a new one, else return the id
-                        let existing_artist = self.artist_service.get_artist_by_name(artist.to_string()).await;
-                       
-                        if let None = existing_artist {
-                            let new_artist = self.artist_service.create_artist(artist.to_string()).await;
-                            if let Ok(new_artist) = new_artist {
-                                self.meta.artist = Some(new_artist);
+                        if !artist.is_empty() {
+
+                            // Insert the artist if its a new one, else return the id
+                            let existing_artist = self.artist_service.get_artist_by_name(artist.to_string()).await;
+
+                            if let None = existing_artist {
+                                let new_artist = self.artist_service.create_artist(artist.to_string()).await;
+                                if let Ok(new_artist) = new_artist {
+                                    self.meta.artist = Some(new_artist);
+                                }
+                            } else {
+                                self.meta.artist = Some(existing_artist.unwrap().id);
                             }
-                        } else {
-                            self.meta.artist = Some(existing_artist.unwrap().id);
+
+                            self.targets.remove(index);
+                            continue;
                         }
-    
-                        self.targets.remove(index);
-                        continue;
                     }
                 },
                 TagTarget::Year => {
