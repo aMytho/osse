@@ -5,17 +5,28 @@ mod db;
 
 use db::{album::init_albums_for_tracks, album_artist::init_album_artists_for_tracks};
 use metadata::FileMetadata;
-use time::{OffsetDateTime, PrimitiveDateTime};
-use std::{fs::{DirEntry, File}, io::Read, path::PathBuf, time::{SystemTime, UNIX_EPOCH}};
+use std::{fs::{DirEntry, File}, io::Read, path::PathBuf};
 use lofty::{file::{AudioFile, TaggedFileExt}, probe::read_from_path, tag::Tag};
 
-use crate::{api::{albums::album_service::AlbumService, artists::artist_service::ArtistService}, files::get_file_directory};
+use crate::{api::{albums::album_service::AlbumService, artists::artist_service::ArtistService, tracks::track_service::TrackService}, entities::track::Track, files::get_file_directory};
 
 use self::{formats::tag_extractor::TagExtractor, metadata::{CoverArt, TagMetadata}};
+use crate::metadata::util::{get_last_modified_date, system_time_to_primitive_datetime}; 
 
 
-pub async fn scan_files(files: Vec<DirEntry>, artist_service: &ArtistService, album_service: &AlbumService) -> Vec<FileMetadata> {
+pub async fn scan_files(files: Vec<DirEntry>, artist_service: &ArtistService, album_service: &AlbumService, track_service: &TrackService) -> Vec<FileMetadata> {
     let mut scanned_files: Vec<FileMetadata> = Vec::with_capacity(files.len());
+    let mut paths: Vec<String> = Vec::with_capacity(files.len());
+
+    // Get each file and extract the path
+    for file in &files {
+        let path = file.path().clone();
+        if let Some(p) = path.to_str() {
+            paths.push(p.to_string());
+        }
+    }
+    
+    let tracks: Vec<Track> = track_service.get_tracks_by_location(paths);
 
     for file in files {
         let tagged_file = match read_from_path(file.path()) {
@@ -25,6 +36,18 @@ pub async fn scan_files(files: Vec<DirEntry>, artist_service: &ArtistService, al
                 continue;
             }
         };
+
+        // Check that the file isn't in the db yet and that it hasn't been modified
+        if tracks.iter().any(|t| {
+            if let Ok(date) = file.metadata().unwrap().modified() {
+                t.location.eq(file.path().to_str().unwrap())
+                && t.updated_at.eq(&system_time_to_primitive_datetime(date))
+            } else {
+                false
+            }
+        }) {
+            continue;
+        }
 
         let tags = tagged_file.tags();
         let properties = tagged_file.properties();
@@ -39,18 +62,9 @@ pub async fn scan_files(files: Vec<DirEntry>, artist_service: &ArtistService, al
             Some(b) => Some(b as i32),
             None => None
         };
-
+    
         // Set updated at (used for rescans)
-        meta.updated_at = Some(match file.metadata() {
-            Ok(file_meta) => match file_meta.modified() {
-                Ok(file_date_modified) => {
-                    system_time_to_primitive_datetime(file_date_modified)
-                },
-                Err(_err) => system_time_to_primitive_datetime(UNIX_EPOCH)
-            },
-            Err(_err) => system_time_to_primitive_datetime(UNIX_EPOCH)
-        });
-
+        meta.updated_at = Some(get_last_modified_date(file.metadata()));
         let tag_meta = extract_metadata(tags, artist_service).await;
 
         // The title is the filename, unless a tag was provided
@@ -150,7 +164,3 @@ pub fn get_cover_art(file_path: String) -> Option<CoverArt> {
     return None;
 }
 
-fn system_time_to_primitive_datetime(system_time: SystemTime) -> PrimitiveDateTime {
-    let dt: OffsetDateTime = system_time.into();
-    PrimitiveDateTime::new(dt.date(), dt.time())
-}

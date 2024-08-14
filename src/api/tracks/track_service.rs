@@ -37,6 +37,14 @@ impl TrackService {
             .load(&mut self.conn())
             .unwrap_or(Vec::new())
     }
+
+    pub fn get_tracks_by_location(&self, paths: Vec<String>) -> Vec<Track> {
+        tracks.
+            select(Track::as_select())
+            .filter(location.eq_any(paths))
+            .load(&mut self.conn())
+            .unwrap_or(Vec::new())
+    }
     
     pub fn get_tracks(&self, pagination: Pagination) -> Vec<Track> {
         tracks
@@ -58,7 +66,7 @@ impl TrackService {
             };
     
             // Get the file metadata (tags/meta)
-            let files = metadata::scan_files(files, &artist_service, &album_service)
+            let files = metadata::scan_files(files, &artist_service, &album_service, &self)
                 .await
                 .iter()
                 .map(|f| TrackForm::from(f))
