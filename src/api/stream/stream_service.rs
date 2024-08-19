@@ -18,8 +18,6 @@ pub fn parse_range(range_header: String) -> Result<RangeMiddleware, Error> {
     let range_str = range_header.trim_start_matches("bytes=");
     let mut parts = range_str.split('-');
 
-    println!("{:?}", parts);
-
     let start_str = parts.next().ok_or(io::ErrorKind::InvalidData)?;
     let end_str = parts.next().unwrap_or("");
     let start = match start_str.parse() {
