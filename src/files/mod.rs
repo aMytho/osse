@@ -12,12 +12,27 @@ pub fn load_directory(dir: &String) -> Result<Vec<DirEntry>, FileError> {
         Err(_err) => return Err(FileError::DirectoryError)
     };
 
-    let mut valid_files: Vec<DirEntry> = Vec::new();
+    Ok(get_files_in_dir(files))
+}
 
+fn get_files_in_dir(files: ReadDir) -> Vec<DirEntry> {
+    let mut valid_files: Vec<DirEntry> = Vec::new();
     for entry in files {
         let entry = match entry {
             Ok(ent) => ent,
             Err(_err) => continue
+        };
+
+        // If the entry is a directory, loop over it
+        match entry.metadata() {
+            Ok(m) => {
+                if m.is_dir() {
+                    if let Ok(d) = fs::read_dir(entry.path()) {
+                        valid_files.append(&mut get_files_in_dir(d));
+                    } 
+                }
+            },
+            Err(_e) => continue
         };
 
         if let Some(file_name) = entry.file_name().to_str() {
@@ -30,7 +45,7 @@ pub fn load_directory(dir: &String) -> Result<Vec<DirEntry>, FileError> {
         };
     };
 
-    Ok(valid_files)
+    return valid_files;
 }
 
 pub fn get_file_directory(file: PathBuf) -> Result<ReadDir, std::io::Error>{
