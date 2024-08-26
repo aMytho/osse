@@ -45,6 +45,7 @@ CREATE TABLE "tracks" (
     "updated_at" TIMESTAMP NOT NULL,
     "album_id" INTEGER,
     "year" INTEGER,
+    "track_number" INTEGER,
     FOREIGN KEY ("artist_id") REFERENCES "artists" ("id") ON DELETE CASCADE,
     FOREIGN KEY ("album_id") REFERENCES "albums" ("id") ON DELETE CASCADE
 );

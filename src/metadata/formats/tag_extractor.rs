@@ -88,6 +88,13 @@ impl TagExtractor<'_> {
                         self.targets.remove(index);
                         continue;
                     }
+                },
+                TagTarget::Number => {
+                    if let Some(number) = tag.track() {
+                        self.meta.track_index = Some(number);
+                        self.targets.remove(index);
+                        continue;
+                    }
                 }
             }
 
@@ -116,3 +123,4 @@ impl TagExtractor<'_> {
         }
     }
 }
+

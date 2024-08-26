@@ -41,6 +41,7 @@ diesel::table! {
         updated_at -> Timestamp,
         album_id -> Nullable<Integer>,
         year -> Nullable<Integer>,
+        track_number -> Nullable<Integer>,
     }
 }
 
