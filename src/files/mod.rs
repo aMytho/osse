@@ -1,6 +1,6 @@
 use std::{fs::{self, DirEntry, ReadDir}, path::PathBuf};
 
-pub const ALLOWED_EXTENSIONS: [&str; 3] = [".mp3", ".wav", ".ogg"];
+pub const ALLOWED_EXTENSIONS: [&str; 4] = [".mp3", ".wav", ".ogg", ".flac"];
 
 pub enum FileError {
     DirectoryError
