@@ -2,7 +2,14 @@
 
 This is the server for the Osse music player. This is a work in progress so no download is provided at this time.
 
-This project is free and open source under the AGPL.
+## Features
+- Free as in (cost) and free as in (freedom) under the AGPL license
+- Supports all major music formats (mp3/ogg/WAV/FLAC)
+- Uses your local music library with no reliance on online third-party services
+- Privacy respecting with no telemetry or tracking whatsoever
+- Simple and minimal. Low resource usage
+- Cross platform (Windows, Mac, and Linux)
+- Built with Rust
 
 ## Installation (Development)
 
@@ -42,3 +49,4 @@ Run the project
 ```
 cargo run
 ```
+
