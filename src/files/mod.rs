@@ -6,7 +6,7 @@ pub enum FileError {
     DirectoryError
 }
 
-pub fn load_directory(dir: &String) -> Result<Vec<DirEntry>, FileError> {
+pub fn load_directory(dir: &String) -> Result<Vec<Vec<DirEntry>>, FileError> {
     let files = match fs::read_dir(&dir) {
         Ok(files) => files,
         Err(_err) => return Err(FileError::DirectoryError)
@@ -15,8 +15,9 @@ pub fn load_directory(dir: &String) -> Result<Vec<DirEntry>, FileError> {
     Ok(get_files_in_dir(files))
 }
 
-fn get_files_in_dir(files: ReadDir) -> Vec<DirEntry> {
-    let mut valid_files: Vec<DirEntry> = Vec::new();
+fn get_files_in_dir(files: ReadDir) -> Vec<Vec<DirEntry>> {
+    let mut valid_files: Vec<Vec<DirEntry>> = Vec::new();
+    let mut files_in_dir = Vec::new();
     for entry in files {
         let entry = match entry {
             Ok(ent) => ent,
@@ -28,7 +29,7 @@ fn get_files_in_dir(files: ReadDir) -> Vec<DirEntry> {
             Ok(m) => {
                 if m.is_dir() {
                     if let Ok(d) = fs::read_dir(entry.path()) {
-                        valid_files.append(&mut get_files_in_dir(d));
+                        valid_files.append(&mut get_files_in_dir(d))
                     } 
                 }
             },
@@ -38,13 +39,14 @@ fn get_files_in_dir(files: ReadDir) -> Vec<DirEntry> {
         if let Some(file_name) = entry.file_name().to_str() {
             for file_extension in ALLOWED_EXTENSIONS {
                 if file_name.ends_with(file_extension) {
-                    valid_files.push(entry);
+                    files_in_dir.push(entry);
                     break;
                 }
             }
         };
     };
 
+    valid_files.push(files_in_dir);
     return valid_files;
 }
 

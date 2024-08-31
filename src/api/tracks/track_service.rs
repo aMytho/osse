@@ -1,3 +1,5 @@
+use core::panic;
+
 use diesel::{associations::HasTable, insert_into, r2d2::{ConnectionManager, Pool, PooledConnection}, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper, SqliteConnection, TextExpressionMethods};
 use crate::{api::{albums::album_service, shared::service::DbConn}, entities::{track::TrackForm, util::Pagination}, schema::tracks::dsl::*};
 
@@ -59,22 +61,43 @@ impl TrackService {
         // For each directory, scan each file
         let artist_service = artist_service::ArtistService::new(self.db.clone());
         let album_service = album_service::AlbumService::new(self.db.clone());
+        let mut inserted_files: Vec<String> = Vec::new();
+        let mut all_files: Vec<String> = Vec::new();
+
         for dir in files {
             let files = match files::load_directory(dir) {
                 Ok(files) => files,
                 Err(_err) => panic!("Failed to load dir: {dir}")
             };
-    
-            // Get the file metadata (tags/meta)
-            let files = metadata::scan_files(files, &artist_service, &album_service, &self)
-                .await
-                .iter()
-                .map(|f| TrackForm::from(f))
-                .collect::<Vec<TrackForm>>();
-            let _ = insert_into(tracks)
-                .values(&files)
-                .execute(&mut self.conn());
+
+            for file_group in files {
+                // Store a list of all files that we will try to add
+                for file in &file_group {
+                    if let Ok(f) = file.path().into_os_string().into_string() {
+                        all_files.push(f);
+                    }
+                }
+
+                // Get the file metadata (tags/meta)
+                let files = metadata::scan_files(file_group, &artist_service, &album_service, &self)
+                    .await
+                    .iter()
+                    .map(|f| TrackForm::from(f))
+                    .collect::<Vec<TrackForm>>();
+                let _ = insert_into(tracks)
+                    .values(&files)
+                    .execute(&mut self.conn());
+
+                // Store the filepaths that were inserted
+                for file in files {
+                    inserted_files.push(file.location);
+                }
+            }
         }
+
+        // Now we clean out any tracks that are in the db but not in this list
+        let _ = diesel::delete(tracks.filter(location.ne_all(all_files)))
+            .execute(&mut self.conn());
     }
 
     pub fn count(&self) -> Option<i64> {
