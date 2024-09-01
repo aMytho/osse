@@ -30,7 +30,9 @@ pub async fn init_albums_for_tracks(files: &mut Vec<FileMetadata>, album_service
 
             // If no match was found, queue album to be added
             if file.album_id == None {
-                albums_to_add.push((file_album_name.to_string(), file.album_artist_id));
+                albums_to_add.push(
+                    (file_album_name.to_string(), file.album_artist_id, file.album_year)
+                );
             }
         }
     }

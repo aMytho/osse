@@ -17,7 +17,8 @@ pub struct FileMetadata {
     pub bitrate: Option<i32>,
     pub duration: u64,
     pub year: Option<i32>,
-    pub track_number: Option<i32>
+    pub track_number: Option<i32>,
+    pub album_year: Option<i32>
 }
 
 impl FileMetadata {
@@ -35,24 +36,26 @@ impl FileMetadata {
             bitrate: None,
             duration: 0,
             year: None,
-            track_number: None
+            track_number: None,
+            album_year: None
         }
     }
 }
 
-
+// Data from a tag. These fields will be used on the FileMetadata
 pub struct TagMetadata {
     pub album: Option<String>,
     pub album_artist: Option<String>,
     pub artist: Option<i32>,
     pub title: Option<String>,
     pub year: Option<u32>,
-    pub track_index: Option<u32>
+    pub track_index: Option<u32>,
+    pub album_year: Option<i32>
 }
 
 impl TagMetadata {
     pub fn new() -> TagMetadata {
-        TagMetadata {album: None, album_artist: None, artist: None, title: None, year: None, track_index: None}
+        TagMetadata {album: None, album_artist: None, artist: None, title: None, year: None, track_index: None, album_year: None}
     }
 }
 

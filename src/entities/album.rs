@@ -11,6 +11,7 @@ pub struct Album {
     pub id: i32,
     pub name: String,
     pub artist_id: Option<i32>,
+    pub year: Option<i32>
 }
 
 impl Album {

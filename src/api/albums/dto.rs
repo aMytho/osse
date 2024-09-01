@@ -16,7 +16,8 @@ pub struct AlbumResponse {
     pub id: i32,
     pub name: String,
     pub artist_id: Option<i32>,
-    pub tracks: Option<Vec<Track>>
+    pub tracks: Option<Vec<Track>>,
+    pub year: Option<i32>
 }
 
 impl AlbumResponse {
@@ -25,7 +26,8 @@ impl AlbumResponse {
             artist_id: album.artist_id,
             name: album.name,
             id: album.id,
-            tracks: None
+            tracks: None,
+            year: album.year
         }
     }
     
@@ -34,7 +36,8 @@ impl AlbumResponse {
             artist_id: album.artist_id,
             name: album.name,
             id: album.id,
-            tracks: Some(tracks)
+            tracks: Some(tracks),
+            year: album.year
         }
     }
 }
@@ -70,3 +73,4 @@ impl Dto for Vec<(Album, Track)> {
             .collect()
     }
 }
+

@@ -59,7 +59,6 @@ impl TagExtractor<'_> {
                         },
                         _ => ()
                     }
-
                 }
                 TagTarget::Artist => {
                     if let Some(artist) = tag.artist() {
@@ -95,6 +94,19 @@ impl TagExtractor<'_> {
                         self.targets.remove(index);
                         continue;
                     }
+                },
+                TagTarget::AlbumYear => {
+                    let result = self.get_custom_tag(tag, target);
+                    match result {
+                        Some(r) => {
+                            if let Ok(r) = r.parse::<i32>() {
+                                self.targets.remove(index);
+                                self.meta.album_year = Some(r);
+                                continue;
+                            }
+                        },
+                        _ => ()
+                    }
                 }
             }
 
@@ -115,6 +127,7 @@ impl TagExtractor<'_> {
                     lofty::tag::TagType::VorbisComments => self.get_vorbis_data(tag, target),
                     lofty::tag::TagType::RiffInfo => self.get_riff_info_data(tag, target),
                     lofty::tag::TagType::AiffText => todo!(),
+                    
                     // The generic tag covers all fields in ID3v1. Doesn't need custom implementation
                     _ => None,
                 }

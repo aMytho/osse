@@ -77,12 +77,11 @@ impl AlbumService {
      * Creates albums and returns the ID of the last album inserted.
      * Names is a vec of tuples where the first item is the album name and second is artist id (nullable)
      */
-    pub async fn create_albums(&self, data: &Vec<(String, Option<i32>)>) -> Result<usize, diesel::result::Error> {
-        let names: Vec<String> = data.iter().map(|f| f.0.clone()).collect();
-        let artists: Vec<Option<i32>> = data.iter().map(|f| f.1).collect();
-        
+    pub async fn create_albums(&self, data: &Vec<(String, Option<i32>, Option<i32>)>) -> Result<usize, diesel::result::Error> {
         insert_into(albums).values(
-        names.iter().zip(artists.iter()).map(|(n, a)| (name.eq(n), artist_id.eq(a))).collect::<Vec<_>>()
+            data.iter().map(|(n, a, y)|
+                (name.eq(n), artist_id.eq(a), year.eq(y))
+            ).collect::<Vec<_>>()
         ).execute(&mut self.conn())
     }
 }

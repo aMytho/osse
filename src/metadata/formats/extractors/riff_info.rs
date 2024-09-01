@@ -8,6 +8,7 @@ impl TagExtractor<'_> {
         
         match target {
             TagTarget::AlbumArtist => self.get_album_artist(&tag),
+            TagTarget::AlbumYear => self.get_album_year(&tag),
             _ => None
         }
     }
@@ -15,10 +16,15 @@ impl TagExtractor<'_> {
 
 trait RiffInfoExtractor {
     fn get_album_artist(&self, tag: &RiffInfoList) -> Option<String>;
+    fn get_album_year(&self, tag: &RiffInfoList) -> Option<String>;
 }
 
 impl RiffInfoExtractor for TagExtractor<'_> {
     fn get_album_artist(&self, tag: &RiffInfoList) -> Option<String> {
         tag.get("IART").map(|f| f.to_string())
+    }
+
+    fn get_album_year(&self, tag: &RiffInfoList) -> Option<String> {
+       tag.get("IARL").map(|f| f.to_string())
     }
 }

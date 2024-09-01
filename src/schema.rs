@@ -5,6 +5,7 @@ diesel::table! {
         id -> Integer,
         name -> Text,
         artist_id -> Nullable<Integer>,
+        year -> Nullable<Integer>,
     }
 }
 

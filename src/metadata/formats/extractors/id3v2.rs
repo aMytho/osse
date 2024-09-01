@@ -8,6 +8,7 @@ impl TagExtractor<'_> {
         
         match target {
             TagTarget::AlbumArtist => self.get_album_artist(&tag),
+            TagTarget::AlbumYear => self.get_album_year(&tag),
             _ => None
         }
     }
@@ -15,11 +16,20 @@ impl TagExtractor<'_> {
 
 trait Id2v2Extractor {
     fn get_album_artist(&self, tag: &Id3v2Tag) -> Option<String>;
+    fn get_album_year(&self, tag: &Id3v2Tag) -> Option<String>;
 }
 
 impl Id2v2Extractor for TagExtractor<'_> {
     fn get_album_artist(&self, tag: &Id3v2Tag) -> Option<String> {
         let id = FrameId::new("TPE2").unwrap();
+        match tag.get_text(&id) {
+            Some(v) => Some(v.to_string()),
+            None => None
+        }
+    }
+
+    fn get_album_year(&self, tag: &Id3v2Tag) -> Option<String> {
+        let id = FrameId::new("TYER").unwrap();
         match tag.get_text(&id) {
             Some(v) => Some(v.to_string()),
             None => None

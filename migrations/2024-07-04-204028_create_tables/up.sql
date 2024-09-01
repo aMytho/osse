@@ -18,6 +18,7 @@ CREATE TABLE "albums" (
     "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     "name" TEXT NOT NULL,
     "artist_id" INTEGER,
+    "year" INTEGER,
     FOREIGN KEY ("artist_id") REFERENCES "artists" ("id") ON DELETE CASCADE
 );
 
@@ -69,3 +70,4 @@ CREATE TABLE "playlist_tracks" (
     FOREIGN KEY ("track_id") REFERENCES "tracks" ("id") ON DELETE CASCADE,
     FOREIGN KEY ("playlist_id") REFERENCES "playlists" ("id") ON DELETE CASCADE
 );
+

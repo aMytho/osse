@@ -5,7 +5,8 @@ pub enum TagTarget {
     AlbumArtist,
     Artist,
     Number,
-    Year
+    Year,
+    AlbumYear
     // Genre,
     // Comment,
 }
@@ -14,5 +15,5 @@ pub enum TagTarget {
  * Returns a vec of all the tags we look for.
  */
 pub fn get_possible_tags() -> Vec<TagTarget> {
-    vec![TagTarget::Title, TagTarget::AlbumTitle, TagTarget::AlbumArtist, TagTarget::Artist, TagTarget::Year, TagTarget::Number]
+    vec![TagTarget::Title, TagTarget::AlbumTitle, TagTarget::AlbumArtist, TagTarget::Artist, TagTarget::Year, TagTarget::Number, TagTarget::AlbumYear]
 }

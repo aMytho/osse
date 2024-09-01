@@ -8,6 +8,7 @@ impl TagExtractor<'_> {
         
         match target {
             TagTarget::AlbumArtist => self.get_album_artist(&tag),
+            TagTarget::AlbumYear => self.get_album_year(&tag),
             _ => None
         }
     }
@@ -15,11 +16,16 @@ impl TagExtractor<'_> {
 
 trait VorbisExtractor {
     fn get_album_artist(&self, tag: &VorbisComments) -> Option<String>;
+    fn get_album_year(&self, tag: &VorbisComments) -> Option<String>;
 }
 
 impl VorbisExtractor for TagExtractor<'_> {
     fn get_album_artist(&self, tag: &VorbisComments) -> Option<String> {
-        let val = tag.get("ALBUMARTIST").map(|f| f.to_string());
-        val
+        tag.get("ALBUMARTIST").map(|f| f.to_string())
+    }
+
+    fn get_album_year(&self, tag: &VorbisComments) -> Option<String> {
+        tag.get("DATE").map(|f| f.to_string())
     }
 }
+
