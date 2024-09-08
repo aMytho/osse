@@ -1,12 +1,22 @@
-use diesel::{associations::HasTable, insert_into, r2d2::{ConnectionManager, Pool, PooledConnection}, ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper, SqliteConnection};
-use crate::{api::shared::service::DbConn, entities::{album::Album, track::Track, util::Pagination}, schema::tracks};
-use crate::schema::albums::dsl::*;
 use crate::api::albums::dto::Dto;
+use crate::schema::albums::dsl::*;
+use crate::{
+    api::shared::service::DbConn,
+    entities::{album::Album, track::Track, util::Pagination},
+    schema::tracks,
+};
+use diesel::NullableExpressionMethods;
+use diesel::{
+    associations::HasTable,
+    insert_into,
+    r2d2::{ConnectionManager, Pool, PooledConnection},
+    ExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper, SqliteConnection,
+};
 
 use super::dto::AlbumResponse;
 
 pub struct AlbumService {
-    pub db: Pool<ConnectionManager<SqliteConnection>>
+    pub db: Pool<ConnectionManager<SqliteConnection>>,
 }
 
 impl AlbumService {
@@ -56,7 +66,7 @@ impl AlbumService {
             .into_iter()
             .next()
     }
-    
+
     pub fn get_album_tracks(&self, album_id: i32, pagination: Pagination) -> Vec<Track> {
         albums
             .filter(id.eq(album_id))
@@ -67,22 +77,34 @@ impl AlbumService {
     }
 
     pub fn count(&self) -> Option<i64> {
-        albums::table()
-            .count()
-            .get_result(&mut self.conn())
-            .ok()
+        albums::table().count().get_result(&mut self.conn()).ok()
     }
 
     /**
      * Creates albums and returns the ID of the last album inserted.
      * Names is a vec of tuples where the first item is the album name and second is artist id (nullable)
      */
-    pub async fn create_albums(&self, data: &Vec<(String, Option<i32>, Option<i32>)>) -> Result<usize, diesel::result::Error> {
-        insert_into(albums).values(
-            data.iter().map(|(n, a, y)|
-                (name.eq(n), artist_id.eq(a), year.eq(y))
-            ).collect::<Vec<_>>()
-        ).execute(&mut self.conn())
+    pub async fn create_albums(
+        &self,
+        data: &Vec<(String, Option<i32>, Option<i32>)>,
+    ) -> Result<usize, diesel::result::Error> {
+        insert_into(albums)
+            .values(
+                data.iter()
+                    .map(|(n, a, y)| (name.eq(n), artist_id.eq(a), year.eq(y)))
+                    .collect::<Vec<_>>(),
+            )
+            .execute(&mut self.conn())
+    }
+
+    pub fn prune(&self) -> Result<usize, diesel::result::Error> {
+        let track_subquery = tracks::table
+            .filter(tracks::album_id.is_not_null())
+            .select(tracks::album_id)
+            .distinct();
+
+        diesel::delete(albums.filter(id.nullable().ne_all(track_subquery)))
+            .execute(&mut self.conn())
     }
 }
 

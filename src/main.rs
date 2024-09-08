@@ -36,6 +36,7 @@ pub struct AppState {
 #[tokio::main(flavor = "multi_thread")]
 async fn main() -> std::io::Result<()> {
     let config_path = args::get_config_path();
+
     let config = match config::load_config(config_path) {
         Ok(config) => config,
         Err(err) => panic!("Failed to load config. Error: {:?}", err)

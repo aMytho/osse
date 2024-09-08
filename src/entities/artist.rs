@@ -1,7 +1,7 @@
-use serde::Serialize;
 use diesel::prelude::*;
+use serde::Serialize;
 
-#[derive(Queryable, Selectable, Serialize)]
+#[derive(Queryable, Selectable, Serialize, Identifiable)]
 #[diesel(table_name = crate::schema::artists)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Artist {
