@@ -19,7 +19,7 @@ CREATE TABLE "albums" (
     "name" TEXT NOT NULL,
     "artist_id" INTEGER,
     "year" INTEGER,
-    FOREIGN KEY ("artist_id") REFERENCES "artists" ("id") ON DELETE CASCADE
+    FOREIGN KEY ("artist_id") REFERENCES "artists" ("id") ON DELETE SET NULL 
 );
 
 -- Drop artists table if exists
@@ -47,8 +47,8 @@ CREATE TABLE "tracks" (
     "album_id" INTEGER,
     "year" INTEGER,
     "track_number" INTEGER,
-    FOREIGN KEY ("artist_id") REFERENCES "artists" ("id") ON DELETE CASCADE,
-    FOREIGN KEY ("album_id") REFERENCES "albums" ("id") ON DELETE CASCADE
+    FOREIGN KEY ("artist_id") REFERENCES "artists" ("id") ON DELETE SET NULL,
+    FOREIGN KEY ("album_id") REFERENCES "albums" ("id") ON DELETE SET NULL 
 );
 
 
