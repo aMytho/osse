@@ -5,11 +5,11 @@ use crate::metadata::formats::{tag_extractor::TagExtractor, target::TagTarget};
 impl TagExtractor<'_> {
     pub fn get_vorbis_data(&self, tag: &Tag, target: &TagTarget) -> Option<String> {
         let tag = VorbisComments::from(tag.to_owned());
-        
+
         match target {
             TagTarget::AlbumArtist => self.get_album_artist(&tag),
             TagTarget::AlbumYear => self.get_album_year(&tag),
-            _ => None
+            _ => None,
         }
     }
 }
@@ -28,4 +28,3 @@ impl VorbisExtractor for TagExtractor<'_> {
         tag.get("DATE").map(|f| f.to_string())
     }
 }
-

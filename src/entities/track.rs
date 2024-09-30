@@ -6,8 +6,7 @@ use crate::metadata::metadata::FileMetadata;
 use super::artist::Artist;
 use time::PrimitiveDateTime;
 
-#[derive(Clone, Serialize)]
-#[derive(Queryable, Selectable, Identifiable, Associations, Debug)]
+#[derive(Clone, Serialize, Queryable, Selectable, Identifiable, Associations, Debug)]
 #[diesel(belongs_to(Artist))]
 #[diesel(table_name = crate::schema::tracks)]
 pub struct Track {
@@ -21,7 +20,8 @@ pub struct Track {
     pub updated_at: PrimitiveDateTime,
     pub album_id: Option<i32>,
     pub year: Option<i32>,
-    pub track_number: Option<i32>
+    pub track_number: Option<i32>,
+    pub disc_number: Option<i32>,
 }
 
 #[derive(Insertable)]
@@ -36,7 +36,8 @@ pub struct TrackForm {
     pub updated_at: PrimitiveDateTime,
     pub album_id: Option<i32>,
     pub year: Option<i32>,
-    pub track_number: Option<i32>
+    pub track_number: Option<i32>,
+    pub disc_number: Option<i32>,
 }
 
 impl TrackForm {
@@ -51,8 +52,8 @@ impl TrackForm {
             title: file.title.clone().unwrap(),
             updated_at: file.updated_at.unwrap(),
             year: file.year,
-            track_number: file.track_number 
+            track_number: file.track_number,
+            disc_number: file.disc_number,
         }
     }
 }
-

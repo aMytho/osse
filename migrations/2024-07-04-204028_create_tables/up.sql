@@ -47,6 +47,7 @@ CREATE TABLE "tracks" (
     "album_id" INTEGER,
     "year" INTEGER,
     "track_number" INTEGER,
+    "disc_number" INTEGER,
     FOREIGN KEY ("artist_id") REFERENCES "artists" ("id") ON DELETE SET NULL,
     FOREIGN KEY ("album_id") REFERENCES "albums" ("id") ON DELETE SET NULL 
 );

@@ -10,12 +10,16 @@ use super::target::{get_possible_tags, TagTarget};
 pub struct TagExtractor<'a> {
     pub artist_service: &'a ArtistService,
     pub meta: TagMetadata,
-    pub targets: Vec<TagTarget>
+    pub targets: Vec<TagTarget>,
 }
 
 impl TagExtractor<'_> {
     pub fn new(artist_service: &ArtistService) -> TagExtractor {
-        TagExtractor {artist_service, meta: TagMetadata::new(), targets: get_possible_tags()}
+        TagExtractor {
+            artist_service,
+            meta: TagMetadata::new(),
+            targets: get_possible_tags(),
+        }
     }
 
     pub async fn extract(mut self, tags: &[Tag]) -> TagMetadata {
@@ -39,7 +43,7 @@ impl TagExtractor<'_> {
                         self.targets.remove(index);
                         continue;
                     }
-                },
+                }
                 TagTarget::AlbumTitle => {
                     if let Some(album) = tag.album() {
                         // Check for other album fields
@@ -48,7 +52,7 @@ impl TagExtractor<'_> {
                         self.targets.remove(index);
                         continue;
                     }
-                },
+                }
                 TagTarget::AlbumArtist => {
                     let result = self.get_custom_tag(tag, target);
                     match result {
@@ -56,19 +60,22 @@ impl TagExtractor<'_> {
                             self.targets.remove(index);
                             self.meta.album_artist = Some(r);
                             continue;
-                        },
-                        _ => ()
+                        }
+                        _ => (),
                     }
                 }
                 TagTarget::Artist => {
                     if let Some(artist) = tag.artist() {
                         if !artist.is_empty() {
-
                             // Insert the artist if its a new one, else return the id
-                            let existing_artist = self.artist_service.get_artist_by_name(artist.to_string()).await;
+                            let existing_artist = self
+                                .artist_service
+                                .get_artist_by_name(artist.to_string())
+                                .await;
 
                             if let None = existing_artist {
-                                let new_artist = self.artist_service.create_artist(artist.to_string()).await;
+                                let new_artist =
+                                    self.artist_service.create_artist(artist.to_string()).await;
                                 if let Ok(new_artist) = new_artist {
                                     self.meta.artist = Some(new_artist);
                                 }
@@ -80,21 +87,21 @@ impl TagExtractor<'_> {
                             continue;
                         }
                     }
-                },
+                }
                 TagTarget::Year => {
                     if let Some(year) = tag.year() {
                         self.meta.year = Some(year);
                         self.targets.remove(index);
                         continue;
                     }
-                },
+                }
                 TagTarget::Number => {
                     if let Some(number) = tag.track() {
                         self.meta.track_index = Some(number);
                         self.targets.remove(index);
                         continue;
                     }
-                },
+                }
                 TagTarget::AlbumYear => {
                     let result = self.get_custom_tag(tag, target);
                     match result {
@@ -104,8 +111,15 @@ impl TagExtractor<'_> {
                                 self.meta.album_year = Some(r);
                                 continue;
                             }
-                        },
-                        _ => ()
+                        }
+                        _ => (),
+                    }
+                }
+                TagTarget::DiscNumber => {
+                    if let Some(disc) = tag.disk() {
+                        self.meta.disc_number = Some(disc as i32);
+                        self.targets.remove(index);
+                        continue;
                     }
                 }
             }
@@ -127,13 +141,12 @@ impl TagExtractor<'_> {
                     lofty::tag::TagType::VorbisComments => self.get_vorbis_data(tag, target),
                     lofty::tag::TagType::RiffInfo => self.get_riff_info_data(tag, target),
                     lofty::tag::TagType::AiffText => todo!(),
-                    
+
                     // The generic tag covers all fields in ID3v1. Doesn't need custom implementation
                     _ => None,
                 }
-            },
-            _ => None
+            }
+            _ => None,
         }
     }
 }
-
