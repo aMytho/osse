@@ -6,6 +6,8 @@ mod files;
 mod metadata;
 mod schema;
 
+use std::panic;
+
 use crate::api::albums::album_controller::get_all_albums;
 use crate::api::artists::artist_controller::{get_all_artists, get_artist};
 use crate::api::shared::middleware::validate_track_query;
@@ -23,6 +25,7 @@ use api::tracks::track_controller::search_for_track;
 use config::AppConfig;
 use diesel::r2d2::{ConnectionManager, Pool};
 use diesel::sqlite::SqliteConnection;
+use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use poem::http::Method;
 use poem::RouteMethod;
 use poem::{delete, middleware::Cors, post, EndpointExt};
@@ -30,10 +33,17 @@ use poem::{listener::TcpListener, Route, Server};
 
 use api::server::{directories, ping, stats};
 
+const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
+
 #[derive(Debug, Clone)]
 pub struct AppState {
     pub db: Pool<ConnectionManager<SqliteConnection>>,
     pub config: AppConfig,
+}
+
+fn run_db_migrations(conn: &mut impl MigrationHarness<diesel::sqlite::Sqlite>) {
+    conn.run_pending_migrations(MIGRATIONS)
+        .expect("Failed to run migrations.");
 }
 
 #[tokio::main(flavor = "multi_thread")]
@@ -52,6 +62,15 @@ async fn main() -> std::io::Result<()> {
         Ok(c) => c,
         Err(_) => panic!("Failed to connect to DB."),
     };
+
+    match db.get() {
+        Ok(mut c) => {
+            run_db_migrations(&mut c);
+        }
+        Err(_) => panic!("Failed to get a DB connection for migrtions."),
+    };
+
+    run_db_migrations(&mut db.get().unwrap());
 
     println!("Starting HTTP server");
 

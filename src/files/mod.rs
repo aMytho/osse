@@ -1,15 +1,21 @@
-use std::{fs::{self, DirEntry, ReadDir}, path::PathBuf};
+use std::{
+    fs::{self, DirEntry, ReadDir},
+    path::PathBuf,
+};
 
 pub const ALLOWED_EXTENSIONS: [&str; 4] = [".mp3", ".wav", ".ogg", ".flac"];
 
 pub enum FileError {
-    DirectoryError
+    DirectoryError,
 }
 
 pub fn load_directory(dir: &String) -> Result<Vec<Vec<DirEntry>>, FileError> {
     let files = match fs::read_dir(&dir) {
         Ok(files) => files,
-        Err(_err) => return Err(FileError::DirectoryError)
+        Err(err) => {
+            println!("{:?}", err);
+            return Err(FileError::DirectoryError);
+        }
     };
 
     Ok(get_files_in_dir(files))
@@ -21,7 +27,7 @@ fn get_files_in_dir(files: ReadDir) -> Vec<Vec<DirEntry>> {
     for entry in files {
         let entry = match entry {
             Ok(ent) => ent,
-            Err(_err) => continue
+            Err(_err) => continue,
         };
 
         // If the entry is a directory, loop over it
@@ -30,10 +36,10 @@ fn get_files_in_dir(files: ReadDir) -> Vec<Vec<DirEntry>> {
                 if m.is_dir() {
                     if let Ok(d) = fs::read_dir(entry.path()) {
                         valid_files.append(&mut get_files_in_dir(d))
-                    } 
+                    }
                 }
-            },
-            Err(_e) => continue
+            }
+            Err(_e) => continue,
         };
 
         if let Some(file_name) = entry.file_name().to_str() {
@@ -44,17 +50,19 @@ fn get_files_in_dir(files: ReadDir) -> Vec<Vec<DirEntry>> {
                 }
             }
         };
-    };
+    }
 
     valid_files.push(files_in_dir);
     return valid_files;
 }
 
-pub fn get_file_directory(file: PathBuf) -> Result<ReadDir, std::io::Error>{
+pub fn get_file_directory(file: PathBuf) -> Result<ReadDir, std::io::Error> {
     // Get the path of the file
     PathBuf::from(file)
         .parent()
-        .ok_or(std::io::Error::new(std::io::ErrorKind::NotFound, "Not Found"))?
+        .ok_or(std::io::Error::new(
+            std::io::ErrorKind::NotFound,
+            "Not Found",
+        ))?
         .read_dir()
 }
-

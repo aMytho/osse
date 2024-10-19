@@ -28,23 +28,7 @@ cargo install
 cargo build
 ```
 
-Setup an environment variable to point to the location for the database. Make a blank `.db` file at this location.
-
-.env
-```
-DATABASE_URL="/path/to/my/file.db"
-```
-
-(Be sure to create this file!)
-
-Run migrations with the diesel CLI.
-
-```
-cargo install diesel_cli
-diesel migration run
-```
-
-Run the project
+Run the project. This will automatically apply any pending CLI migrations.
 
 ```
 cargo run
