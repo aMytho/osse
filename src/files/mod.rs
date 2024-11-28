@@ -3,7 +3,7 @@ use std::{
     path::PathBuf,
 };
 
-pub const ALLOWED_EXTENSIONS: [&str; 4] = [".mp3", ".wav", ".ogg", ".flac"];
+pub const ALLOWED_EXTENSIONS: [&str; 5] = [".mp3", ".wav", ".ogg", ".opus", ".flac"];
 
 pub enum FileError {
     DirectoryError,
