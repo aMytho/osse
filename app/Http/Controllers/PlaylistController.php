@@ -11,7 +11,7 @@ class PlaylistController extends Controller
 {
     public function index()
     {
-        return response()->json(Playlist::all());
+        return response()->json(Playlist::withCount('tracks')->get());
     }
 
     public function store(CreatePlaylistRequest $request)
