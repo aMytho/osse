@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreatePlaylistRequest;
 use App\Http\Requests\UpdatePlaylistRequest;
 use App\Models\Playlist;
+use App\Models\Track;
 
 class PlaylistController extends Controller
 {
@@ -44,5 +45,10 @@ class PlaylistController extends Controller
     public function remove(Playlist $playlist)
     {
         $playlist->delete();
+    }
+
+    public function addTrack(Playlist $playlist, Track $track)
+    {
+        $playlist->tracks()->attach($track);
     }
 }

@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\PlaylistController;
+use App\Http\Controllers\TrackController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,3 +25,10 @@ Route::get('/playlists/{playlist}', [PlaylistController::class, 'show']);
 Route::patch('/playlists/{playlist}', [PlaylistController::class, 'update']);
 Route::delete('/playlists/{playlist}', [PlaylistController::class, 'remove']);
 Route::get('/playlists/{playlist}/tracks', [PlaylistController::class, 'tracks']);
+Route::post('/playlists/{playlist}/tracks/{track}', [PlaylistController::class, 'addTrack']);
+
+Route::get('/artists/{artist}', [ArtistController::class, 'show']);
+
+Route::get('/tracks/search', [TrackController::class, 'search']);
+Route::get('/tracks/{track}/stream', [TrackController::class, 'stream']);
+Route::get('/tracks/{track}/cover', [TrackController::class, 'cover']);
