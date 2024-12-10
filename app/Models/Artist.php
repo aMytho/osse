@@ -10,6 +10,8 @@ use tracks;
 
 class Artist extends Model
 {
+    protected $fillable = ['name'];
+
     /**
      * @return HasMany<tracks,Artist>
      */

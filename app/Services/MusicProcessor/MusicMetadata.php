@@ -2,6 +2,7 @@
 
 namespace App\Services\MusicProcessor;
 
+use Illuminate\Support\Carbon;
 use Kiwilan\Audio\Audio;
 use Kiwilan\Audio\Models\AudioMetadata;
 
@@ -31,6 +32,9 @@ class MusicMetadata
     public ?int $artistID;
     public ?int $albumArtistID;
 
+    // Store the date that we scanned the metadata. Used to avoid rescanning unchanged files.
+    public Carbon $dateScanned;
+
     /**
      * Create a new class instance.
      */
@@ -46,6 +50,7 @@ class MusicMetadata
         $this->size = $this->meta->getFileSize();
         $this->duration = $this->meta->getDurationSeconds();
         $this->bitrate = $this->meta->getBitrate();
+        $this->dateScanned = Carbon::instance($this->meta->getModifiedAt() ?? now());
     }
 
     public function extractMetadata(): void
@@ -64,9 +69,13 @@ class MusicMetadata
         $this->albumID = $albumID;
     }
 
-    public function setArtistFields(?int $artistID, ?int $albumArtistID): void
+    public function setArtistFields(?int $artistID): void
     {
         $this->artistID = $artistID;
+    }
+
+    public function setAlbumArtistFields(?int $albumArtistID): void
+    {
         $this->albumArtistID = $albumArtistID;
     }
 }

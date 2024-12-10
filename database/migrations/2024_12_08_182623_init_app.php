@@ -43,6 +43,9 @@ return new class extends Migration
             $table->integer('year')->nullable();
             $table->integer('track_number')->nullable();
             $table->integer('disc_number')->nullable();
+            // This is used for comparing changes to the tag.
+            $table->timestamp('scanned_at');
+            // Standard timestamp. If we ever implement db modifications, this would be useful.
             $table->timestamps();
         });
 

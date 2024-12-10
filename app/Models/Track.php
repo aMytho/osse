@@ -10,6 +10,18 @@ use artists;
 class Track extends Model
 {
     /**
+    * Get the attributes that should be cast.
+    *
+    * @return array<string, string>
+    */
+    protected function casts(): array
+    {
+        return [
+            'scanned_at' => 'datetime'
+        ];
+    }
+
+    /**
      * @return BelongsTo<albums,Track>
      */
     public function album(): BelongsTo

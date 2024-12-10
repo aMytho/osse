@@ -30,5 +30,6 @@ Route::post('/playlists/{playlist}/tracks/{track}', [PlaylistController::class, 
 Route::get('/artists/{artist}', [ArtistController::class, 'show']);
 
 Route::get('/tracks/search', [TrackController::class, 'search']);
+Route::post('/tracks/scan', [TrackController::class, 'scan']);
 Route::get('/tracks/{track}/stream', [TrackController::class, 'stream']);
 Route::get('/tracks/{track}/cover', [TrackController::class, 'cover']);

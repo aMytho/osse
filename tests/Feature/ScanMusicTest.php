@@ -5,12 +5,11 @@ namespace Tests\Feature;
 use App\Jobs\ScanMusic;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
-/**
-* @group Jobs
-* @group Scan
-*/
+#[Group('Scan')]
+#[Group('Jobs')]
 class ScanMusicTest extends TestCase
 {
     /**
