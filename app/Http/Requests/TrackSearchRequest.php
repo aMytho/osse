@@ -14,8 +14,8 @@ class TrackSearchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'track_offset' => 'int:min:0',
-            'track' => 'string'
+            'track_offset' => 'nullable|int|min:0',
+            'track' => 'nullable|string'
         ];
     }
 }

@@ -38,7 +38,7 @@ class MusicProcessor
         $existingTracksForDirectory = Track::whereIn('location', $this->files->map(fn ($f) => $f->getRealPath()))->get();
         $this->filesMetadata = collect();
 
-        foreach ($this->files->take(3) as $file) {
+        foreach ($this->files as $file) {
             // Make sure that we don't scan a file we already have.
             if ($existingTracksForDirectory->some(function ($f) use ($file) {
                 return $f->location == $file->getRealPath() && $file->getMTime() == $f->scanned_at->timestamp;
