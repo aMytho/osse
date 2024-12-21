@@ -19,6 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
+    // todo: add origins from config for local network support
     'allowed_origins' => ['http://localhost:4200'],
 
     'allowed_origins_patterns' => [],

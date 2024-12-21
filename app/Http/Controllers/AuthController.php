@@ -32,9 +32,14 @@ class AuthController extends Controller
       return response(status:200);
     }
 
-    return back()->withErrors([
-      'username' => 'The provided credentials do not match our records.',
-    ])->onlyInput('username');
+    // TODO: indicate if a user doesn't exist.
+    return response(status: 401, content: json_encode([
+      'unauthorized' => 'invalid credentials'
+    ]), headers: [['Content-Type' => 'application/json']]);
+  }
 
+  public function sendToLogin()
+  {
+    return redirect(config('client_url' . 'login'), 401);
   }
 }
