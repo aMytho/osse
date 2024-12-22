@@ -9,3 +9,4 @@ Route::get('/', function () {
 
 // Sanctum routes. On auth fail, send user here. This redirects to the SPA login.
 Route::get('login', [AuthController::class, 'sendToLogin']);
+Route::post('/login', [AuthController::class, 'login']);

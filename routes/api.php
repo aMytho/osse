@@ -8,7 +8,6 @@ use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\TrackController;
 use App\Http\Middleware\HTTPCache;
 use Illuminate\Http\Request;
-use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', [ConfigController::class, 'ping']);
@@ -16,13 +15,12 @@ Route::get('/ping', [ConfigController::class, 'ping']);
 // Auth routes.
 Route::post('/register', [AuthController::class, 'register']);
 // This route is different than the web /login redirect.
-Route::post('/login', [AuthController::class, 'login'])->middleware(StartSession::class);
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::group(['middleware' => ['auth:sanctum']], function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/config/directories', [ConfigController::class, 'directories']);
     Route::get('/albums', [AlbumController::class, 'index'])->middleware(HTTPCache::class);
     Route::get('/albums/{album}', [AlbumController::class, 'show'])->middleware(HTTPCache::class);

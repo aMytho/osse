@@ -13,10 +13,6 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->statefulApi();
-        // The login route is on the api php file. We need to exclude the sanctum CRSF checks for this route.
-        $middleware->validateCsrfTokens([
-            '*login*'
-        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
