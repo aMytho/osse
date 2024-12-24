@@ -51,4 +51,9 @@ class PlaylistController extends Controller
     {
         $playlist->tracks()->attach($track);
     }
+
+    public function removeTrack(Playlist $playlist, Track $track)
+    {
+        $playlist->tracks()->detach($track);
+    }
 }

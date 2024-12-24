@@ -22,22 +22,23 @@ Route::get('/user', function (Request $request) {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/config/directories', [ConfigController::class, 'directories']);
-    Route::get('/albums', [AlbumController::class, 'index'])->middleware(HTTPCache::class);
-    Route::get('/albums/{album}', [AlbumController::class, 'show'])->middleware(HTTPCache::class);
-    Route::get('/albums/{album}/tracks', [AlbumController::class, 'tracks'])->middleware(HTTPCache::class);
+    Route::get('/albums', [AlbumController::class, 'index']);
+    Route::get('/albums/{album}', [AlbumController::class, 'show']);
+    Route::get('/albums/{album}/tracks', [AlbumController::class, 'tracks']);
 
-    Route::get('/playlists', [PlaylistController::class, 'index'])->middleware(HTTPCache::class);
+    Route::get('/playlists', [PlaylistController::class, 'index']);
     Route::post('/playlists', [PlaylistController::class, 'store']);
-    Route::get('/playlists/{playlist}', [PlaylistController::class, 'show'])->middleware(HTTPCache::class);
+    Route::get('/playlists/{playlist}', [PlaylistController::class, 'show']);
     Route::patch('/playlists/{playlist}', [PlaylistController::class, 'update']);
     Route::delete('/playlists/{playlist}', [PlaylistController::class, 'remove']);
-    Route::get('/playlists/{playlist}/tracks', [PlaylistController::class, 'tracks'])->middleware(HTTPCache::class);
+    Route::get('/playlists/{playlist}/tracks', [PlaylistController::class, 'tracks']);
     Route::post('/playlists/{playlist}/tracks/{track}', [PlaylistController::class, 'addTrack']);
+    Route::delete('/playlists/{playlist}/tracks/{track}', [PlaylistController::class, 'removeTrack']);
 
-    Route::get('/artists/{artist}', [ArtistController::class, 'show'])->middleware(HTTPCache::class);
+    Route::get('/artists/{artist}', [ArtistController::class, 'show']);
 
     Route::get('/tracks/search', [TrackController::class, 'search']);
     Route::post('/tracks/scan', [TrackController::class, 'scan']);
-    Route::get('/tracks/{track}/stream', [TrackController::class, 'stream'])->middleware(HTTPCache::class);
-    Route::get('/tracks/{track}/cover', [TrackController::class, 'cover'])->middleware(HTTPCache::class);
+    Route::get('/tracks/{track}/stream', [TrackController::class, 'stream']);
+    Route::get('/tracks/{track}/cover', [TrackController::class, 'cover']);
 });
