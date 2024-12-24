@@ -69,7 +69,7 @@ class MusicProcessor
                 'size' => $m->size,
                 'bitrate' => $m->bitrate,
                 'location' => $m->path,
-                'album_id' => $m->albumID,
+                'album_id' => $m->albumID ?? null,
                 'year' => $m->year,
                 'track_number' => $m->trackNumber,
                 'disc_number' => $m->discNumber,
