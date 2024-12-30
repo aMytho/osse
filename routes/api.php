@@ -6,7 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\TrackController;
-use App\Http\Middleware\HTTPCache;
+// use App\Http\Middleware\HTTPCache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/playlists/{playlist}', [PlaylistController::class, 'remove']);
     Route::get('/playlists/{playlist}/tracks', [PlaylistController::class, 'tracks']);
     Route::post('/playlists/{playlist}/tracks/{track}', [PlaylistController::class, 'addTrack']);
+    Route::post('/playlists/{playlist}/track-set', [PlaylistController::class, 'addTracks']);
     Route::delete('/playlists/{playlist}/tracks/{track}', [PlaylistController::class, 'removeTrack']);
 
     Route::get('/artists/{artist}', [ArtistController::class, 'show']);

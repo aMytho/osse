@@ -6,6 +6,7 @@ use App\Http\Requests\CreatePlaylistRequest;
 use App\Http\Requests\UpdatePlaylistRequest;
 use App\Models\Playlist;
 use App\Models\Track;
+use Illuminate\Http\Request;
 
 class PlaylistController extends Controller
 {
@@ -50,6 +51,16 @@ class PlaylistController extends Controller
     public function addTrack(Playlist $playlist, Track $track)
     {
         $playlist->tracks()->attach($track);
+    }
+
+    public function addTracks(Playlist $playlist, Request $request)
+    {
+        $validated = $request->validate([
+            'track-ids' => 'required|array',
+            'track-ids.*' => 'required|integer'
+        ]);
+
+        $playlist->tracks()->attach($validated['track-ids']);
     }
 
     public function removeTrack(Playlist $playlist, Track $track)
