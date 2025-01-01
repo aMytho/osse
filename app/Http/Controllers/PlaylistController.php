@@ -27,13 +27,13 @@ class PlaylistController extends Controller
 
     public function show(Playlist $playlist)
     {
-        $playlist->load('tracks');
+        $playlist->load(['tracks', 'tracks.artist']);
         return response()->json($playlist);
     }
 
     public function tracks(Playlist $playlist)
     {
-        $playlist->load('tracks');
+        $playlist->load(['tracks', 'tracks.artist']);
         return response()->json($playlist->tracks);
     }
 
