@@ -3,12 +3,13 @@
 namespace App\Jobs;
 
 use App\Services\MusicProcessor\MusicProcessor;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 
-class ScanMusic implements ShouldQueue
+class ScanMusic implements ShouldQueue, ShouldBeUnique
 {
     use Queueable;
 
