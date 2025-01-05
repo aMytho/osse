@@ -6,8 +6,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\TrackController;
+use App\Http\Controllers\ScanController;
 // use App\Http\Middleware\HTTPCache;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', [ConfigController::class, 'ping']);
@@ -16,9 +16,7 @@ Route::get('/ping', [ConfigController::class, 'ping']);
 Route::post('/register', [AuthController::class, 'register']);
 // This route is different than the web /login redirect.
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/config/directories', [ConfigController::class, 'directories']);
@@ -39,7 +37,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/artists/{artist}', [ArtistController::class, 'show']);
 
     Route::get('/tracks/search', [TrackController::class, 'search']);
-    Route::post('/tracks/scan', [TrackController::class, 'scan']);
     Route::get('/tracks/{track}/stream', [TrackController::class, 'stream']);
     Route::get('/tracks/{track}/cover', [TrackController::class, 'cover']);
+
+    Route::post('/scan', [ScanController::class, 'startScan']);
 });

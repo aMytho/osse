@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TrackSearchRequest;
-use App\Jobs\ScanMusic;
 use App\Models\Track;
 use Kiwilan\Audio\Audio;
 
@@ -33,10 +32,5 @@ class TrackController extends Controller
   public function stream(Track $track)
   {
     return response()->file($track->location);
-  }
-
-  public function scan()
-  {
-    ScanMusic::dispatch();
   }
 }

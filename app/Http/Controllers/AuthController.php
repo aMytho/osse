@@ -40,4 +40,15 @@ class AuthController extends Controller
   {
     return redirect(config('client_url' . 'login'), 401);
   }
+
+  public function user(Request $request)
+  {
+    $user = $request->user();
+
+    return response()->json([
+      'id' => $user->id,
+      'username' => $user->username,
+      'broadcastKey' => config('reverb.apps.apps.0.key')
+    ]);
+  }
 }
