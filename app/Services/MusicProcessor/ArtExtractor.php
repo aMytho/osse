@@ -107,19 +107,32 @@ class ArtExtractor
         // There are many files. Group by hash and only save 1 of duplicate files.
         $filesWithHashes = collect();
         foreach ($this->artworkToSave->groupBy('hash') as $art) {
+            foreach ($art as $artFile) {
+                $artFile->storeFile();
+            }
+
             $filesWithHashes->push(['art' => $art->first(), 'trackFilePaths' => $art->pluck('trackFilePath')]);
         }
 
         // Create DB entries.
         CoverArt::insert($filesWithHashes->map(function ($f) {
             return [
-                'hash' => $f->art->hash,
-                'mime_type' => $f->art->mimeType
+                'hash' => $f['art']->hash,
+                'mime_type' => $f['art']->getMimeType()
             ];
         })->toArray());
 
         // Get the cover art and link to track.
         $covers = CoverArt::whereIn('hash', $filesWithHashes->pluck('art.hash'))->get();
-        // TODO: Finish this.
+        $tracks = Track::whereIn('location', $filesWithHashes->pluck('trackFilePaths')->flatten()->toArray())->get();
+        foreach ($tracks as $track) {
+            $hashForTrackCover = $filesWithHashes->firstWhere(function ($f) use ($track) {
+                return $f['trackFilePaths']->contains($track->location);
+            })['art']->hash;
+
+            $cover = $covers->firstWhere('hash', $hashForTrackCover);
+            $track->cover_art_id = $cover->id;
+            $track->save();
+        }
     }
 }
