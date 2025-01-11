@@ -4,6 +4,7 @@ namespace App\Services\MusicProcessor;
 
 use Illuminate\Support\Carbon;
 use Kiwilan\Audio\Audio;
+use Kiwilan\Audio\Models\AudioCover;
 use Kiwilan\Audio\Models\AudioMetadata;
 
 class MusicMetadata
@@ -35,6 +36,9 @@ class MusicMetadata
     // Store the date that we scanned the metadata. Used to avoid rescanning unchanged files.
     public Carbon $dateScanned;
 
+    // Cover art (used by ArtExtractor)
+    public bool $hasCoverArt = false;
+
     /**
      * Create a new class instance.
      */
@@ -51,6 +55,7 @@ class MusicMetadata
         $this->duration = $this->meta->getDurationSeconds();
         $this->bitrate = $this->meta->getBitrate();
         $this->dateScanned = Carbon::instance($this->meta->getModifiedAt() ?? now());
+        $this->hasCoverArt = $this->audio->hasCover();
     }
 
     public function extractMetadata(): void
@@ -77,5 +82,10 @@ class MusicMetadata
     public function setAlbumArtistFields(?int $albumArtistID): void
     {
         $this->albumArtistID = $albumArtistID;
+    }
+
+    public function getCoverArt(): ?AudioCover
+    {
+        return $this->audio->getCover();
     }
 }

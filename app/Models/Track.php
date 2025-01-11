@@ -36,4 +36,25 @@ class Track extends Model
     {
         return $this->belongsTo(Artist::class);
     }
+
+    /**
+     * @return BelongsTo<CoverArt,Track>
+     */
+    public function coverArt(): BelongsTo
+    {
+        return $this->belongsTo(CoverArt::class);
+    }
+
+    /**
+    * Checks if a track has cover art.
+    */
+    public function hasCover(): bool
+    {
+        return !is_null($this->cover_art_id);
+    }
+
+    public function getCoverUrl()
+    {
+        return 'cover-art/' . $this->coverArt?->hash;
+    }
 }

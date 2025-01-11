@@ -4,31 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TrackSearchRequest;
 use App\Models\Track;
-use Illuminate\Support\Facades\File;
-use Kiwilan\Audio\Audio;
+use Illuminate\Support\Facades\Storage;
 
 class TrackController extends Controller
 {
   public function cover(Track $track)
   {
     try {
-      if (File::exists($track->location)) {
-        $file = Audio::read($track->location);
-        if ($file && $file->hasCover()) {
-          return response()->make()->setContent($file->getCover()->getContents());
-        }
-
-        return response()->make(status:503);
+      if ($track->hasCover()) {
+        $track->load('coverArt');
+        return response()->make(content: Storage::get($track->getCoverUrl()))->header('Content-Type', $track->coverArt->mime_type);
+      } else {
+        return response()->make(status:404);
       }
     } catch (\Throwable $th) {
-        return response()->make(status:503);
+      return response()->make(status:404);
     }
-    return response()->make(status:404);
   }
 
   public function search(TrackSearchRequest $request)
   {
-    $tracks = Track::with('artist')
+      $tracks = Track::with('artist')
         ->where('title', 'like', '%' . $request->validated('track', '') . '%')
         ->skip($request->validated('track_offset', 0))
         ->limit(25)

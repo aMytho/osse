@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Events\ScanFailed;
+use App\Services\MusicProcessor\ArtExtractor;
 use App\Services\MusicProcessor\MusicProcessor;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -59,6 +60,11 @@ class ScanMusic implements ShouldQueue, ShouldBeUnique
             Log::info('Processing ' . $dir);
             $processor = new MusicProcessor($directoryGroup);
             $processor->scan();
+
+            // Album art
+            $artProcessor = new ArtExtractor($processor->getScannedFiles(), $directoryGroup);
+            $artProcessor->storeArt();
+
             Log::info('Finished ' . $dir . ' with ' . $processor->filesScanned . ' files scanned and ' . $processor->filesSkipped . ' files skipped.');
 
             // Emit the event. We have to cast dir as a string, or it may interpert it as a class.
