@@ -36,4 +36,12 @@ class Track extends Model
     {
         return $this->belongsTo(Artist::class);
     }
+
+    /**
+     * @return BelongsTo<CoverArt,Track>
+     */
+    public function coverArt(): BelongsTo
+    {
+        return $this->belongsTo(CoverArt::class);
+    }
 }
