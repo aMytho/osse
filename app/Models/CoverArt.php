@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CoverArt extends Model
 {
-    protected $fillable = ['hash'];
+    protected $fillable = ['hash', 'mime_type'];
 
     /**
      * @return HasMany<Track,CoverArt>

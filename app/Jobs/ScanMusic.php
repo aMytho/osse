@@ -63,6 +63,7 @@ class ScanMusic implements ShouldQueue, ShouldBeUnique
 
             // Album art
             $artProcessor = new ArtExtractor($processor->getScannedFiles(), $directoryGroup);
+            $artProcessor->storeArt();
 
             Log::info('Finished ' . $dir . ' with ' . $processor->filesScanned . ' files scanned and ' . $processor->filesSkipped . ' files skipped.');
 

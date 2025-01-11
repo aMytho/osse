@@ -43,7 +43,7 @@ return new class extends Migration
             $table->integer('year')->nullable();
             $table->integer('track_number')->nullable();
             $table->integer('disc_number')->nullable();
-            $table->integer('covert_art_id')->nullable();
+            $table->integer('cover_art_id')->nullable();
             // This is used for comparing changes to the tag.
             $table->timestamp('scanned_at');
             // Standard timestamp. If we ever implement db modifications, this would be useful.
@@ -54,6 +54,7 @@ return new class extends Migration
             $table->id();
             // 64 length SHA-256 hash of the file. This is also the filename
             $table->string('hash', 64);
+            $table->string('mime_type');
             $table->timestamps();
         });
 
