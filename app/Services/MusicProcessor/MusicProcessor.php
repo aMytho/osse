@@ -193,4 +193,9 @@ class MusicProcessor
             $file->setAlbumFields($album?->id ?? null);
         }
     }
+
+    public function getScannedFiles(): Collection
+    {
+        return $this->filesMetadata;
+    }
 }
