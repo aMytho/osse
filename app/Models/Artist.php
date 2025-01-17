@@ -21,14 +21,6 @@ class Artist extends Model
     }
 
     /**
-     * @return HasMany<playlists,Artist>
-     */
-    public function playlists(): HasMany
-    {
-        return $this->hasMany('playlists');
-    }
-
-    /**
      * @return HasMany<albums,Artist>
      */
     public function albums(): HasMany
