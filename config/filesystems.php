@@ -45,6 +45,11 @@ return [
             'throw' => false,
         ],
 
+        'test_files' => [
+            'driver' => 'local',
+            'root' => storage_path('framework/testing/disks/test_files'),
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

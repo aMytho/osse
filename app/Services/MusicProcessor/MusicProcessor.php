@@ -198,4 +198,9 @@ class MusicProcessor
     {
         return $this->filesMetadata;
     }
+
+    public function getAllFiles(): Collection
+    {
+        return $this->files;
+    }
 }

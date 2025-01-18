@@ -3,12 +3,14 @@
 namespace Tests\Feature\Jobs;
 
 use App\Jobs\ScanMusic;
+use App\Models\Track;
+use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\Group;
+use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
 use Tests\TestCase;
 
 #[Group('Jobs')]
 #[Group('ScanMusic')]
-#[Group('current')]
 class ScanMusicTest extends TestCase
 {
     protected function setUp(): void
@@ -66,5 +68,45 @@ class ScanMusicTest extends TestCase
             'track_number' => 2,
             'disc_number' => 1,
         ]);
+    }
+
+    public function test_unused_tracks_relations_are_removed(): void
+    {
+        $this->mockStorage();
+        $this->copyTestMusicFiles();
+        $testFilePath = Storage::disk('test_files')->path('');
+
+        // Scan in 2 files with metadata.
+        config(['scan.directories' => [$testFilePath . 'has_metadata']]);
+        ScanMusic::dispatchSync();
+
+        $this->assertDatabaseCount('artists', 1);
+        $this->assertDatabaseCount('albums', 1);
+        $this->assertDatabaseCount('tracks', 2);
+
+        // Delete 1 file, 1 should be left.
+        Storage::disk('test_files')->delete('has_metadata/track_two.mp3');
+        ScanMusic::dispatchSync();
+        $this->assertDatabaseCount('tracks', 1);
+
+        // Delete the entire directory. Nothing should be left.
+        // We set the scan dirs to a new dir with nothing in it to test the old tracks in deleted(unscanned) dirs are pruned.
+        Storage::disk('test_files')->deleteDirectory('has_metadata');
+        Storage::disk('test_files')->put('empty/foo', 'baz');
+        config(['scan.directories' => [$testFilePath . 'empty']]);
+        ScanMusic::dispatchSync();
+
+        $this->assertDatabaseEmpty('artists');
+        $this->assertDatabaseEmpty('albums');
+        $this->assertDatabaseEmpty('tracks');
+    }
+
+    public function test_scanning_a_invalid_directory_fails(): void
+    {
+        $this->mockStorage();
+        config(['scan.directories' => ['/fake-directory']]);
+
+        $this->expectException(DirectoryNotFoundException::class);
+        ScanMusic::dispatchSync();
     }
 }

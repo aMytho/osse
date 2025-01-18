@@ -3,8 +3,12 @@
 namespace App\Jobs;
 
 use App\Events\ScanFailed;
+use App\Models\Album;
+use App\Models\Artist;
+use App\Models\CoverArt;
 use App\Services\MusicProcessor\ArtExtractor;
 use App\Services\MusicProcessor\MusicProcessor;
+use App\Services\MusicProcessor\MusicPruner;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -13,6 +17,7 @@ use Illuminate\Support\Facades\Log;
 use App\Events\ScanStarted;
 use App\Events\ScanProgressed;
 use App\Events\ScanCompleted;
+use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 class ScanMusic implements ShouldQueue, ShouldBeUnique
@@ -65,6 +70,10 @@ class ScanMusic implements ShouldQueue, ShouldBeUnique
             $artProcessor = new ArtExtractor($processor->getScannedFiles(), $directoryGroup);
             $artProcessor->storeArt();
 
+            // If there was a file that was here previously, but is no longer here, remove it.
+            $musicPruner = new MusicPruner($dir, $processor->getAllFiles());
+            $musicPruner->prune();
+
             Log::info('Finished ' . $dir . ' with ' . $processor->filesScanned . ' files scanned and ' . $processor->filesSkipped . ' files skipped.');
 
             // Emit the event. We have to cast dir as a string, or it may interpert it as a class.
@@ -72,7 +81,9 @@ class ScanMusic implements ShouldQueue, ShouldBeUnique
             ScanProgressed::dispatch(strval($dir), $processor->filesScanned, $processor->filesSkipped);
         }
 
-        // TODO: prune models
+        // Prune any directories that used to exist, but were not in this scan list.
+        // Also prunes relations
+        MusicPruner::pruneDirectoriesThatUsedToExist($files->keys());
 
         ScanCompleted::dispatch($files->count());
     }
