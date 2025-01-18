@@ -11,6 +11,13 @@ use Tests\TestCase;
 #[Group('ScanMusic')]
 class ScanControllerTest extends TestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->mockJobs();
+    }
+
     public function test_scan_route_starts_scan(): void
     {
         $this->actingAs($this->user);

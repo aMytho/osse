@@ -4,9 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use albums;
-use playlists;
-use tracks;
 
 class Artist extends Model
 {
@@ -17,7 +14,7 @@ class Artist extends Model
      */
     public function tracks(): HasMany
     {
-        return $this->hasMany('tracks');
+        return $this->hasMany(Track::class);
     }
 
     /**
@@ -25,6 +22,6 @@ class Artist extends Model
      */
     public function albums(): HasMany
     {
-        return $this->hasMany('albums');
+        return $this->hasMany(Album::class);
     }
 }
