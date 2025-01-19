@@ -1,66 +1,88 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Osse
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Osse is a free and open source music player and server. This repository is the **server**.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+> Osse is in **early development**. There will be bugs and unexpected behavior. Some features are not yet complete. It is safe to use on your library, but it will need some time before it can be your main music player.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Supports most music formats (MP3, Ogg/Opus, Flac, WAV).
+- Support reading tags for library generation.
+- Album & Playlist support.
+- No Tracking/Telemetry/Data collection.
+- Simplicity. Install it and it **just works**.
+- Support for Linux/Mac/Windows (Mac/Windows need Docker or other medium). Any device (including Android and IOS) can use the web frontend.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Installation 
 
-## Learning Laravel
+> Interested in helping us test? Use the below instructions for an installation.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Both the server (this repo) and the web frontend must be installed.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+> When v1 releases, we will provide a standalone installer/executable to simplify this process. We will also provide docker images. Currently, you must manually install the projects and their dependencies.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+You will need the following tools installed:
 
-## Laravel Sponsors
+- Git https://git-scm.com/downloads
+- PHP 8.4 with the PCNTL extension `/bin/bash -c "$(curl -fsSL https://php.new/install/linux/8.4)"`
+- NodeJS v22 https://nodejs.org/en
+- PNPM (optional, preferred over NPM) https://pnpm.io/installation
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+> You may be able to run osse with older versions of the above software. However, the above configuration has been tested and proven to work.
 
-### Premium Partners
+Clone this repository and the web client.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+```
+git clone https://github.com/amytho/osse
+git clone https://github.com/amytho/osse-web
+```
 
-## Contributing
+Start the server and the web frontend.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```
+cd osse
+composer install
+cp .env.example .env
+composer run dev
+```
 
-## Code of Conduct
+In another terminal window:
+```
+cd osse-web
+pnpm install
+pnpm start
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Open the web frontend and login. http://localhost:4200
 
-## Security Vulnerabilities
+The default username is `osse` and the default password is `cassidor`.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Configuration
 
-## License
+Configuration is stored in a .env file in the osse server repo. This file should have been created for you if you followed the above instructions.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+You shouldn't need to change anything if you are accessing this project from your current device. However, you should confirm that the client URL is set to the URL of the web frontend. It should have an ending slash. The below URL is the default that the web frontend will use.
+
+`clientURL="http://localhost:4200/"`
+
+> If you want to access the project from another device, adjust the cookie, session, and sanctum fields. We will provide examples before release.
+
+### Adding Music
+
+You need to tell Osse where your music library is. You can provide a comma separated list of directories in the .env file for the `directories` entry. See below example.
+
+`directories="/mnt/laptop-music/my-folder,/mnt/laptop-music/my-other-folder,/home/myuser/Music"`
+
+**You must provide an absolute path for each directory**. Osse will scan subdirectories recursively. If you store your music in a top level music folder, simply point Osse to it and it will scan all of the files.
+
+Click on the settings page on the web frontend. Press the scan button. This will scan your files. When the scan is complete a message will appear verifying that you can leave the page. Your files should be accessible now, happy listening!
+
+## Providing Feedback
+
+Osse is in an early stage. We need your feedback to help shape the future of the project. If you have a bug or feature request, please make an issue!
+
+## Contributing and Support
+
+The best way to support the project is to use it and provide feedback. Starring the project is also appreciated. 
+
+Code contributions are welcome. We request that you open an issue before starting work on a feature.
