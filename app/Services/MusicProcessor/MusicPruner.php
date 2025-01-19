@@ -77,7 +77,7 @@ class MusicPruner
             $dirs = $tracks->map(function ($t) {
                 $t->directory = dirname($t->location);
                 return $t;
-            })->unique('directory');
+            });
 
             // If we have a directory that is not in directoriesScannedNow, delete it.
             $tracksToRemove = $dirs->where(fn ($t) => $directoriesScannedNow->doesntContain($t->directory));
