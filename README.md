@@ -61,9 +61,12 @@ The default username is `osse` and the default password is `cassidor`.
 
 Configuration is stored in a .env file in the osse server repo. This file should have been created for you if you followed the above instructions.
 
-You shouldn't need to change anything if you are accessing this project from your current device. However, you should confirm that the client URL is set to the URL of the web frontend. It should have an ending slash. The below URL is the default that the web frontend will use.
+You shouldn't need to change anything if you are accessing this project from your current device. However, you should confirm that the client URL variables are set. Do not add a ending slash to the host. The below URL variables are the default that the web frontend will use.
 
-`clientURL="http://localhost:4200/"`
+```
+clientUseHttps="false" # or true
+clientHostAndPort="localhost:4200" # no ending slash. Include port.
+```
 
 > If you want to access the project from another device, adjust the cookie, session, and sanctum fields. We will provide examples before release.
 

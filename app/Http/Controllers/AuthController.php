@@ -38,7 +38,7 @@ class AuthController extends Controller
 
   public function sendToLogin()
   {
-    return redirect(config('client_url' . 'login'), 401);
+    return redirect(config('client_url' . '/login'), 401);
   }
 
   public function user(Request $request)

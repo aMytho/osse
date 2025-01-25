@@ -19,8 +19,11 @@ return [
 
     'allowed_methods' => ['*'],
 
-    // todo: add origins from config for local network support
-    'allowed_origins' => ['http://localhost:4200'],
+    'allowed_origins' => [
+        (env('clientUseHttps', false) ? 'https://' : 'http://') . env('clientHostAndPort', 'localhost:4200'),
+        'http://localhost:4200',
+        'https://localhost:4200'
+    ],
 
     'allowed_origins_patterns' => [],
 
