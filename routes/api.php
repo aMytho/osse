@@ -18,6 +18,8 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
 
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/config/directories', [ConfigController::class, 'directories']);
     Route::get('/albums', [AlbumController::class, 'index']);

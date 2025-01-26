@@ -29,11 +29,17 @@ class AuthController extends Controller
     if (Auth::attempt($credentials)) {
       $request->session()->regenerate();
 
-      return response()->json(['message' => 'login successful'], 200);
+      return response()->json(['message' => 'Login Successful'], 200);
     }
 
     // TODO: indicate if a user doesn't exist.
-    return response()->json(['message' => 'login failed'], 401);
+    return response()->json(['message' => 'Invalid Credentials'], 401);
+  }
+
+  public function logout(Request $request) {
+    Auth::guard('web')->logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
   }
 
   public function sendToLogin()
