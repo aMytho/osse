@@ -17,6 +17,8 @@ class AuthController extends Controller
 
     $user = new User($credentials);
     $user->save();
+
+    return response(status: 201);
   }
 
   public function login(Request $request)
