@@ -7,6 +7,7 @@ use App\Models\Artist;
 use App\Models\Track;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Kiwilan\Audio\Audio;
 
 class MusicProcessor
@@ -64,7 +65,6 @@ class MusicProcessor
         Track::insert(
             $this->filesMetadata->map(fn ($m) => [
                 'title' => $m->title,
-                'artist_id' => $m->artistID,
                 'duration' => $m->duration,
                 'size' => $m->size,
                 'bitrate' => $m->bitrate,
@@ -78,6 +78,12 @@ class MusicProcessor
             ])->toArray()
         );
 
+        // We need to link the track to the artist.
+        $tracks = Track::whereIn('location', $this->filesMetadata->pluck('path'))->get();
+        $albums = Album::whereIn('id', $this->filesMetadata->pluck('albumID'))->get();
+        $this->linkArtistsToTracks($tracks);
+        $this->linkAlbumsToArtists($albums);
+
         $this->filesScanned = $this->filesMetadata->count();
     }
 
@@ -86,10 +92,10 @@ class MusicProcessor
         // Get each artist from the files
         $fileArtists = collect();
         foreach ($this->filesMetadata as $file) {
-            $fileArtists->push($file->artist);
-            $fileArtists->push($file->albumArtist);
+            $fileArtists->push($file->artists);
+            $fileArtists->push($file->albumArtists);
         }
-        $fileArtists = $fileArtists->filter()->unique();
+        $fileArtists = $fileArtists->filter()->flatten()->unique();
 
         // Get the matching artists in the DB.
         $artists = Artist::whereIn('name', $fileArtists)->get();
@@ -97,24 +103,24 @@ class MusicProcessor
         // Assign the IDs for each artist. Store a list of artists that are not yet in the DB.
         $newArtists = collect();
         foreach ($this->filesMetadata as $file) {
-            $artist = $artists->firstWhere('name', $file->artist);
-            $albumArtist = $artists->firstWhere('name', $file->albumArtist);
+            $fileArtists = $artists->whereIn('name', $file->artists);
+            $fileAlbumArtists = $artists->whereIn('name', $file->albumArtists);
 
-            if ($artist) {
-                $file->setArtistFields($artist->id);
+            if ($fileArtists->isNotEmpty()) {
+                $file->setArtistFields($fileArtists->pluck('id')->toArray());
             } else {
-                $newArtists->push($file->artist);
+                $newArtists->push($file->artists);
             }
 
-            if ($albumArtist) {
-                $file->setAlbumArtistFields($albumArtist->id);
+            if ($fileAlbumArtists->isNotEmpty()) {
+                $file->setAlbumArtistFields($fileAlbumArtists->pluck('id')->toArray());
             } else {
-                $newArtists->push($file->albumArtist);
+                $newArtists->push($file->albumArtists);
             }
         }
 
         // Get a unique, non null list of artists to add.
-        $newArtists = $newArtists->filter()->unique();
+        $newArtists = $newArtists->filter()->flatten()->unique();
 
         // Add the artists.
         Artist::insert($newArtists
@@ -124,14 +130,14 @@ class MusicProcessor
 
         // For each newly inserted artist, assign the artist ID or null if none.
         $artists = Artist::whereIn('name', $newArtists)->get();
-        foreach ($this->filesMetadata->whereNull('artistID') as $file) {
-            $artist = $artists->firstWhere('name', $file->artist);
-            $file->setArtistFields($artist?->id ?? null);
+        foreach ($this->filesMetadata->filter(fn ($f) => count($f->artistIDs) == 0) as $file) {
+            $fileArtists = $artists->whereIn('name', $file->artists);
+            $file->setArtistFields($fileArtists->pluck('id')->toArray());
         }
 
         foreach ($this->filesMetadata->whereNull('albumArtistID') as $file) {
-            $artist = $artists->firstWhere('name', $file->albumArtist);
-            $file->setAlbumArtistFields($artist?->id ?? null);
+            $fileArtists = $artists->whereIn('name', $file->albumArtists);
+            $file->setAlbumArtistFields($fileArtists->pluck('id')->toArray());
         }
     }
 
@@ -192,6 +198,41 @@ class MusicProcessor
             $album = $albums->firstWhere('name', $file->album);
             $file->setAlbumFields($album?->id ?? null);
         }
+    }
+
+    private function linkArtistsToTracks(Collection $tracks): void
+    {
+        $artists = [];
+        foreach ($this->filesMetadata as $file) {
+            if (count($file->artistIDs) == 0) return;
+
+            $artistOrder = 1;
+            foreach ($file->artistIDs as $artistID) {
+                array_push($artists, ['artist_id' => $artistID, 'artist_order' => $artistOrder, 'track_id' => $tracks->firstWhere('location', $file->path)->id]);
+                $artistOrder++;
+            }
+        }
+
+
+        DB::table('track_artist')->insert($artists);
+    }
+
+    private function linkAlbumsToArtists(Collection $albums): void
+    {
+        dd($albums);
+        $artists = [];
+        foreach ($this->filesMetadata as $file) {
+            if (empty($file->albumID)) continue;
+
+            $artistOrder = 1;
+            foreach ($file->albumArtistIDs as $artistID) {
+                array_push($artists, ['artist_id' => $artistID, 'artist_order' => $artistOrder, 'album_id' => $albums->firstWhere('id', $file->albumID)->id]);
+                $artistOrder++;
+            }
+        }
+
+
+        DB::table('album_artist')->insert($artists);
     }
 
     public function getScannedFiles(): Collection

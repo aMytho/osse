@@ -21,17 +21,19 @@ class MusicMetadata
 
     // Raw metadata
     public ?string $title;
-    public ?string $artist;
+    public array $artists = [];
     public ?string $album;
-    public ?string $albumArtist;
+    public array $albumArtists = [];
     public ?int $discNumber;
     public ?int $trackNumber;
     public ?int $year;
 
     // DB Data (after identification)
     public ?int $albumID;
-    public ?int $artistID;
-    public ?int $albumArtistID;
+    // Array where each val is the artist ID
+    public array $artistIDs = [];
+    // Array where each val is the album artist ID
+    public array $albumArtistIDs = [];
 
     // Store the date that we scanned the metadata. Used to avoid rescanning unchanged files.
     public Carbon $dateScanned;
@@ -61,9 +63,15 @@ class MusicMetadata
     public function extractMetadata(): void
     {
         $this->title = $this->audio->getTitle() ?? $this->meta->getFilename();
-        $this->artist = $this->audio->getArtist();
+
+        // Split the artist on delimiters
+        $this->artists = preg_split('/;\s*|\/\s*|,\s*|&\s*/', $this->audio->getArtist() ?? "");
+
         $this->album = $this->audio->getAlbum();
-        $this->albumArtist = $this->audio->getAlbumArtist();
+
+        // Split the album artist on delimiters
+        $this->albumArtists = preg_split('/;\s*|\/\s*|,\s*|&\s*/', $this->audio->getAlbumArtist() ?? "");
+
         $this->discNumber = $this->audio->getDiscNumberInt();
         $this->trackNumber = $this->audio->getTrackNumberInt();
         $this->year = $this->audio->getYear();
@@ -74,14 +82,14 @@ class MusicMetadata
         $this->albumID = $albumID;
     }
 
-    public function setArtistFields(?int $artistID): void
+    public function setArtistFields(array $artistIDs): void
     {
-        $this->artistID = $artistID;
+        $this->artistIDs = $artistIDs;
     }
 
-    public function setAlbumArtistFields(?int $albumArtistID): void
+    public function setAlbumArtistFields(array $albumArtistIDs): void
     {
-        $this->albumArtistID = $albumArtistID;
+        $this->albumArtistIDs = $albumArtistIDs;
     }
 
     public function getCoverArt(): ?AudioCover

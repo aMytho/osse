@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Artist extends Model
@@ -12,9 +13,9 @@ class Artist extends Model
     /**
      * @return HasMany<tracks,Artist>
      */
-    public function tracks(): HasMany
+    public function tracks(): BelongsToMany
     {
-        return $this->hasMany(Track::class);
+        return $this->belongsToMany(Track::class, 'track_artist');
     }
 
     /**

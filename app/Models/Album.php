@@ -3,10 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use artists;
-use tracks;
 
 class Album extends Model
 {
@@ -21,10 +19,11 @@ class Album extends Model
     }
 
     /**
-     * @return BelongsTo<artists,Album>
+     * @return BelongsToMany<artists,Album>
      */
-    public function artist(): BelongsTo
+    public function artists(): BelongsToMany
     {
-        return $this->belongsTo(Artist::class);
+        return $this->belongsToMany(Artist::class, 'album_artist')
+            ->withPivot('artist_order');
     }
 }

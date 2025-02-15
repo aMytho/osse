@@ -3,9 +3,6 @@
 namespace App\Jobs;
 
 use App\Events\ScanFailed;
-use App\Models\Album;
-use App\Models\Artist;
-use App\Models\CoverArt;
 use App\Services\MusicProcessor\ArtExtractor;
 use App\Services\MusicProcessor\MusicProcessor;
 use App\Services\MusicProcessor\MusicPruner;
@@ -17,7 +14,6 @@ use Illuminate\Support\Facades\Log;
 use App\Events\ScanStarted;
 use App\Events\ScanProgressed;
 use App\Events\ScanCompleted;
-use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 class ScanMusic implements ShouldQueue, ShouldBeUnique
