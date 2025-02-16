@@ -7,7 +7,6 @@ use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\ScanController;
-// use App\Http\Middleware\HTTPCache;
 use App\Http\Middleware\RegistrationCheck;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +22,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/config/directories', [ConfigController::class, 'directories']);
+    Route::get('/config/logs', [ConfigController::class, 'logs']);
     Route::get('/albums', [AlbumController::class, 'index']);
     Route::get('/albums/{album}', [AlbumController::class, 'show']);
     Route::get('/albums/{album}/tracks', [AlbumController::class, 'tracks']);
