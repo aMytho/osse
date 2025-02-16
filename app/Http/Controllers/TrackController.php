@@ -24,7 +24,7 @@ class TrackController extends Controller
 
   public function search(TrackSearchRequest $request)
   {
-      $tracks = Track::with('artist')
+      $tracks = Track::with('artists')
         ->where('title', 'like', '%' . $request->validated('track', '') . '%')
         ->skip($request->validated('track_offset', 0))
         ->limit(25)
