@@ -18,7 +18,8 @@ class AlbumResponse extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'tracks' => $this->tracks ?? [],
-            'year' => $this->year
+            'year' => $this->year,
+            'artists' => $this->artists ?? []
         ];
     }
 }

@@ -20,9 +20,14 @@ return new class extends Migration
         Schema::create('albums', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('artist_id')->nullable();
             $table->integer('year')->nullable();
             $table->timestamps();
+        });
+
+        Schema::create('album_artist', function (Blueprint $table) {
+            $table->foreignId('album_id');
+            $table->foreignId('artist_id');
+            $table->integer('artist_order');
         });
 
         Schema::create('playlists', function (Blueprint $table) {
@@ -34,7 +39,6 @@ return new class extends Migration
         Schema::create('tracks', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->foreignId('artist_id')->nullable();
             $table->integer('duration');
             $table->bigInteger('size');
             $table->integer('bitrate')->nullable();
@@ -48,6 +52,12 @@ return new class extends Migration
             $table->timestamp('scanned_at');
             // Standard timestamp. If we ever implement db modifications, this would be useful.
             $table->timestamps();
+        });
+
+        Schema::create('track_artist', function (Blueprint $table) {
+            $table->foreignId('track_id');
+            $table->foreignId('artist_id');
+            $table->integer('artist_order');
         });
 
         Schema::create('cover_art', function (Blueprint $table) {

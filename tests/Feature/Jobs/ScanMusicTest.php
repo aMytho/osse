@@ -3,7 +3,6 @@
 namespace Tests\Feature\Jobs;
 
 use App\Jobs\ScanMusic;
-use App\Models\Track;
 use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
@@ -40,6 +39,7 @@ class ScanMusicTest extends TestCase
         $this->assertDatabaseHas('tracks', ['title' => 'test_no_metadata.mp3']);
     }
 
+    #[Group('idk')]
     public function test_metadata_is_picked_up(): void
     {
         // These files have metadata
@@ -56,17 +56,27 @@ class ScanMusicTest extends TestCase
         // Test title was picked up.
         $this->assertDatabaseHas('tracks', [
             'title' => 'track_one',
-            'artist_id' => 1,
             'album_id' => 1,
             'track_number' => 1,
             'disc_number' => 1,
         ]);
         $this->assertDatabaseHas('tracks', [
             'title' => 'track_two',
-            'artist_id' => 1,
             'album_id' => 1,
             'track_number' => 2,
             'disc_number' => 1,
+        ]);
+        $this->assertDatabaseHas('track_artist', [
+            'artist_id' => 1,
+            'track_id' => 1,
+        ]);
+        $this->assertDatabaseHas('track_artist', [
+            'artist_id' => 1,
+            'track_id' => 2,
+        ]);
+        $this->assertDatabaseHas('album_artist', [
+            'album_id' => 1,
+            'artist_id' => 1
         ]);
     }
 
@@ -119,7 +129,6 @@ class ScanMusicTest extends TestCase
         $this->assertEquals(count(Storage::disk('local')->files('cover-art')), 1);
     }
 
-    #[Group('current')]
     public function test_track_covers_are_deleted_when_track_is_deleted(): void
     {
         $this->mockStorage();
@@ -150,4 +159,7 @@ class ScanMusicTest extends TestCase
         $this->expectException(DirectoryNotFoundException::class);
         ScanMusic::dispatchSync();
     }
+
+    // Test inserting a file, scan, then change it, then scan again.
+    // Prob need to delete it during that.
 }

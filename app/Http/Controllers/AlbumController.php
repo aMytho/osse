@@ -12,7 +12,7 @@ class AlbumController extends Controller
     public function index(Request $request)
     {
         if ($request->get('tracks') == true) {
-            $albums = Album::with(['tracks', 'tracks.artist', 'artist'])->get();
+            $albums = Album::with(['tracks', 'tracks.artists', 'artists'])->get();
         } else {
             $albums =  Album::all();
         }
@@ -23,7 +23,7 @@ class AlbumController extends Controller
     public function show(Album $album, Request $request)
     {
         if ($request->get('tracks') == true) {
-            $album->load('tracks');
+            $album->load(['tracks', 'tracks.artists', 'artists']);
         }
 
         return new AlbumResponse($album);

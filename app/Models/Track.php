@@ -4,8 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use albums;
-use artists;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Track extends Model
 {
@@ -30,11 +29,13 @@ class Track extends Model
     }
 
     /**
-     * @return BelongsTo<artists,Track>
-     */
-    public function artist(): BelongsTo
+    * The artists for the track.
+    */
+    public function artists(): BelongsToMany
     {
-        return $this->belongsTo(Artist::class);
+        return $this->belongsToMany(Artist::class, 'track_artist')
+            ->withPivot('artist_order')
+            ->orderBy('artist_order');
     }
 
     /**
@@ -53,7 +54,7 @@ class Track extends Model
         return !is_null($this->cover_art_id);
     }
 
-    public function getCoverUrl()
+    public function getCoverUrl(): string
     {
         return 'cover-art/' . $this->coverArt?->hash;
     }
