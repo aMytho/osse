@@ -13,14 +13,14 @@ class RegistrationCheckTest extends TestCase
     public function test_when_registration_closed_users_cant_be_created(): void
     {
         config(['auth.allow_registration' => false]);
-        $response = $this->post('/api/register', ['username' => 'osse2', 'password' => 'abc123'])
+        $response = $this->post('register', ['username' => 'osse2', 'password' => 'abc123'])
             ->assertForbidden();
     }
 
     public function test_when_registration_allowed_users_can_be_created(): void
     {
         config(['auth.allow_registration' => true]);
-        $response = $this->post('/api/register', ['username' => 'osse2', 'password' => 'abc123'])
+        $response = $this->post('register', ['username' => 'osse2', 'password' => 'abc123'])
             ->assertCreated();
     }
 }

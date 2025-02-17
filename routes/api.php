@@ -7,17 +7,10 @@ use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\ScanController;
-use App\Http\Middleware\RegistrationCheck;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', [ConfigController::class, 'ping']);
-
-// Auth routes.
-Route::post('/register', [AuthController::class, 'register'])->middleware(RegistrationCheck::class);
-// This route is different than the web /login redirect.
-
 Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
-
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {

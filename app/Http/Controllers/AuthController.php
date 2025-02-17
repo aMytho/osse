@@ -11,12 +11,18 @@ class AuthController extends Controller
   public function register(Request $request)
   {
     $credentials = $request->validate([
-      'username' => 'required|string',
+      'username' => 'required|string|unique:users',
       'password' => 'required|string'
     ]);
 
     $user = new User($credentials);
     $user->save();
+
+    if (Auth::attempt($credentials)) {
+      $request->session()->regenerate();
+
+      return response()->json(['message' => 'Account Created'], 201);
+    }
 
     return response(status: 201);
   }
