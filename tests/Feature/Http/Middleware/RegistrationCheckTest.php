@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Http\Middleware;
 
-use App\Models\User;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 

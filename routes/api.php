@@ -36,5 +36,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tracks/{track}/stream', [TrackController::class, 'stream']);
     Route::get('/tracks/{track}/cover', [TrackController::class, 'cover']);
 
+    Route::get('/scan', [ScanController::class, 'progress'])->name('scan.status');
     Route::post('/scan', [ScanController::class, 'startScan'])->name('scan.start');
 });

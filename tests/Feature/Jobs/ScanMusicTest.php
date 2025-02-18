@@ -39,7 +39,6 @@ class ScanMusicTest extends TestCase
         $this->assertDatabaseHas('tracks', ['title' => 'test_no_metadata.mp3']);
     }
 
-    #[Group('idk')]
     public function test_metadata_is_picked_up(): void
     {
         // These files have metadata
