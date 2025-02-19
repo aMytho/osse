@@ -1,0 +1,53 @@
+name: Build and Package Osse with FrankenPHP
+
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Backend Repository
+        uses: actions/checkout@v4
+
+      - name: Checkout Frontend Repository
+        uses: actions/checkout@v4
+        with:
+          repository: amytho/osse-web
+          path: frontend
+
+      - name: Install Node.js and Dependencies
+        working-directory: frontend
+        run: |
+          corepack enable
+          npm install
+          npm run build
+
+      - name: Move Frontend to Laravel Public Directory
+        run: mv frontend/dist/* public/osse-web
+
+      - name: Generate Environment Configurations
+        run: |
+          cp .env.example .env
+          sed -i'' -e 's/^APP_ENV=.*/APP_ENV=production/' -e 's/^APP_DEBUG=.*/APP_DEBUG=false/' .env
+
+      - name: Destroy Development Files
+        run: |
+          rm -Rf tests/
+          rm -Rf .git
+          rm -Rf .github
+          rm -Rf .vscode
+
+      - name: Build Dockerfile
+        run: |
+          docker build -t static-laravel-app  -f .static-build.Dockerfile
+          docker cp $(docker create --name static-laravel-app-tmp static-laravel-app):/go/src/app/dist/frankenphp-linux-x86_64 osse ; docker rm static-laravel-app-tmp
+
+      - name: Upload FrankenPHP Executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: osse
+          compression-level: 9
+          path: |
+            osse
+            production-setup.sh
