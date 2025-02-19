@@ -29,8 +29,8 @@ return [
     'servers' => [
 
         'reverb' => [
-            'host' => env('REVERB_SERVER_HOST', '0.0.0.0'),
-            'port' => env('REVERB_SERVER_PORT', 8080),
+            'host' => env('OSSE_HOST', env('REVERB_SERVER_HOST', '0.0.0.0')),
+            'port' => env('OSSE_REVERB_PORT', env('REVERB_SERVER_PORT', 8080) ),
             'hostname' => env('REVERB_HOST'),
             'options' => [
                 'tls' => [],
@@ -75,10 +75,10 @@ return [
                 'secret' => env('REVERB_APP_SECRET'),
                 'app_id' => env('REVERB_APP_ID'),
                 'options' => [
-                    'host' => env('REVERB_HOST'),
-                    'port' => env('REVERB_PORT', 443),
-                    'scheme' => env('REVERB_SCHEME', 'https'),
-                    'useTLS' => env('REVERB_SCHEME', 'https') === 'https',
+                    'host' => env('OSSE_HOST', env('REVERB_HOST', '0.0.0.0')),
+                    'port' => env('OSSE_REVERB_PORT', env('REVERB_SERVER_PORT', 8080)),
+                    'scheme' => env('OSSE_PROTOCOL', env('REVERB_SCHEME', 'http')),
+                    'useTLS' => env('OSSE_PROTOCOL', env('REVERB_SCHEME', 'http')) === 'https',
                 ],
                 'allowed_origins' => ['*'],
                 'ping_interval' => env('REVERB_APP_PING_INTERVAL', 60),

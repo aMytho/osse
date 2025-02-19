@@ -156,7 +156,7 @@ return [
     |
     */
 
-    'domain' => env('SESSION_DOMAIN', '.localhost'),
+    'domain' => env('OSSE_HOST') ? '.' . env('OSSE_HOST') : env('SESSION_DOMAIN', '.localhost'),
 
     /*
     |--------------------------------------------------------------------------

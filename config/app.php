@@ -123,5 +123,5 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    'client_url' => (env('clientUseHttps', false) ? 'https://' : 'http://') . env('clientHostAndPort', 'localhost:4200')
+    'client_url' => (env('clientUseHttps', false) ? 'https://' : 'http://') . env('clientHostAndPort', 'localhost:4200'),
 ];

@@ -5,7 +5,7 @@
 }
 
 # Serve the angular frontend
-:80 {
+{$OSSE_URL_SERVER} {
 	root * public/dist/browser/
 	encode zstd gzip
 	try_files {path} /index.html
@@ -13,7 +13,7 @@
 }
 
 # The domain name of your server
-:443 {
+{$OSSE_URL_SERVER_SECURE} {
 	root * public/dist/browser/
 	encode zstd br gzip
 	try_files {path} /index.html
@@ -21,7 +21,7 @@
 }
 
 # Serve the laravel API
-:9000 {
+{$OSSE_URL_API} {
 	# Set the webroot to the public/ directory
 	root * public/
 	# Enable compression
@@ -33,7 +33,7 @@
 }
 
 # Serve the laravel API (securely)
-:9001 {
+{$OSSE_URL_API_SECURE} {
 	# Set the webroot to the public/ directory
 	root * public/
 	# Enable compression
@@ -44,6 +44,3 @@
 	}
 }
 
-192.168.1.104 {
-	reverse_proxy localhost
-}

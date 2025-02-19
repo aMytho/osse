@@ -62,7 +62,9 @@ class AuthController extends Controller
     return response()->json([
       'id' => $user->id,
       'username' => $user->username,
-      'broadcastKey' => config('reverb.apps.apps.0.key')
+      'broadcastKey' => config('reverb.apps.apps.0.key'),
+      'broadcastHost' => config('reverb.apps.apps.0.options.host'),
+      'broadcastPort' => config('reverb.apps.apps.0.options.port')
     ]);
   }
 }
