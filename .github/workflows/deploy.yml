@@ -41,7 +41,7 @@ jobs:
       - name: Build Dockerfile
         run: |
           docker build -t static-laravel-app -f static-build.Dockerfile .
-          docker cp $(docker create --name static-laravel-app-tmp static-laravel-app):/go/src/app/dist/frankenphp-linux-x86_64 osse ; docker rm static-laravel-app-tmp
+          docker cp $(docker create --name static-laravel-app-tmp static-laravel-app):/go/src/app/dist/frankenphp-linux-x86_64 frankenphp ; docker rm static-laravel-app-tmp
 
       - name: Upload FrankenPHP Executable
         uses: actions/upload-artifact@v4
@@ -49,5 +49,5 @@ jobs:
           name: osse
           compression-level: 9
           path: |
-            osse
+            frankenphp
             production-setup.sh

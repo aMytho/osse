@@ -42,11 +42,11 @@ echo 'Server URLs'
 echo $OSSE_URL_API \n $OSSE_URL_API_SECURE \n $OSSE_URL_SERVER \n $OSSE_URL_SERVER_SECURE
 
 # Loads the new env variables
-osse php-cli artisan config:cache
+frankenphp php-cli artisan config:cache
 # Run migrations
-osse php-cli artisan migrate
+frankenphp php-cli artisan migrate
 
 # Starts osse. We run the queue (scan jobs), Reverb (websockets), and Laravel.
 trap 'kill %1; kill %2' SIGINT
-osse php-cli artisan queue:work --tries=3 --timeout=0 | tee 1.log | sed -e 's/^/[Osse Queue] /' & osse php-cli artisan reverb:start | tee 2.log | sed -e 's/^/[Osse Reverb] /' & sudo -E osse run | tee 3.log | sed -e 's/^/[Osse] /'
+frankenphp php-cli artisan queue:work --tries=3 --timeout=0 | tee 1.log | sed -e 's/^/[Osse Queue] /' & frankenphp php-cli artisan reverb:start | tee 2.log | sed -e 's/^/[Osse Reverb] /' & sudo -E frankenphp run | tee 3.log | sed -e 's/^/[Osse] /'
 # This method of starting multiple commands was from this lovely person https://unix.stackexchange.com/a/204619 - Thanks!
