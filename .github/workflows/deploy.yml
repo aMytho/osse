@@ -26,28 +26,39 @@ jobs:
       - name: Move Frontend to Laravel Public Directory
         run: mv frontend/dist/* public/osse-web
 
+        # Run osse in production with default config options.
       - name: Generate Environment Configurations
         run: |
           cp .env.example .env
           sed -i'' -e 's/^APP_ENV=.*/APP_ENV=production/' -e 's/^APP_DEBUG=.*/APP_DEBUG=false/' .env
 
+        # Destroy files that are not needed in production to save space.
       - name: Destroy Development Files
         run: |
           rm -Rf tests/
           rm -Rf .git
           rm -Rf .github
           rm -Rf .vscode
+          rm -Rf .node_modules
 
+        # Build the static executable using the frankenphp dockerfile.
       - name: Build Dockerfile
         run: |
           docker build -t static-laravel-app -f static-build.Dockerfile .
           docker cp $(docker create --name static-laravel-app-tmp static-laravel-app):/go/src/app/dist/frankenphp-linux-x86_64 frankenphp ; docker rm static-laravel-app-tmp
 
+      # Rename files to be more clear about their usage
+      - name: Rename Files
+        run: |
+          mv frakenphp osse
+          mv production-setup.sh osse.sh
+
+        # Upload the files to the action so I can add them to a release.
       - name: Upload FrankenPHP Executable
         uses: actions/upload-artifact@v4
         with:
           name: osse
-          compression-level: 9
+          compression-level: 0 # The server executable is already compressed.
           path: |
-            frankenphp
-            production-setup.sh
+            osse
+            osse.sh

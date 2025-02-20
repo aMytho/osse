@@ -28,25 +28,50 @@ export OSSE_API_PORT_SECURE=9001
 # This port is used for websockets (Laravel Reverb) over WS or WSS
 export OSSE_REVERB_PORT=9003
 
-# Set storage paths and DB location.
+# Set storage path for logs and cache.
 export LARAVEL_STORAGE_PATH="~/.osse/storage"
+# Set the path to the database.
 export DB_DATABASE="~/.osse/osse.sqlite"
 
-# Do not edit anything below this line! ----------------------------------------------------------------
+# Set osse executable location. By default, it is with this shell script. If you move it, update the location.
+OSSE_EXECUTABLE="osse"
+
+# Do not edit anything below this line! ------------------------------- If you made it this far, you can run the script!
+
+# Set the envs for caddy
 export OSSE_URL_SERVER="http://${OSSE_HOST}:${OSSE_SERVER_PORT}"
 export OSSE_URL_SERVER_SECURE="https://${OSSE_HOST}:${OSSE_SERVER_PORT_SECURE}"
 export OSSE_URL_API="http://${OSSE_HOST}:${OSSE_API_PORT}"
 export OSSE_URL_API_SECURE="https://${OSSE_HOST}:${OSSE_API_PORT_SECURE}"
 
-echo 'Server URLs'
-echo $OSSE_URL_API \n $OSSE_URL_API_SECURE \n $OSSE_URL_SERVER \n $OSSE_URL_SERVER_SECURE
+# Evaluate filepaths
+eval "OSSE_EXECUTABLE=$OSSE_EXECUTABLE"
+eval "LARAVEL_STORAGE_PATH=$LARAVEL_STORAGE_PATH"
+eval "DB_DATABASE=$DB_DATABASE"
+
+# Make the storage/cache/database if they don't exist.
+mkdir $LARAVEL_STORAGE_PATH -p
+mkdir "$(dirname "$DB_DATABASE")" -p
+touch "$DB_DATABASE"
+
+# Ask for sudo now, since the command output can make it appear as though the password input was missed.
+echo 'Starting Osse...'
+sudo -v
+
+# Check if the server is executable, and make it executable if it's not.
+if [[ ! -x "$OSSE_EXECUTABLE" ]]; then  # Check if the file is NOT executable
+  echo "Osse is not executable. Making it executable."
+  sudo chmod +x "$OSSE_EXECUTABLE"  # Grant execute permission.
+fi
 
 # Loads the new env variables
-frankenphp php-cli artisan config:cache
+"$OSSE_EXECUTABLE" php-cli artisan config:cache
 # Run migrations
-frankenphp php-cli artisan migrate
+"$OSSE_EXECUTABLE" php-cli artisan migrate
+
+echo 'Server will be available on $OSSE_URL_SERVER and $OSSE_URL_SERVER_SECURE (if https enabled)'
 
 # Starts osse. We run the queue (scan jobs), Reverb (websockets), and Laravel.
 trap 'kill %1; kill %2' SIGINT
-frankenphp php-cli artisan queue:work --tries=3 --timeout=0 | tee 1.log | sed -e 's/^/[Osse Queue] /' & frankenphp php-cli artisan reverb:start | tee 2.log | sed -e 's/^/[Osse Reverb] /' & sudo -E frankenphp run | tee 3.log | sed -e 's/^/[Osse] /'
+"$OSSE_EXECUTABLE" php-cli artisan queue:work --tries=3 --timeout=0 | tee 1.log | sed -e 's/^/[Osse Queue] /' & "$OSSE_EXECUTABLE" php-cli artisan reverb:start | tee 2.log | sed -e 's/^/[Osse Reverb] /' & sudo -E "$OSSE_EXECUTABLE" php-server | tee 3.log | sed -e 's/^/[Osse] /'
 # This method of starting multiple commands was from this lovely person https://unix.stackexchange.com/a/204619 - Thanks!

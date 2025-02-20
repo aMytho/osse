@@ -16,4 +16,4 @@ RUN php artisan key:generate
 
 # Build the static binary
 WORKDIR /go/src/app/
-RUN EMBED=dist/app/ PHP_VERSION=8.4.4 PHP_EXTENSIONS=apcu,bcmath,calendar,ctype,curl,dom,exif,fileinfo,filter,gd,iconv,intl,mbregex,mbstring,opcache,openssl,pcntl,pdo,phar,posix,readline,redis,session,sockets,sodium,sqlite3,ssh2,tokenizer,uuid,xml,xsl,yaml,zip,zlib,zstd PHP_EXTENSION_LIBS=bzip2,freetype,libavif,libjpeg,liblz4,libwebp,libzip,curl,icu,libiconv,libpng,libsodium,libxml2,openssl,postgresql,readline,zlib,zstd,onig,libxslt,libssh2,nghttp2 ./build-static.sh
+RUN EMBED=dist/app/ PHP_VERSION=8.4.4 PHP_EXTENSIONS=apcu,bcmath,calendar,ctype,curl,dom,exif,fileinfo,filter,gd,iconv,intl,mbregex,mbstring,opcache,openssl,pcntl,pdo,pdo_sqlite,phar,posix,readline,redis,session,sockets,sodium,sqlite3,ssh2,tokenizer,uuid,xml,xsl,yaml,zip,zlib,zstd PHP_EXTENSION_LIBS=bzip2,freetype,libavif,libjpeg,liblz4,libwebp,libzip,curl,icu,libiconv,libpng,libsodium,libxml2,openssl,postgresql,readline,zlib,zstd,onig,libxslt,libssh2,nghttp2 ./build-static.sh

@@ -1,7 +1,6 @@
 {
 	frankenphp
 	auto_https disable_redirects
-	debug
 }
 
 # Serve the angular frontend
