@@ -123,5 +123,8 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    'client_url' => (env('clientUseHttps', false) ? 'https://' : 'http://') . env('clientHostAndPort', 'localhost:4200'),
+    //TODO: This should use the same env for dev as production.
+    'client_url' => env('APP_ENV', 'production') == 'production' ?
+        (env('OSSE_PROTOCOL', 'http') == 'http' ? 'http://' : 'https://') . env('OSSE_HOST', 'localhost') . ':' . ((env('OSSE_PROTOCOL', 'http') == 'http') ? env('OSSE_SERVER_PORT', 80) : env('OSSE_SERVER_PORT_SECURE', 443))
+        : (env('clientUseHttps', false) ? 'https://' : 'http://') . env('clientHostAndPort', 'localhost:4200'),
 ];

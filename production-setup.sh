@@ -32,9 +32,14 @@ export OSSE_REVERB_PORT=9003
 export LARAVEL_STORAGE_PATH="~/.osse/storage"
 # Set the path to the database.
 export DB_DATABASE="~/.osse/osse.sqlite"
-
 # Set osse executable location. By default, it is with this shell script. If you move it, update the location.
 OSSE_EXECUTABLE="osse"
+
+# The paths to scan for music. See examples below. Only absolute paths are supported (no ~ or env vars). Separate directories with comma.
+export OSSE_DIRECTORIES=""
+# export OSSE_DIRECTORIES="/home/me/Music,/mnt/server1/files"
+# If true, allow new accounts to be created. Once you make your account, set this to false.
+export allowRegistration=true
 
 # Do not edit anything below this line! ------------------------------- If you made it this far, you can run the script!
 

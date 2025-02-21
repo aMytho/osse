@@ -115,5 +115,5 @@ return [
     /*
     * Allow new users to register.
     */
-    'allow_registration' => env('allowRegistration', true),
+    'allow_registration' => env('OSSE_ALLOW_REGISTRATION', true),
 ];

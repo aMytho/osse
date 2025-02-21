@@ -1,5 +1,5 @@
 <?php
 
 return [
-    "directories" => explode(',', env('directories', ''))
+    "directories" => explode(',', env('OSSE_DIRECTORIES', ''))
 ];

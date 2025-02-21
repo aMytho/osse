@@ -72,9 +72,9 @@ clientHostAndPort="localhost:4200" # no ending slash. Include port.
 
 ### Adding Music
 
-You need to tell Osse where your music library is. You can provide a comma separated list of directories in the .env file for the `directories` entry. See below example.
+You need to tell Osse where your music library is. You can provide a comma separated list of directories in the .env file for the `OSSE_DIRECTORIES` entry. See below example.
 
-`directories="/mnt/laptop-music/my-folder,/mnt/laptop-music/my-other-folder,/home/myuser/Music"`
+`OSSE_DIRECTORIES="/mnt/laptop-music/my-folder,/mnt/laptop-music/my-other-folder,/home/myuser/Music"`
 
 **You must provide an absolute path for each directory**. Osse will scan subdirectories recursively. If you store your music in a top level music folder, simply point Osse to it and it will scan all of the files.
 
