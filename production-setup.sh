@@ -33,7 +33,7 @@ export LARAVEL_STORAGE_PATH="~/.osse/storage"
 # Set the path to the database.
 export DB_DATABASE="~/.osse/osse.sqlite"
 # Set osse executable location. By default, it is with this shell script. If you move it, update the location.
-OSSE_EXECUTABLE="osse"
+OSSE_EXECUTABLE="./osse"
 
 # The paths to scan for music. See examples below. Only absolute paths are supported (no ~ or env vars). Separate directories with comma.
 export OSSE_DIRECTORIES=""
@@ -74,7 +74,7 @@ fi
 # Run migrations
 "$OSSE_EXECUTABLE" php-cli artisan migrate
 
-echo 'Server will be available on $OSSE_URL_SERVER and $OSSE_URL_SERVER_SECURE (if https enabled)'
+echo "Server will be available on $OSSE_URL_SERVER and $OSSE_URL_SERVER_SECURE (if https enabled)"
 
 # Starts osse. We run the queue (scan jobs), Reverb (websockets), and Laravel.
 trap 'kill %1; kill %2' SIGINT
