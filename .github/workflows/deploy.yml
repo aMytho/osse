@@ -24,7 +24,7 @@ jobs:
           npm run build
 
       - name: Move Frontend to Laravel Public Directory
-        run: mv frontend/dist/* public/osse-web
+        run: mv frontend/dist/* public/dist
 
         # Run osse in production with default config options.
       - name: Generate Environment Configurations
