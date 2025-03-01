@@ -28,8 +28,8 @@ export OSSE_API_PORT_SECURE=9001
 # This port is used for websockets (Laravel Reverb) over WS or WSS
 export OSSE_REVERB_PORT=9003
 
-# Set storage path for logs and cache.
-export LARAVEL_STORAGE_PATH="~/.osse/storage"
+# Set storage path for logs and cache. The DB is also here, but you can move it with the below env variable.
+export LARAVEL_STORAGE_PATH="~/.osse"
 # Set the path to the database.
 export DB_DATABASE="~/.osse/osse.sqlite"
 # Set osse executable location. By default, it is with this shell script. If you move it, update the location.
@@ -56,6 +56,10 @@ eval "DB_DATABASE=$DB_DATABASE"
 
 # Make the storage/cache/database if they don't exist.
 mkdir $LARAVEL_STORAGE_PATH -p
+mkdir "$LARAVEL_STORAGE_PATH"/storage -p
+mkdir "$LARAVEL_STORAGE_PATH"/framework/cache -p
+mkdir "$LARAVEL_STORAGE_PATH"/framework/sessions -p
+mkdir "$LARAVEL_STORAGE_PATH"/framework/views -p
 mkdir "$(dirname "$DB_DATABASE")" -p
 touch "$DB_DATABASE"
 
