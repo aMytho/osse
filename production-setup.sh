@@ -75,7 +75,11 @@ fi
 
 # Loads the new env variables
 "$OSSE_EXECUTABLE" php-cli artisan config:cache
+# Run optimizations
+echo 'Starting optimizations...'
+"$OSSE_EXECUTABLE" php-cli artisan optimize
 # Run migrations
+echo 'Running database migrations...'
 "$OSSE_EXECUTABLE" php-cli artisan migrate
 
 echo "Server will be available on $OSSE_URL_SERVER and $OSSE_URL_SERVER_SECURE (if https enabled)"
