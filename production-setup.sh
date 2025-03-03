@@ -86,5 +86,5 @@ echo "Server will be available on $OSSE_URL_SERVER and $OSSE_URL_SERVER_SECURE (
 
 # Starts osse. We run the queue (scan jobs), Reverb (websockets), and Laravel.
 trap 'kill %1; kill %2' SIGINT
-"$OSSE_EXECUTABLE" php-cli artisan queue:work --tries=3 --timeout=0 | tee 1.log | sed -e 's/^/[Osse Queue] /' & "$OSSE_EXECUTABLE" php-cli artisan reverb:start | tee 2.log | sed -e 's/^/[Osse Reverb] /' & sudo -E "$OSSE_EXECUTABLE" php-server | tee 3.log | sed -e 's/^/[Osse] /'
+"$OSSE_EXECUTABLE" php-cli artisan queue:work --tries=3 --timeout=0 | tee 1.log | sed -e 's/^/[Osse Queue] /' & "$OSSE_EXECUTABLE" php-cli artisan reverb:start | tee 2.log | sed -e 's/^/[Osse Reverb] /' & sudo -E "$OSSE_EXECUTABLE" run | tee 3.log | sed -e 's/^/[Osse] /'
 # This method of starting multiple commands was from this lovely person https://unix.stackexchange.com/a/204619 - Thanks!
