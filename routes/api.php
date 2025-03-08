@@ -29,6 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/playlists/{playlist}/tracks/{track}', [PlaylistController::class, 'addTrack']);
     Route::post('/playlists/{playlist}/track-set', [PlaylistController::class, 'addTracks']);
     Route::delete('/playlists/{playlist}/tracks/{track}', [PlaylistController::class, 'removeTrack']);
+    Route::delete('/playlists/{playlist}/track-set', [PlaylistController::class, 'removeTracks']);
 
     Route::get('/artists/{artist}', [ArtistController::class, 'show']);
 

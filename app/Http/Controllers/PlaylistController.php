@@ -67,4 +67,14 @@ class PlaylistController extends Controller
     {
         $playlist->tracks()->detach($track);
     }
+
+    public function removeTracks(Playlist $playlist, Request $request)
+    {
+        $validated = $request->validate([
+            'track-ids' => 'required|array',
+            'track-ids.*' => 'required|integer'
+        ]);
+
+        $playlist->tracks()->detach($validated['track-ids']);
+    }
 }
