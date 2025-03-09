@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TrackSearchRequest;
 use App\Models\Track;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TrackController extends Controller
 {
@@ -33,8 +35,71 @@ class TrackController extends Controller
     return response()->json($tracks);
   }
 
-  public function stream(Track $track)
+  public function stream(Track $track, Request $request)
   {
-    return response()->file($track->location);
+      set_time_limit(0);
+      $filePath = $track->location;
+
+      if (!file_exists($filePath)) {
+        return response()->json(['error' => 'File not found'], 404);
+      }
+
+      $fileSize = filesize($filePath);
+      $mimeType = mime_content_type($filePath);
+
+      $headers = [
+        'Content-Type' => $mimeType,
+        'Accept-Ranges' => 'bytes',
+        'Content-Length' => $fileSize,
+        'Cache-Control' => 'public, must-revalidate, max-age=0',
+      ];
+
+      if ($request->hasHeader('Range')) {
+        return $this->handleRangeRequest($request, $filePath, $fileSize, $mimeType);
+      }
+
+      return response()->stream(function () use ($filePath) {
+        readfile($filePath);
+      }, 200, $headers);
+  }
+
+  private function handleRangeRequest(Request $request, $filePath, $fileSize, $mimeType)
+  {
+      $range = $request->header('Range');
+      preg_match('/bytes=(\d+)-(\d+)?/', $range, $matches);
+
+      $start = intval($matches[1]);
+      $end = isset($matches[2]) ? intval($matches[2]) : $fileSize - 1;
+
+      if ($end >= $fileSize) {
+        $end = $fileSize - 1;
+      }
+
+      $length = $end - $start + 1;
+
+      $headers = [
+        'Content-Type' => $mimeType,
+        'Accept-Ranges' => 'bytes',
+        'Content-Length' => $length,
+        'Content-Range' => "bytes $start-$end/$fileSize",
+        'Cache-Control' => 'public, must-revalidate, max-age=0',
+      ];
+
+      $response = new StreamedResponse(function () use ($filePath, $start, $length) {
+        $file = fopen($filePath, 'rb');
+        fseek($file, $start);
+        $bytesLeft = $length;
+
+        while (!feof($file) && $bytesLeft > 0) {
+          $buffer = fread($file, min(8192, $bytesLeft));
+          echo $buffer;
+          flush();
+          $bytesLeft -= strlen($buffer);
+        }
+
+        fclose($file);
+      }, 206, $headers);
+
+      return $response;
   }
 }

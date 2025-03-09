@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # This is the script to run Osse. If you are trying to develop Osse, DO NOT use this script!
-# Feel free to change any of the .env variables below. If you make a change, restart osse for the changes to take affect.
-# Lines with # at the beginning are comments and are not read by the shell.
+# Feel free to change any of the .env variables below. If you make a change, restart osse for the changes to take effect.
+# Lines with # at the beginning are comments and are not used.
 
 # HTTPS support. Use one or the other (http or https), not both.
 export OSSE_PROTOCOL=http
@@ -12,7 +12,7 @@ export OSSE_PROTOCOL=http
 # For most users, this is localhost. To access the server, use http://localhost in your browser.
 # If you want to access Osse from a different device, change it to your local IP. This is usually something like 192.168.0.5
 # To access osse from another device, set the env and enter your local IP address in the address bar. You can access it from your server the same way. (localhost won't work anymore)
-# There is a commented out example. Only one host can be active at a time.
+# There are several commented out examples. Only one host can be active at a time.
 export OSSE_HOST=localhost
 # export OSSE_HOST=192.168.0.5
 #export OSSE_HOST=my-app.example.com
