@@ -1,6 +1,7 @@
 {
 	frankenphp
 	auto_https disable_redirects
+	admin off
 }
 
 # Serve the angular frontend
