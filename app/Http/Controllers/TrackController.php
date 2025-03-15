@@ -29,7 +29,7 @@ class TrackController extends Controller
       $tracks = Track::with('artists')
         ->where('title', 'like', '%' . $request->validated('track', '') . '%')
         ->skip($request->validated('track_offset', 0))
-        ->limit(25)
+        ->limit(75)
         ->get();
 
     return response()->json($tracks);
