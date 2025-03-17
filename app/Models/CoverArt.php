@@ -16,4 +16,9 @@ class CoverArt extends Model
     {
         return $this->hasMany(Track::class);
     }
+
+    public function getCoverLocation(): string
+    {
+        return 'cover-art/' . $this->hash;
+    }
 }

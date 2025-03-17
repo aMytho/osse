@@ -4,6 +4,7 @@ use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConfigController;
+use App\Http\Controllers\CoverArtController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\ScanController;
@@ -36,6 +37,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tracks/search', [TrackController::class, 'search']);
     Route::get('/tracks/{track}/stream', [TrackController::class, 'stream']);
     Route::get('/tracks/{track}/cover', [TrackController::class, 'cover']);
+
+    Route::get('/cover-art/{cover}', [CoverArtController::class, 'show']);
 
     Route::get('/scan', [ScanController::class, 'progress'])->name('scan.status');
     Route::post('/scan', [ScanController::class, 'startScan'])->name('scan.start');

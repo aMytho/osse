@@ -15,12 +15,16 @@ class TrackController extends Controller
     try {
       if ($track->hasCover()) {
         $track->load('coverArt');
-        return response()->make(content: Storage::get($track->getCoverUrl()))->header('Content-Type', $track->coverArt->mime_type);
+        return Storage::response($track->getCoverUrl())
+          ->setPublic()
+          ->setEtag($track->coverArt->hash)
+          ->setMaxAge(86400)
+          ->setLastModified($track->coverArt->updated_at);
       } else {
         return response()->make(status:404);
       }
     } catch (\Throwable $th) {
-      return response()->make(status:404);
+      return response()->make(status:500);
     }
   }
 
