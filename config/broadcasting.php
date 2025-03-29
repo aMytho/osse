@@ -30,6 +30,11 @@ return [
 
     'connections' => [
 
+        'redis' => [
+            'driver' => 'redis',
+            'connection' => 'default',
+        ],
+
         'reverb' => [
             'driver' => 'reverb',
             'key' => env('REVERB_APP_KEY'),
@@ -79,4 +84,7 @@ return [
 
     ],
 
+    'osse-broadcast' => [
+        'url' => env('OSSE_BROADCAST_HOST', 'localhost') . ':' .  env('OSSE_BROADCAST_PORT', 9003) . '/'
+    ],
 ];
