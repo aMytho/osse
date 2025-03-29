@@ -27,14 +27,16 @@ You will need the following tools installed:
 - PHP 8.4 with the PCNTL extension `/bin/bash -c "$(curl -fsSL https://php.new/install/linux/8.4)"`
 - NodeJS v22 https://nodejs.org/en
 - PNPM (optional, preferred over NPM) https://pnpm.io/installation
+- Go 1.24+ https://go.dev/
 
 > You may be able to run osse with older versions of the above software. However, the above configuration has been tested and proven to work.
 
-Clone this repository and the web client.
+Clone this repository, the web client, and the broadcast server.
 
 ```
 git clone https://github.com/amytho/osse
 git clone https://github.com/amytho/osse-web
+git clone https://github.com/amytho/osse-broadcast
 ```
 
 Start the server and the web frontend.
@@ -52,6 +54,15 @@ cd osse-web
 pnpm install
 pnpm start
 ```
+
+In another terminal window:
+```
+cd osse-broadcast
+chmod +x dev-run.sh
+./dev-run.sh
+```
+
+> Note: You may want to adjust the env vars in this setup script.
 
 Open the web frontend and login. http://localhost:4200
 

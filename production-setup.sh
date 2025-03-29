@@ -12,7 +12,7 @@ export OSSE_PROTOCOL=http
 # For most users, this is localhost. To access the server, use http://localhost in your browser.
 # If you want to access Osse from a different device, change it to your local IP. This is usually something like 192.168.0.5
 # To access osse from another device, set the env and enter your local IP address in the address bar. You can access it from your server the same way. (localhost won't work anymore)
-# There are several commented out examples. Only one host can be active at a time.
+# There are several commented out examples. Only one host can be active at a time. DO NOT add an ending slash.
 export OSSE_HOST=localhost
 # export OSSE_HOST=192.168.0.5
 #export OSSE_HOST=my-app.example.com
@@ -25,8 +25,11 @@ export OSSE_SERVER_PORT_SECURE=443
 export OSSE_API_PORT=9000
 # This port is used for the HTTPS API.
 export OSSE_API_PORT_SECURE=9001
-# This port is used for websockets (Laravel Reverb) over WS or WSS
-export OSSE_REVERB_PORT=9003
+# This port is used for SSE (server sent events) by osse-broadcast
+export OSSE_BROADCAST_PORT=9003
+
+# This is the host and port of the redis server. DO NOT include the redis:// protocol.
+export OSSE_REDIS_HOST="localhost:6379"
 
 # Set storage path for logs and cache. The DB is also here, but you can move it with the below env variable.
 export LARAVEL_STORAGE_PATH="~/.osse"
@@ -34,6 +37,9 @@ export LARAVEL_STORAGE_PATH="~/.osse"
 export DB_DATABASE="~/.osse/osse.sqlite"
 # Set osse executable location. By default, it is with this shell script. If you move it, update the location.
 OSSE_EXECUTABLE="./osse"
+# Set osse-broadcast executable location. Make sure you match your CPU arch. For most users, it is amd-64.
+OSSE_BROADCAST_EXECUTABLE="./osse-broadcast-linux-amd64"
+# OSSE_EXECUTABLE="./osse-broadcast-linux-arm64"
 
 # The paths to scan for music. See examples below. Only absolute paths are supported (no ~ or env vars). Separate directories with comma.
 export OSSE_DIRECTORIES=""
@@ -48,6 +54,14 @@ export OSSE_URL_SERVER="http://${OSSE_HOST}:${OSSE_SERVER_PORT}"
 export OSSE_URL_SERVER_SECURE="https://${OSSE_HOST}:${OSSE_SERVER_PORT_SECURE}"
 export OSSE_URL_API="http://${OSSE_HOST}:${OSSE_API_PORT}"
 export OSSE_URL_API_SECURE="https://${OSSE_HOST}:${OSSE_API_PORT_SECURE}"
+
+# Set the envs for osse-broadcast
+export OSSE_BROADCAST_HOST="${OSSE_PROTOCOL}://${OSSE_HOST}:${OSSE_BROADCAST_PORT}"
+if [ "${OSSE_PROTOCOL}" == "http" ]; then
+  export OSSE_ALLOWED_ORIGIN="${OSSE_HOST}:${OSSE_SERVER_PORT}"
+else
+  export OSSE_ALLOWED_ORIGIN="${OSSE_HOST}:${OSSE_SERVER_PORT_SECURE}"
+fi
 
 # Evaluate filepaths
 eval "OSSE_EXECUTABLE=$OSSE_EXECUTABLE"
@@ -86,5 +100,5 @@ echo "Server will be available on $OSSE_URL_SERVER and $OSSE_URL_SERVER_SECURE (
 
 # Starts osse. We run the queue (scan jobs), Reverb (websockets), and Laravel.
 trap 'kill %1; kill %2' SIGINT
-"$OSSE_EXECUTABLE" php-cli artisan queue:work --tries=3 --timeout=0 | tee 1.log | sed -e 's/^/[Osse Queue] /' & "$OSSE_EXECUTABLE" php-cli artisan reverb:start | tee 2.log | sed -e 's/^/[Osse Reverb] /' & sudo -E "$OSSE_EXECUTABLE" run | tee 3.log | sed -e 's/^/[Osse] /'
+"$OSSE_EXECUTABLE" php-cli artisan queue:work --tries=3 --timeout=0 | tee 1.log | sed -e 's/^/[Osse Queue] /' & "$OSSE_BROADCAST_EXECUTABLE" | tee 2.log | sed -e 's/^/[Osse Broadcast] /' & sudo -E "$OSSE_EXECUTABLE" run | tee 3.log | sed -e 's/^/[Osse] /'
 # This method of starting multiple commands was from this lovely person https://unix.stackexchange.com/a/204619 - Thanks!

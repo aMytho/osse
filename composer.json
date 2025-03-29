@@ -12,7 +12,6 @@
         "php": "^8.2",
         "kiwilan/php-audio": "^4.0",
         "laravel/framework": "^12.3",
-        "laravel/reverb": "^1.4",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10"
     },
@@ -55,7 +54,7 @@
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74,#bb7892\" \"php artisan serve --host 0.0.0.0\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan pail\" \"npm run dev\" \"php artisan reverb:start --debug\"  --names=server,queue,logs,vite,reverb"
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve --host 0.0.0.0\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan pail\" \"npm run dev\"  --names=server,queue,logs,vite"
         ]
     },
     "extra": {

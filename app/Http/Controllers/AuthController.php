@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -62,9 +64,24 @@ class AuthController extends Controller
     return response()->json([
       'id' => $user->id,
       'username' => $user->username,
-      'broadcastKey' => config('reverb.apps.apps.0.key'),
-      'broadcastHost' => config('reverb.apps.apps.0.options.host'),
-      'broadcastPort' => config('reverb.apps.apps.0.options.port')
     ]);
+  }
+
+  /**
+  * Give the user access to SSE by storing the user id in sse-access redis.
+  * The value is a random string which is sent as a mock-password.
+  * Its secure enough.
+  */
+  public function authorizeSSE()
+  {
+    $token = Str::random(25);
+    $id = Auth::user()->id;
+    $url = config('broadcasting.osse-broadcast.url') . 'sse';
+    // Give broadcast permission rights for 60 seconds. They have to connect in that window.
+    Redis::setex('sse_access:' . $id, 60, $token);
+
+    // Return the token and the user id.
+    // The user should know their ID, but the client side doesn't have a clean way to get that yet.
+    return response()->json(['token' => $token, 'userID' => $id, 'url' => $url]);
   }
 }

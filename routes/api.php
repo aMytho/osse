@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/ping', [ConfigController::class, 'ping']);
 Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::post('/sse', [AuthController::class, 'authorizeSSE'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/config/directories', [ConfigController::class, 'directories']);
