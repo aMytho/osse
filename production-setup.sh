@@ -58,9 +58,9 @@ export OSSE_URL_API_SECURE="https://${OSSE_HOST}:${OSSE_API_PORT_SECURE}"
 # Set the envs for osse-broadcast
 export OSSE_BROADCAST_HOST="${OSSE_PROTOCOL}://${OSSE_HOST}:${OSSE_BROADCAST_PORT}"
 if [ "${OSSE_PROTOCOL}" == "http" ]; then
-  export OSSE_ALLOWED_ORIGIN="${OSSE_URL_SERVER}"
+  export OSSE_ALLOWED_ORIGIN="${OSSE_HOST}:${OSSE_SERVER_PORT}"
 else
-  export OSSE_ALLOWED_ORIGIN="${OSSE_URL_SERVER_SECURE}"
+  export OSSE_ALLOWED_ORIGIN="${OSSE_HOST}:${OSSE_SERVER_PORT_SECURE}"
 fi
 
 # Evaluate filepaths
