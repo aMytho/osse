@@ -4,6 +4,7 @@
 # Feel free to change any of the .env variables below. If you make a change, restart osse for the changes to take effect.
 # Lines with # at the beginning are comments and are not used.
 
+
 # HTTPS support. Use one or the other (http or https), not both.
 export OSSE_PROTOCOL=http
 #export OSSE_PROTOCOL=https
@@ -15,7 +16,7 @@ export OSSE_PROTOCOL=http
 # There are several commented out examples. Only one host can be active at a time. DO NOT add an ending slash.
 export OSSE_HOST=localhost
 # export OSSE_HOST=192.168.0.5
-#export OSSE_HOST=my-app.example.com
+# export OSSE_HOST=my-app.example.com
 
 # This is the port Osse will serve the website from. 80 is the default because it isn't required to be entered into the URL bar.
 export OSSE_SERVER_PORT=80
@@ -25,7 +26,9 @@ export OSSE_SERVER_PORT_SECURE=443
 export OSSE_API_PORT=9000
 # This port is used for the HTTPS API.
 export OSSE_API_PORT_SECURE=9001
-# This port is used for SSE (server sent events) by osse-broadcast
+# This port is used for SSE (server sent events) by osse-broadcast. This port is used internally only.
+export OSSE_BROADCAST_INTERNAL_PORT=9002
+# This port will be externally available. Users will use this port to connect to osse-broadcast.
 export OSSE_BROADCAST_PORT=9003
 
 # This is the host and port of the redis server. DO NOT include the redis:// protocol.
@@ -37,7 +40,7 @@ export LARAVEL_STORAGE_PATH="~/.osse"
 export DB_DATABASE="~/.osse/osse.sqlite"
 # Set osse executable location. By default, it is with this shell script. If you move it, update the location.
 export OSSE_EXECUTABLE="./osse"
-# Set osse-broadcast executable location. Make sure you match your CPU arch. For most users, it is amd-64.
+# Set osse-broadcast executable location. Make sure you match your CPU arch. For most users, it is amd64.
 export OSSE_BROADCAST_EXECUTABLE="./osse-broadcast-linux-amd64"
 # export OSSE_BROADCAST_EXECUTABLE="./osse-broadcast-linux-arm64"
 
@@ -55,8 +58,10 @@ export OSSE_URL_SERVER_SECURE="https://${OSSE_HOST}:${OSSE_SERVER_PORT_SECURE}"
 export OSSE_URL_API="http://${OSSE_HOST}:${OSSE_API_PORT}"
 export OSSE_URL_API_SECURE="https://${OSSE_HOST}:${OSSE_API_PORT_SECURE}"
 
-# Set the envs for osse-broadcast
-export OSSE_BROADCAST_URL="${OSSE_PROTOCOL}://${OSSE_HOST}:${OSSE_BROADCAST_PORT}"
+# Set the envs for osse-broadcast. It is not made available externally. Caddy will reverse proxy the connection to allow access.
+export OSSE_BROADCAST_URL="localhost:${OSSE_BROADCAST_INTERNAL_PORT}"
+# This URL will be sent to clients as the public osse broadcast URL.
+export OSSE_BROADCAST_HOST="${OSSE_PROTOCOL}://${OSSE_HOST}:${OSSE_BROADCAST_PORT}"
 if [ "${OSSE_PROTOCOL}" == "http" ]; then
   export OSSE_ALLOWED_ORIGIN="${OSSE_HOST}:${OSSE_SERVER_PORT}"
 else

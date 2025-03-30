@@ -46,3 +46,9 @@
 	}
 }
 
+
+# Serve osse broadcast
+{$OSSE_BROADCAST_HOST} {
+    reverse_proxy localhost:{$OSSE_BROADCAST_INTERNAL_PORT}
+}
+
