@@ -36,10 +36,10 @@ export LARAVEL_STORAGE_PATH="~/.osse"
 # Set the path to the database.
 export DB_DATABASE="~/.osse/osse.sqlite"
 # Set osse executable location. By default, it is with this shell script. If you move it, update the location.
-OSSE_EXECUTABLE="./osse"
+export OSSE_EXECUTABLE="./osse"
 # Set osse-broadcast executable location. Make sure you match your CPU arch. For most users, it is amd-64.
-OSSE_BROADCAST_EXECUTABLE="./osse-broadcast-linux-amd64"
-# OSSE_EXECUTABLE="./osse-broadcast-linux-arm64"
+export OSSE_BROADCAST_EXECUTABLE="./osse-broadcast-linux-amd64"
+# export OSSE_BROADCAST_EXECUTABLE="./osse-broadcast-linux-arm64"
 
 # The paths to scan for music. See examples below. Only absolute paths are supported (no ~ or env vars). Separate directories with comma.
 export OSSE_DIRECTORIES=""
@@ -56,11 +56,15 @@ export OSSE_URL_API="http://${OSSE_HOST}:${OSSE_API_PORT}"
 export OSSE_URL_API_SECURE="https://${OSSE_HOST}:${OSSE_API_PORT_SECURE}"
 
 # Set the envs for osse-broadcast
-export OSSE_BROADCAST_HOST="${OSSE_PROTOCOL}://${OSSE_HOST}:${OSSE_BROADCAST_PORT}"
+export OSSE_BROADCAST_URL="${OSSE_PROTOCOL}://${OSSE_HOST}:${OSSE_BROADCAST_PORT}"
 if [ "${OSSE_PROTOCOL}" == "http" ]; then
   export OSSE_ALLOWED_ORIGIN="${OSSE_HOST}:${OSSE_SERVER_PORT}"
 else
   export OSSE_ALLOWED_ORIGIN="${OSSE_HOST}:${OSSE_SERVER_PORT_SECURE}"
+fi
+# Check if the port ends with 443 or 80 and remove the port from OSSE_ALLOWED_ORIGIN. Browsers remove it automatically so its a different origin.
+if [[ "${OSSE_ALLOWED_ORIGIN}" =~ :80$ || "${OSSE_ALLOWED_ORIGIN}" =~ :443$ ]]; then
+  OSSE_ALLOWED_ORIGIN="${OSSE_HOST}"
 fi
 
 # Evaluate filepaths

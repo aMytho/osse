@@ -28,6 +28,7 @@ You will need the following tools installed:
 - NodeJS v22 https://nodejs.org/en
 - PNPM (optional, preferred over NPM) https://pnpm.io/installation
 - Go 1.24+ https://go.dev/
+- Valkey 8+ (or Redis) https://valkey.io/topics/installation/
 
 > You may be able to run osse with older versions of the above software. However, the above configuration has been tested and proven to work.
 
@@ -43,8 +44,8 @@ Start the server and the web frontend.
 
 ```
 cd osse
-composer install
 cp .env.example .env
+composer install
 composer run dev
 ```
 

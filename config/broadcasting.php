@@ -85,6 +85,6 @@ return [
     ],
 
     'osse-broadcast' => [
-        'url' => env('OSSE_BROADCAST_HOST', 'localhost') . ':' .  env('OSSE_BROADCAST_PORT', 9003) . '/'
+        'url' => env('OSSE_BROADCAST_HOST', 'http://localhost:9003') . '/'
     ],
 ];
