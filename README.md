@@ -17,9 +17,27 @@ Osse is a free and open source music player and server. This repository is the *
 
 > Interested in helping us test? Use the below instructions for an installation.
 
-Both the server (this repo) and the web frontend must be installed.
 
-> When v1 releases, we will provide a standalone installer/executable to simplify this process. We will also provide docker images. Currently, you must manually install the projects and their dependencies.
+### Docker
+
+Docker is the recommended method of installation. You can also use Podman.
+
+Start by cloning the projects. This will install the Laravel API, Angular Frontend, and Go SSE Server.
+
+```
+git clone https://github.com/amytho/osse --recurse-submodules
+```
+
+Next, copy the `.env.docker` file to `.env`. Open the file and modify any values you wish.
+
+Next, run the project with Docker/Podman.
+
+```
+docker compose up
+```
+
+### Manual Installation
+Both the server (this repo), web frontend, and the broadcast server must be installed.
 
 You will need the following tools installed:
 
@@ -35,9 +53,7 @@ You will need the following tools installed:
 Clone this repository, the web client, and the broadcast server.
 
 ```
-git clone https://github.com/amytho/osse
-git clone https://github.com/amytho/osse-web
-git clone https://github.com/amytho/osse-broadcast
+git clone https://github.com/amytho/osse --recurse-submodules
 ```
 
 Start the server and the web frontend.
@@ -73,12 +89,7 @@ The default username is `osse` and the default password is `cassidor`.
 
 Configuration is stored in a .env file in the osse server repo. This file should have been created for you if you followed the above instructions.
 
-You shouldn't need to change anything if you are accessing this project from your current device. However, you should confirm that the client URL variables are set. Do not add a ending slash to the host. The below URL variables are the default that the web frontend will use.
-
-```
-clientUseHttps="false" # or true
-clientHostAndPort="localhost:4200" # no ending slash. Include port.
-```
+You shouldn't need to change anything if you are accessing this project from your current device. 
 
 > If you want to access the project from another device, adjust the cookie, session, and sanctum fields. We will provide examples before release.
 

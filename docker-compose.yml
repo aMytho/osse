@@ -1,0 +1,72 @@
+version: '3.8'
+
+# This is the docker/podman compose file. This is the easiest way to start osse.
+# The port, music directories, hostname, etc. can all be customized in the .env file.
+# If it does not yet exist, copy .env.example and name the copy .env.
+# You also need to pass your music directories.
+
+services:
+  valkey:
+    image: valkey/valkey:8.1-alpine3.21
+    restart: unless-stopped
+    ports:
+      - "9000:6379"
+    volumes:
+      - valkey_data:/data
+
+  osse:
+    build:
+      dockerfile: ./docker/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - .:/app # Copy the API
+      - ./empty:/app/osse-web # Don't copy osse-web or broadcast.
+      - ./empty:/app/osse-broadcast
+      - caddy_data:/data # TLS/SSL Certs
+      - caddy_config:/config # Caddy data
+      - osse_web:/app/public/dist # Copy the generated files from osse-web.
+      - "${OSSE_DIR_1}:/media/mnt:ro" # This mounts a local music folder into the directory. If no folder was chosen, Osse refuses to start.
+      # You can pass an empty folder if you just want to explore :)
+      # - "${OSSE_DIR_1:?error}:/media/mnt:ro" # This mounts a local music folder into the directory. Uncomment if used.
+      # - "${OSSE_DIR_1:?error}:/media/mnt:ro" # This mounts a local music folder into the directory. Uncomment if used.
+
+    env_file:
+      - path: ".env"
+    environment:
+      - OSSE_REDIS_HOST=localhost:6379
+      - OSSE_BROADCAST_URL=http://localhost:9003 # This should match the protocol/hostname/port in the osse_broadcast section.
+    depends_on:
+      - valkey
+      - osse_web
+    ports:
+      # The port of the left is publically available on the host. You can change the left port, but not the right port.
+      - "${OSSE_SERVER_PORT:?error}:${OSSE_SERVER_PORT}" # HTTP server
+      - "${OSSE_SERVER_PORT}:${OSSE_SERVER_PORT}/udp" # HTTPS/3
+      - "${OSSE_API_PORT:?error}:${OSSE_API_PORT}" # HTTP (API)
+    tty: true
+    command: ["sh", "/app/docker/entrypoint.sh"] # Run startup script
+
+  osse_broadcast:
+    build: ./osse-broadcast
+    restart: unless-stopped
+    environment:
+      - OSSE_REDIS_HOST=valkey:6379
+      - OSSE_BROADCAST_URL=localhost:9003
+      - OSSE_ALLOWED_ORIGIN=localhost
+    depends_on:
+      - valkey
+    ports:
+      - "9003:9003"
+
+  osse_web:
+    build: ./osse-web
+    volumes:
+      - osse_web:/app/dist
+
+volumes:
+  valkey_data:
+  caddy_data:
+  caddy_config:
+  osse:
+  osse_web:
+

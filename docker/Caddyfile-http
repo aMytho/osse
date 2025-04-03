@@ -6,20 +6,11 @@
 
 # Serve the angular frontend
 {$OSSE_URL_SERVER} {
-	root * public/dist/browser/
+	root * public/dist/osse-web/browser/
 	encode zstd gzip
 	try_files {path} /index.html
 	file_server
   header Set-Cookie "API_URL={$OSSE_URL_API}; Path=/; Max-Age=31536000; SameSite=Strict;"
-}
-
-# The domain name of your server
-{$OSSE_URL_SERVER_SECURE} {
-	root * public/dist/browser/
-	encode zstd br gzip
-	try_files {path} /index.html
-	file_server
-  header Set-Cookie "API_URL={$OSSE_URL_API_SECURE}; Path=/; Max-Age=31536000; SameSite=Strict; Secure;"
 }
 
 # Serve the laravel API
@@ -28,18 +19,6 @@
 	root * public/
 	# Enable compression
 	encode zstd gzip
-	# Execute PHP files from the public/ directory and serve assets
-	php_server {
-		try_files {path} index.php
-	}
-}
-
-# Serve the laravel API (securely)
-{$OSSE_URL_API_SECURE} {
-	# Set the webroot to the public/ directory
-	root * public/
-	# Enable compression
-	encode zstd br gzip
 	# Execute PHP files from the public/ directory and serve assets
 	php_server {
 		try_files {path} index.php
