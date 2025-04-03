@@ -6,3 +6,4 @@ RUN install-php-extensions redis
 # Generate encryption key and cache the views.
 RUN frankenphp php-cli artisan key:generate
 RUN frankenphp php-cli artisan view:cache
+RUN frankenphp php-cli artisan route:cache

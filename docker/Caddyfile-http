@@ -28,6 +28,6 @@
 
 # Serve osse broadcast
 {$OSSE_BROADCAST_HOST} {
-    reverse_proxy localhost:{$OSSE_BROADCAST_INTERNAL_PORT}
+    reverse_proxy {$OSSE_PROTOCOL}://{$OSSE_DOCKER_BROADCAST:localhost}:{$OSSE_BROADCAST_INTERNAL_PORT}
 }
 
