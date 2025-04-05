@@ -1,9 +1,6 @@
 #!/bin/bash
 
-# This is the script to run Osse. If you are trying to develop Osse, DO NOT use this script!
-# Feel free to change any of the .env variables below. If you make a change, restart osse for the changes to take effect.
-# Lines with # at the beginning are comments and are not used.
-
+# Script is used in docker production only. Don't modify anything here.
 
 # HTTPS support. Use one or the other (http or https), not both.
 export OSSE_PROTOCOL=http
@@ -20,12 +17,8 @@ export OSSE_HOST=localhost
 
 # This is the port Osse will serve the website from. 80 is the default because it isn't required to be entered into the URL bar.
 export OSSE_SERVER_PORT=80
-# This port is used for the HTTPS website.
-export OSSE_SERVER_PORT_SECURE=443
 # This port is used for the API
 export OSSE_API_PORT=9000
-# This port is used for the HTTPS API.
-export OSSE_API_PORT_SECURE=9001
 # This port is used for SSE (server sent events) by osse-broadcast. This port is used internally only.
 export OSSE_BROADCAST_INTERNAL_PORT=9002
 # This port will be externally available. Users will use this port to connect to osse-broadcast.
@@ -53,10 +46,15 @@ export allowRegistration=true
 # Do not edit anything below this line! ------------------------------- If you made it this far, you can run the script!
 
 # Set the envs for caddy
-export OSSE_URL_SERVER="http://${OSSE_HOST}:${OSSE_SERVER_PORT}"
-export OSSE_URL_SERVER_SECURE="https://${OSSE_HOST}:${OSSE_SERVER_PORT_SECURE}"
-export OSSE_URL_API="http://${OSSE_HOST}:${OSSE_API_PORT}"
-export OSSE_URL_API_SECURE="https://${OSSE_HOST}:${OSSE_API_PORT_SECURE}"
+export OSSE_URL_SERVER="${OSSE_PROTOCOL}://${OSSE_HOST}:${OSSE_SERVER_PORT}"
+export OSSE_URL_API="${OSSE_PROTOCOL}://${OSSE_HOST}:${OSSE_API_PORT}"
+
+# Choose the correct Caddyfile based on OSSE_PROTOCOL
+if [ "$OSSE_PROTOCOL" = "https" ]; then
+    export CADDYFILE="docker/Caddyfile-https"
+else
+    export CADDYFILE="docker/Caddyfile-http"
+fi
 
 # Set the envs for osse-broadcast. It is not made available externally. Caddy will reverse proxy the connection to allow access.
 export OSSE_BROADCAST_URL="localhost:${OSSE_BROADCAST_INTERNAL_PORT}"
@@ -109,5 +107,5 @@ echo "Server will be available on $OSSE_URL_SERVER and $OSSE_URL_SERVER_SECURE (
 
 # Starts osse. We run the queue (scan jobs), Reverb (websockets), and Laravel.
 trap 'kill %1; kill %2' SIGINT
-"$OSSE_EXECUTABLE" php-cli artisan queue:work --tries=3 --timeout=0 | tee 1.log | sed -e 's/^/[Osse Queue] /' & "$OSSE_BROADCAST_EXECUTABLE" | tee 2.log | sed -e 's/^/[Osse Broadcast] /' & sudo -E "$OSSE_EXECUTABLE" run | tee 3.log | sed -e 's/^/[Osse] /'
+"$OSSE_EXECUTABLE" php-cli artisan queue:work --tries=3 --timeout=0 | tee 1.log | sed -e 's/^/[Osse Queue] /' & "$OSSE_BROADCAST_EXECUTABLE" | tee 2.log | sed -e 's/^/[Osse Broadcast] /' & sudo -E "$OSSE_EXECUTABLE" run --config "$CADDYFILE" | tee 3.log | sed -e 's/^/[Osse] /'
 # This method of starting multiple commands was from this lovely person https://unix.stackexchange.com/a/204619 - Thanks!

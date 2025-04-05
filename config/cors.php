@@ -20,12 +20,12 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        (env('clientUseHttps', false) ? 'https://' : 'http://') . env('clientHostAndPort', 'localhost:4200'),
         // Development angular routes
         'http://localhost:4200',
         // Production Routes
         'http://' . env('OSSE_HOST', 'localhost'),
         'https://' . env('OSSE_HOST', 'localhost'),
+        env('OSSE_URL_SERVER', "http://localhost")
     ],
 
     'allowed_origins_patterns' => [],

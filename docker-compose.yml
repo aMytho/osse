@@ -1,0 +1,75 @@
+version: '3.8'
+
+# This is the docker/podman compose file. This is the easiest way to start osse.
+# The port, music directories, HOST, etc. can all be customized in the .env file.
+# If it does not yet exist, copy .env.example and name the copy .env.
+# Osse will fail to start if you skip that step.
+# You shouldn't need to edit this file, unless you pass in more than 1 music source.
+
+services:
+  valkey:
+    image: valkey/valkey:8.1-alpine3.21
+    restart: unless-stopped
+    ports:
+      - "9000:6379"
+    volumes:
+      - valkey_data:/data
+
+  osse:
+    build:
+      dockerfile: ./docker/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - .:/app # Copy the API
+      - ./empty:/app/osse-web # Don't copy osse-web or broadcast.
+      - ./empty:/app/osse-broadcast
+      - caddy_data:/data # TLS/SSL Certs
+      - caddy_config:/config # Caddy data
+      - osse_web:/app/public/dist # Copy the generated files from osse-web.
+      - "${OSSE_DIR_1}:/media/mnt:ro" # This mounts a local music folder into the directory.
+      # You can pass an empty folder if you just want to explore :)
+      # - "${OSSE_DIR_2}:/media/mnt:ro" # This mounts a local music folder into the directory. Uncomment if used.
+      # - "${OSSE_DIR_3}:/media/mnt:ro" # This mounts a local music folder into the directory. Uncomment if used.
+
+    env_file:
+      - path: ".env"
+    environment:
+      - OSSE_REDIS_HOST=localhost:6379
+      - "OSSE_BROADCAST_URL=${OSSE_PROTOCOL}://${OSSE_HOST}:${OSSE_BROADCAST_PORT}"
+    depends_on:
+      - valkey
+      - osse_web
+    ports:
+      # The port of the left is publically available on the host. The right is the internal port it maps to.
+      - "${OSSE_SERVER_PORT:?error}:${OSSE_SERVER_PORT}" # HTTP server
+      - "${OSSE_SERVER_PORT}:${OSSE_SERVER_PORT}/udp" # HTTPS/3
+      - "${OSSE_API_PORT:?error}:${OSSE_API_PORT}" # HTTP (API)
+      - "${OSSE_BROADCAST_PORT:?error}:${OSSE_BROADCAST_PORT}" # HTTP (SSE)
+    tty: true
+    command: ["sh", "/app/docker/entrypoint.sh"] # Run startup script
+
+  osse_broadcast:
+    build: ./osse-broadcast
+    restart: unless-stopped
+    environment:
+      - OSSE_REDIS_HOST=valkey:6379
+      - "OSSE_BROADCAST_URL=osse_broadcast:${OSSE_BROADCAST_INTERNAL_PORT}" # Osse runs on this internally.
+      - "OSSE_ALLOWED_ORIGIN=${OSSE_HOST}:${OSSE_SERVER_PORT}" # CORS URL
+    depends_on:
+      - valkey
+    expose:
+      - "${OSSE_BROADCAST_INTERNAL_PORT}" # Allow internal communication between osse and osse_web on this port.
+
+  osse_web:
+    build: ./osse-web
+    volumes:
+      - osse_web:/app/dist
+
+# Users can view any of these files outside the container.
+volumes:
+  valkey_data:
+  caddy_data:
+  caddy_config:
+  osse:
+  osse_web:
+
