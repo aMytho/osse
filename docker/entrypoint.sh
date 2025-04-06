@@ -44,7 +44,7 @@ if [ "$OSSE_RUN_SETUP" = "true" ]; then
     mkdir storage/framework/sessions -p
     mkdir storage/framework/views -p
 else
-  if [ ! -f "/tmp/osse_setup" ]; then
+  if [ ! -f "/app/storage/osse_setup" ]; then
     composer install --no-dev --optimize-autoloader
     frankenphp php-cli artisan key:generate --force
     frankenphp php-cli artisan view:cache
@@ -57,7 +57,7 @@ else
     mkdir storage/framework/views -p
 
     # Dont rerun command.
-    touch "/tmp/osse_setup"
+    touch "/app/storage/osse_setup"
   else
     echo "Setup already complete, skipping."
   fi
