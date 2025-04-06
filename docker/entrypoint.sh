@@ -31,7 +31,41 @@ export REDIS_HOST=valkey
 export REDIS_PASSWORD=null
 export REDIS_PORT=6379
 
+# Check if we need to run the setup.
+if [ "$OSSE_RUN_SETUP" = "true" ]; then
+    composer install --no-dev --optimize-autoloader
+    frankenphp php-cli artisan key:generate --force
+    frankenphp php-cli artisan view:cache
+    frankenphp php-cli artisan route:cache
+
+    # Make the storage/cache/database if they don't exist.
+    mkdir storage -p
+    mkdir storage/framework/cache -p
+    mkdir storage/framework/sessions -p
+    mkdir storage/framework/views -p
+else
+  if [ ! -f "/tmp/osse_setup" ]; then
+    composer install --no-dev --optimize-autoloader
+    frankenphp php-cli artisan key:generate --force
+    frankenphp php-cli artisan view:cache
+    frankenphp php-cli artisan route:cache
+
+    # Make the storage/cache/database if they don't exist.
+    mkdir storage -p
+    mkdir storage/framework/cache -p
+    mkdir storage/framework/sessions -p
+    mkdir storage/framework/views -p
+
+    # Dont rerun command.
+    touch "/tmp/osse_setup"
+  else
+    echo "Setup already complete, skipping."
+  fi
+fi
+
+
 # Cache the env and run migrations.
+# Generate encryption key and cache the views.
 frankenphp php-cli artisan config:cache
 frankenphp php-cli artisan migrate --force
 

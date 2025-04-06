@@ -11,7 +11,7 @@ services:
     image: valkey/valkey:8.1-alpine3.21
     restart: unless-stopped
     ports:
-      - "9000:6379"
+      - "${OSSE_REDIS_PORT}:6379"
     volumes:
       - valkey_data:/data
 
@@ -26,15 +26,15 @@ services:
       - caddy_data:/data # TLS/SSL Certs
       - caddy_config:/config # Caddy data
       - osse_web:/app/public/dist # Copy the generated files from osse-web.
-      - "${OSSE_DIR_1}:/media/mnt:ro" # This mounts a local music folder into the directory.
+      - "${OSSE_MUSIC_DIR_1}:/mnt/music:ro" # This mounts a local music folder into the directory.
       # You can pass an empty folder if you just want to explore :)
-      # - "${OSSE_DIR_2}:/media/mnt:ro" # This mounts a local music folder into the directory. Uncomment if used.
-      # - "${OSSE_DIR_3}:/media/mnt:ro" # This mounts a local music folder into the directory. Uncomment if used.
+      # - "${OSSE_MUSIC_DIR_2}:/media/mnt:ro" # This mounts a local music folder into the directory. Uncomment if used.
+      # - "${OSSE_MUSIC_DIR_3}:/media/mnt:ro" # This mounts a local music folder into the directory. Uncomment if used.
 
     env_file:
       - path: ".env"
     environment:
-      - OSSE_REDIS_HOST=localhost:6379
+      - OSSE_REDIS_HOST=valkey:6379
       - "OSSE_BROADCAST_URL=${OSSE_PROTOCOL}://${OSSE_HOST}:${OSSE_BROADCAST_PORT}"
     depends_on:
       - valkey
