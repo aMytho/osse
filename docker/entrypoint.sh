@@ -31,32 +31,28 @@ export REDIS_HOST=valkey
 export REDIS_PASSWORD=null
 export REDIS_PORT=6379
 
+function setup_osse () {
+  echo "Running osse setup"
+  composer install --no-dev --optimize-autoloader
+  frankenphp php-cli artisan key:generate --force
+  frankenphp php-cli artisan view:cache
+  frankenphp php-cli artisan route:cache
+
+  # Make the storage/cache/database if they don't exist.
+  mkdir storage -p
+  mkdir storage/framework/cache -p
+  mkdir storage/framework/sessions -p
+  mkdir storage/framework/views -p
+}
+
 # Check if we need to run the setup.
 if [ "$OSSE_RUN_SETUP" = "true" ]; then
-    composer install --no-dev --optimize-autoloader
-    frankenphp php-cli artisan key:generate --force
-    frankenphp php-cli artisan view:cache
-    frankenphp php-cli artisan route:cache
-
-    # Make the storage/cache/database if they don't exist.
-    mkdir storage -p
-    mkdir storage/framework/cache -p
-    mkdir storage/framework/sessions -p
-    mkdir storage/framework/views -p
+  setup_osse
 else
   if [ ! -f "/app/storage/osse_setup" ]; then
-    composer install --no-dev --optimize-autoloader
-    frankenphp php-cli artisan key:generate --force
-    frankenphp php-cli artisan view:cache
-    frankenphp php-cli artisan route:cache
+    setup_osse
 
-    # Make the storage/cache/database if they don't exist.
-    mkdir storage -p
-    mkdir storage/framework/cache -p
-    mkdir storage/framework/sessions -p
-    mkdir storage/framework/views -p
-
-    # Dont rerun command.
+    # Dont rerun setup.
     touch "/app/storage/osse_setup"
   else
     echo "Setup already complete, skipping."
