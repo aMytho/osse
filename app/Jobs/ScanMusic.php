@@ -67,6 +67,8 @@ class ScanMusic implements ShouldQueue, ShouldBeUnique
             if (!$this->allowedToRun()) {
                 // Emit the event and stop all execution. This won't delete what has been scanned, but no pruning will be done either. 
                 ScanCancelled::dispatch($directoryCounter);
+                // Allow future scans to run.
+                Cache::delete('scan_cancelled');
                 return;
             }
 

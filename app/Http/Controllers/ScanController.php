@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\ScanMusic;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
 
 class ScanController extends Controller
