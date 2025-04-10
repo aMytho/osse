@@ -2,8 +2,10 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Events\ScanCancelled;
 use App\Jobs\ScanMusic;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -42,7 +44,6 @@ class ScanControllerTest extends TestCase
 
     public function test_progress_works(): void
     {
-        // We need to run this job
         $this->mockEvents();
 
         Cache::spy();
@@ -66,4 +67,38 @@ class ScanControllerTest extends TestCase
                 'active' => false
             ]);
     }
+
+    public function test_cancel_works(): void
+    {
+        $this->mockEvents();
+        $this->runJobs();
+        $this->actingAs($this->user);
+
+        config(['scan.directories' => [base_path('tests/files/no_metadata')]]);
+
+        // We have to run the job in this thread so we can cancel after the job has been created.
+        // If a scans are cancelled before the job is ran, it is reset and the job runs normally.
+        $job = new ScanMusic();
+        $this->post(route('scan.cancel'));
+
+        // Check that the scan was cancelled.
+        $job->dispatchSync();
+        Event::assertDispatched(ScanCancelled::class);
+    }
+
+    public function test_cancel_wont_stop_new_scan()
+    {
+        $this->mockEvents();
+        $this->runJobs();
+        $this->actingAs($this->user);
+
+        config(['scan.directories' => [base_path('tests/files/no_metadata')]]);
+
+        $this->post(route('scan.cancel'));
+        $this->post(route('scan.start'));
+
+        // The scan shouldn't have been cancelled.
+        Event::assertNotDispatched(ScanCancelled::class);
+    }
+
 }

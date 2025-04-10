@@ -5,6 +5,7 @@ namespace Tests;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
@@ -44,7 +45,7 @@ abstract class TestCase extends BaseTestCase
     */
     public function mockEvents(): void
     {
-        config(['broadcasting.default' => null]);
+        Event::fake();
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\ScanCancelled;
 use App\Events\ScanFailed;
 use App\Services\MusicProcessor\ArtExtractor;
 use App\Services\MusicProcessor\MusicProcessor;
@@ -62,6 +63,13 @@ class ScanMusic implements ShouldQueue, ShouldBeUnique
         ScanStarted::dispatch($files->count());
 
         foreach ($files as $dir => $directoryGroup) {
+            // Check if the user cancelled the job mid-operation.
+            if (!$this->allowedToRun()) {
+                // Emit the event and stop all execution. This won't delete what has been scanned, but no pruning will be done either. 
+                ScanCancelled::dispatch($directoryCounter);
+                return;
+            }
+
             Log::info('Processing ' . $dir);
             $processor = new MusicProcessor($directoryGroup);
             $processor->scan();
@@ -93,5 +101,10 @@ class ScanMusic implements ShouldQueue, ShouldBeUnique
     public function failed(?Throwable $exception): void
     {
         ScanFailed::dispatch($exception?->getMessage() ?? 'Unknown Error');
+    }
+
+    private function allowedToRun(): bool
+    {
+        return !Cache::has('scan_cancelled');
     }
 }

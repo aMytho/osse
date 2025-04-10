@@ -43,4 +43,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/scan', [ScanController::class, 'progress'])->name('scan.status');
     Route::post('/scan', [ScanController::class, 'startScan'])->name('scan.start');
+    Route::post('/scan/cancel', [ScanController::class, 'cancel'])->name('scan.cancel');
 });
