@@ -22,10 +22,10 @@ class ScanMusic implements ShouldQueue, ShouldBeUnique
     use Queueable;
 
     /**
-    * Wait a max of 10 minutes to process a library.
-    * Todo: This will probably need to be a user setting.
+    * Wait a max of 30 minutes to process a library.
+    * TODO: This will probably need to be a user setting.
     */
-    public $timeout = 600;
+    public $timeout = 1800;
 
     /**
     * Mark job as failed if time exceeded.
@@ -42,7 +42,8 @@ class ScanMusic implements ShouldQueue, ShouldBeUnique
      */
     public function __construct()
     {
-        //
+        // Set the max memory limit to 1gb.
+        ini_set('memory_limit', '1G');
     }
 
     /**
