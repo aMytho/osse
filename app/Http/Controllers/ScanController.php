@@ -30,5 +30,6 @@ class ScanController extends Controller
   {
     // Stop the current execution. When the next dir is processed, it will exit.
     Cache::put('scan_cancelled', true);
+    Cache::forget('scan_progress');
   }
 }
