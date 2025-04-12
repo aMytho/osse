@@ -14,11 +14,6 @@ services:
       - "${OSSE_REDIS_PORT}:6379"
     volumes:
       - valkey_data:/data
-    healthcheck:
-      test: ["CMD", "valkey-cli", "ping"]
-      interval: 3s
-      timeout: 1s
-      retries: 5
 
   osse:
     build:
@@ -38,8 +33,7 @@ services:
       - OSSE_REDIS_HOST=valkey:6379
       - "OSSE_BROADCAST_URL=${OSSE_PROTOCOL}://${OSSE_HOST}:${OSSE_BROADCAST_PORT}"
     depends_on:
-      valkey:
-        condition: service_healthy
+      - valkey
     ports:
       # The port of the left is publically available on the host. The right is the internal port it maps to.
       - "${OSSE_SERVER_PORT:?error}:${OSSE_SERVER_PORT}" # HTTP server
@@ -57,8 +51,7 @@ services:
       - "OSSE_BROADCAST_URL=osse_broadcast:${OSSE_BROADCAST_INTERNAL_PORT}" # Osse runs on this internally.
       - "OSSE_ALLOWED_ORIGIN=${OSSE_HOST}:${OSSE_SERVER_PORT}" # CORS URL
     depends_on:
-      valkey:
-        condition: service_healthy
+      - valkey
     expose:
       - "${OSSE_BROADCAST_INTERNAL_PORT}" # Allow internal communication between osse and osse_broadcast on this port.
 

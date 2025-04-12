@@ -31,6 +31,12 @@ export REDIS_HOST=valkey
 export REDIS_PASSWORD=null
 export REDIS_PORT=6379
 
+# Wait for redis (valkey) to go online
+until nc -z valkey 6379; do
+  echo "Waiting for Valkey..."
+  sleep 1
+done
+
 function setup_osse () {
   echo "Running osse setup"
   composer install --no-dev --optimize-autoloader
