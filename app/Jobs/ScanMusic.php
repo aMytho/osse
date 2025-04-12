@@ -43,8 +43,8 @@ class ScanMusic implements ShouldQueue, ShouldBeUnique
      */
     public function __construct()
     {
-        // Set the max memory limit to 1gb.
-        ini_set('memory_limit', '1G');
+        // Set the max memory limit to 2gb.
+        ini_set('memory_limit', '2G');
     }
 
     /**
@@ -60,13 +60,13 @@ class ScanMusic implements ShouldQueue, ShouldBeUnique
 
         $directoryCounter = 0;
         Cache::put('scan_progress', ['total_directories' => $files->count(), 'finished_count' => $directoryCounter]);
-        ScanStarted::dispatch($files->count());
+        broadcast(new ScanStarted($files->count()));
 
         foreach ($files as $dir => $directoryGroup) {
             // Check if the user cancelled the job mid-operation.
             if (!$this->allowedToRun()) {
                 // Emit the event and stop all execution. This won't delete what has been scanned, but no pruning will be done either. 
-                ScanCancelled::dispatch($directoryCounter);
+                broadcast(new ScanCancelled($directoryCounter));
                 // Allow future scans to run.
                 Cache::delete('scan_cancelled');
                 return;
@@ -90,19 +90,19 @@ class ScanMusic implements ShouldQueue, ShouldBeUnique
             // Only in php...
             $directoryCounter++;
             Cache::put('scan_progress', ['total_directories' => $files->count(), 'finished_count' => $directoryCounter]);
-            ScanProgressed::dispatch(strval($dir), $processor->filesScanned, $processor->filesSkipped, $files->count(), $directoryCounter);
+            broadcast(new ScanProgressed(strval($dir), $processor->filesScanned, $processor->filesSkipped, $files->count(), $directoryCounter));
         }
 
         // Prune any directories that used to exist, but were not in this scan list.
         // Also prunes relations
         MusicPruner::pruneDirectoriesThatUsedToExist($files->keys());
         Cache::forget('scan_progress');
-        ScanCompleted::dispatch($files->count());
+        broadcast(new ScanCompleted($files->count()));
     }
 
     public function failed(?Throwable $exception): void
     {
-        ScanFailed::dispatch($exception?->getMessage() ?? 'Unknown Error');
+        broadcast(new ScanFailed($exception?->getMessage() ?? 'Unknown Error'));
     }
 
     private function allowedToRun(): bool

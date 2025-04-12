@@ -66,4 +66,4 @@ frankenphp php-cli artisan config:cache
 frankenphp php-cli artisan migrate --force
 
 # Run the server and queue worker (jobs)
-frankenphp run --config "$CADDYFILE" & frankenphp php-cli artisan queue:work --tries=3 --timeout=0
+frankenphp run --config "$CADDYFILE" & frankenphp php-cli artisan queue:work redis --tries=3 --timeout=0 --memory=2048
