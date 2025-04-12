@@ -32,7 +32,7 @@ return [
 
         'redis' => [
             'driver' => 'redis',
-            'connection' => 'sync',
+            'connection' => 'default',
             'after_commit' => false,
         ],
 
