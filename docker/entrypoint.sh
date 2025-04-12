@@ -34,9 +34,10 @@ export REDIS_PORT=6379
 function setup_osse () {
   echo "Running osse setup"
   composer install --no-dev --optimize-autoloader
-  frankenphp php-cli artisan key:generate --force
-  frankenphp php-cli artisan view:cache
-  frankenphp php-cli artisan route:cache
+  php artisan key:generate --force
+  php artisan view:cache
+  php artisan route:cache
+  php artisan event:cache
 
   # Make the storage/cache/database if they don't exist.
   mkdir storage -p
@@ -59,11 +60,10 @@ else
   fi
 fi
 
-
 # Cache the env and run migrations.
 # Generate encryption key and cache the views.
-frankenphp php-cli artisan config:cache
-frankenphp php-cli artisan migrate --force
+php artisan config:cache
+php artisan migrate --force
 
 # Run the server and queue worker (jobs)
-frankenphp run --config "$CADDYFILE" & frankenphp php-cli artisan queue:work redis --tries=3 --timeout=0 --memory=2048
+frankenphp run --config "$CADDYFILE" & php artisan queue:work --tries=3 --timeout=0 --memory=2048

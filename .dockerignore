@@ -1,0 +1,12 @@
+osse-web/node_modules
+osse-web/dist
+osse-web/.git
+osse-web/.idea
+osse-web/.vscode
+osse-web/.angular
+osse-web/coverage
+osse-web/README.md
+
+vendor
+node_modules
+osse-broadcast

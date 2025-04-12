@@ -32,7 +32,8 @@ return [
 
         'redis' => [
             'driver' => 'redis',
-            'connection' => 'default',
+            'connection' => 'sync',
+            'after_commit' => false,
         ],
 
         'reverb' => [

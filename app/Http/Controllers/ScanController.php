@@ -10,7 +10,6 @@ class ScanController extends Controller
   public function startScan()
   {
     // If the job has been cancelled, clear that setting.
-    // We have middleware that will not start this new job while another job is running.
     Cache::delete('scan_cancelled');
 
     // Start the job.

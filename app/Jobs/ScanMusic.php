@@ -103,6 +103,8 @@ class ScanMusic implements ShouldQueue, ShouldBeUnique
     public function failed(?Throwable $exception): void
     {
         broadcast(new ScanFailed($exception?->getMessage() ?? 'Unknown Error'));
+        Cache::forget('scan_cancelled');
+        Cache::forget('scan_progress');
     }
 
     private function allowedToRun(): bool
