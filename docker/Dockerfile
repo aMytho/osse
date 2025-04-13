@@ -19,6 +19,9 @@ FROM dunglas/frankenphp:1.5.0-php8.4-alpine
 # Install PHP Redis extension
 RUN install-php-extensions redis
 
+# Install supervisord for managing queue workers
+RUN apk update && apk add --no-cache supervisor && rm -rf /var/cache/apk/*
+
 WORKDIR /app
 COPY composer.json composer.lock artisan ./
 
@@ -31,6 +34,18 @@ COPY . .
 
 # Now that the dependencies are installed, rerun install scripts
 RUN composer install --optimize-autoloader --no-dev
+
+# Generate caches
+RUN php artisan key:generate --force
+RUN php artisan view:cache
+RUN php artisan route:cache
+RUN php artisan event:cache
+
+# Make the storage/cache/database if they don't exist.
+RUN mkdir storage -p
+RUN mkdir storage/framework/cache -p
+RUN mkdir storage/framework/sessions -p
+RUN mkdir storage/framework/views -p
 
 # Copy osse-web
 COPY --from=osse_web /app/dist /app/public/dist

@@ -6,9 +6,6 @@
 
 # These are for the docker build only. If the user runs them manual production script, they are set there instead.
 # Modifying these in docker could have unforseen consquences, such as things not working.
-#
-export APP_ENV=production
-
 export OSSE_URL_SERVER="${OSSE_PROTOCOL}://${OSSE_HOST}:${OSSE_SERVER_PORT}"
 export OSSE_URL_API="${OSSE_PROTOCOL}://${OSSE_HOST}:${OSSE_API_PORT}"
 export OSSE_BROADCAST_HOST="${OSSE_PROTOCOL}://${OSSE_HOST}:${OSSE_BROADCAST_PORT}"
@@ -21,15 +18,12 @@ else
     export CADDYFILE="docker/Caddyfile-http"
 fi
 
+# Set the caddyfile in supervisord
 echo "Using Caddyfile: $CADDYFILE"
+sed -i "s|__CADDYFILE__|$CADDYFILE|g" docker/supervisor.conf
 
 # Ensure storage & cache directories are writable
 chmod -R 777 storage bootstrap/cache
-
-export REDIS_CLIENT=phpredis
-export REDIS_HOST=valkey
-export REDIS_PASSWORD=null
-export REDIS_PORT=6379
 
 # Wait for redis (valkey) to go online
 until nc -z valkey 6379; do
@@ -37,39 +31,11 @@ until nc -z valkey 6379; do
   sleep 1
 done
 
-function setup_osse () {
-  echo "Running osse setup"
-  composer install --no-dev --optimize-autoloader
-  php artisan key:generate --force
-  php artisan view:cache
-  php artisan route:cache
-  php artisan event:cache
-
-  # Make the storage/cache/database if they don't exist.
-  mkdir storage -p
-  mkdir storage/framework/cache -p
-  mkdir storage/framework/sessions -p
-  mkdir storage/framework/views -p
-}
-
-# Check if we need to run the setup.
-if [ "$OSSE_RUN_SETUP" = "true" ]; then
-  setup_osse
-else
-  if [ ! -f "/app/storage/osse_setup" ]; then
-    setup_osse
-
-    # Dont rerun setup.
-    touch "/app/storage/osse_setup"
-  else
-    echo "Setup already complete, skipping."
-  fi
-fi
-
 # Cache the env and run migrations.
 # Generate encryption key and cache the views.
 php artisan config:cache
 php artisan migrate --force
 
 # Run the server and queue worker (jobs)
-frankenphp run --config "$CADDYFILE" & php artisan queue:work --tries=3 --timeout=0 --memory=2048
+echo "Starting Osse"
+exec /usr/bin/supervisord -c docker/supervisor.conf
