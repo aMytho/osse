@@ -44,7 +44,7 @@ class ArtExtractor
     private function getCoverFiles(Collection $files): Collection
     {
         return $files->filter(function ($file) {
-            return array_any(self::STANDALONE_COVERS, fn ($validFileType) => $validFileType == $file->getExtension());
+            return in_array($file->getExtension(), self::STANDALONE_COVERS, true);
         });
     }
 
@@ -59,7 +59,7 @@ class ArtExtractor
         }
 
         // Check for a cover.extension file. Most albums include one of these files so we check them first.
-        $coverArt = $this->coverArtFiles->first(fn ($file) => 'cover' == $file->getBasename('.' . $file->getExtension()));
+        $coverArt = $this->coverArtFiles->first(fn ($file) => pathinfo($file->getFilename(), PATHINFO_FILENAME) === 'cover');
         if (!is_null($coverArt)) {
             $this->artworkToSave->push(new ArtFile($coverArt, $coverArt->getRealPath()));
             return;
@@ -72,6 +72,10 @@ class ArtExtractor
 
     private function checkFilesForArt(): void
     {
+        if ($this->files->isEmpty()) {
+            return;
+        }
+
         foreach ($this->files as $file) {
             if ($file->hasCoverArt) {
                 $this->artworkToSave->push(new ArtFile($file->getCoverArt(), $file->path));
@@ -107,9 +111,8 @@ class ArtExtractor
         // There are many files. Group by hash and only save 1 of duplicate files.
         $filesWithHashes = collect();
         foreach ($this->artworkToSave->groupBy('hash') as $art) {
-            foreach ($art as $artFile) {
-                $artFile->storeFile();
-            }
+            // Store the first artifle only. Each file in $art has the same hash, so we only need 1 file stored.
+            $art->first()->storeFile();
 
             $filesWithHashes->push(['art' => $art->first(), 'trackFilePaths' => $art->pluck('trackFilePath')]);
         }

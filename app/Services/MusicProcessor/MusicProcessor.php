@@ -80,7 +80,6 @@ class MusicProcessor
 
         // We need to link the track to the artist.
         $tracks = Track::whereIn('location', $this->filesMetadata->pluck('path'))->get();
-        $albums = Album::whereIn('id', $this->filesMetadata->pluck('albumID'))->get();
         $this->linkArtistsToTracks($tracks);
 
         $this->filesScanned = $this->filesMetadata->count();

@@ -15,9 +15,10 @@ class ScanProgressed implements ShouldBroadcastNow
     /**
      * Create a new event instance.
      */
-    public function __construct(public string $directoryName, public int $filesScanned, public int $filesSkipped, public int $totalDirectories, public int $scannedDirectories)
-    {
-    }
+    public function __construct(
+        public string $directoryName, public int $filesScanned, public int $filesSkipped,
+        public int $totalDirectories, public int $scannedDirectories, public ?string $nextDirectoryToScan
+    ) {}
 
     /**
      * Get the channels the event should broadcast on.
