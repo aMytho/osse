@@ -24,6 +24,29 @@ sed -i "s|__CADDYFILE__|$CADDYFILE|g" docker/supervisor.conf
 
 # Ensure storage & cache directories are writable
 chmod -R 777 storage bootstrap/cache
+# Make sure user data dir exists
+mkdir -p "/osse-data"
+
+# Ensure the database exists
+if [ ! -f "/osse-data/database.sqlite" ]; then
+  touch "/osse-data/database.sqlite"
+  chown root:root "/osse-data/database.sqlite"
+fi
+
+# Ensure logs file exists
+if [ ! -f "/osse-data/laravel.log" ]; then
+  touch "/osse-data/laravel.log"
+  chown root:root "osse-data/laravel.log"
+fi
+
+# Ensure storage dirs exist
+export OSSE_PRIVATE_STORAGE="/osse-data/storage/private"
+export OSSE_PUBLIC_STORAGE="/osse-data/storage/public"
+mkdir -p "$OSSE_PRIVATE_STORAGE"
+mkdir -p "$OSSE_PUBLIC_STORAGE"
+
+# Docker sets the app key from the host .env, but we want to use the one in the container .env file we just made.
+unset APP_KEY
 
 # Wait for redis (valkey) to go online
 until nc -z valkey 6379; do

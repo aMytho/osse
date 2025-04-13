@@ -35,17 +35,17 @@ COPY . .
 # Now that the dependencies are installed, rerun install scripts
 RUN composer install --optimize-autoloader --no-dev
 
-# Generate caches
-RUN php artisan key:generate --force
-RUN php artisan view:cache
-RUN php artisan route:cache
-RUN php artisan event:cache
-
-# Make the storage/cache/database if they don't exist.
+# Make the storage/cache/view dirs if they don't exist.
 RUN mkdir storage -p
 RUN mkdir storage/framework/cache -p
 RUN mkdir storage/framework/sessions -p
 RUN mkdir storage/framework/views -p
+
+# Generate caches and key.
+RUN php artisan key:generate --force
+RUN php artisan view:cache
+RUN php artisan route:cache
+RUN php artisan event:cache
 
 # Copy osse-web
 COPY --from=osse_web /app/dist /app/public/dist

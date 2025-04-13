@@ -22,6 +22,7 @@ services:
     volumes:
       - caddy_data:/data # TLS/SSL Certs
       - caddy_config:/config # Caddy data
+      - "${OSSE_USER_DATA_PATH:?error}:/osse-data"
       - "${OSSE_MUSIC_DIR_1}:/mnt/music:ro" # This mounts a local music folder into the directory.
       # You can pass an empty folder if you just want to explore :)
       # - "${OSSE_MUSIC_DIR_2}:/media/mnt:ro" # This mounts a local music folder into the directory. Uncomment if used.
