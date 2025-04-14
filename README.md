@@ -28,7 +28,7 @@ Start by cloning the projects. This will install the Laravel API, Angular Fronte
 git clone https://github.com/amytho/osse --recurse-submodules
 ```
 
-Next, copy the `.env.docker` file to `.env`. Open the file and modify any values you wish.
+Next, copy the `.env.docker` file to `.env`. Open the file and modify any values you wish. You will likely want to modify the ports and music dirs.
 
 Next, run the project with Docker/Podman.
 
@@ -36,7 +36,13 @@ Next, run the project with Docker/Podman.
 docker compose up
 ```
 
-### Manual Installation
+Open the web frontend and login. http://localhost:9000
+
+> Note that your URL may be different if you changed the protocol, host, or port.
+
+The default username is `osse` and the default password is `cassidor`.
+
+### Manual Installation (Development)
 Both the server (this repo), web frontend, and the broadcast server must be installed.
 
 You will need the following tools installed:
@@ -56,11 +62,14 @@ Clone this repository, the web client, and the broadcast server.
 git clone https://github.com/amytho/osse --recurse-submodules
 ```
 
-Start the server and the web frontend.
+Start the server. Copy the .env.example to a new file called .env
+
+Open this file and uncomment the development variables at the top of the file.
 
 ```
 cd osse
 cp .env.example .env
+# Don't forget to uncomment the variables at the top of the .env file!
 composer install
 composer run dev
 ```
@@ -79,7 +88,9 @@ chmod +x dev-run.sh
 ./dev-run.sh
 ```
 
-> Note: You may want to adjust the env vars in this setup script.
+### Manual Installation (regular user)
+
+> This will be made available upon release. If you want to run it locally now, we suggest using the developer method above.
 
 Open the web frontend and login. http://localhost:4200
 

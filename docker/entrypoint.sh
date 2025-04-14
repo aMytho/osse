@@ -36,7 +36,7 @@ fi
 # Ensure logs file exists
 if [ ! -f "/osse-data/laravel.log" ]; then
   touch "/osse-data/laravel.log"
-  chown root:root "osse-data/laravel.log"
+  chown root:root "/osse-data/laravel.log"
 fi
 
 # Ensure storage dirs exist

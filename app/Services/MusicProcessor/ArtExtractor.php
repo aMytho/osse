@@ -9,25 +9,32 @@ use Illuminate\Support\Collection;
 class ArtExtractor
 {
     /**
-    * Standalone file types we search for in each directory.
-    */
+     * Standalone file types we search for in each directory.
+     */
     public const STANDALONE_COVERS = ['jpg', 'jpeg', 'png'];
 
     /**
-    * List of images to save.
-    * @var Collection<array-key,ArtFile>
-    */
+     * List of images to save.
+     *
+     * @var Collection<array-key,ArtFile>
+     */
     public Collection $artworkToSave;
+
     /**
-    * Collection of images in this directory. 
-    */
+     * Collection of images in this directory.
+     */
     public Collection $coverArtFiles;
 
     /**
-     * @param Collection<array-key,MusicMetadata> $files
+     * @param  Collection<array-key,MusicMetadata>  $files
      */
     public function __construct(public Collection $files, Collection $allFiles)
     {
+        // If no files in this directory, skip this step.
+        if ($this->files->isEmpty()) {
+            return;
+        }
+
         $this->coverArtFiles = $this->getCoverFiles($allFiles);
         $this->artworkToSave = collect();
 
@@ -39,8 +46,8 @@ class ArtExtractor
     }
 
     /**
-    * Takes in a collection (directory of files) and returns the images.
-    */
+     * Takes in a collection (directory of files) and returns the images.
+     */
     private function getCoverFiles(Collection $files): Collection
     {
         return $files->filter(function ($file) {
@@ -49,9 +56,9 @@ class ArtExtractor
     }
 
     /**
-    * First, check for a image file in this directory.
-    * This overrides any track art.
-    */
+     * First, check for a image file in this directory.
+     * This overrides any track art.
+     */
     private function checkForStandaloneArt(): void
     {
         if ($this->coverArtFiles->isEmpty()) {
@@ -60,8 +67,9 @@ class ArtExtractor
 
         // Check for a cover.extension file. Most albums include one of these files so we check them first.
         $coverArt = $this->coverArtFiles->first(fn ($file) => pathinfo($file->getFilename(), PATHINFO_FILENAME) === 'cover');
-        if (!is_null($coverArt)) {
+        if (! is_null($coverArt)) {
             $this->artworkToSave->push(new ArtFile($coverArt, $coverArt->getRealPath()));
+
             return;
         }
 
@@ -72,10 +80,6 @@ class ArtExtractor
 
     private function checkFilesForArt(): void
     {
-        if ($this->files->isEmpty()) {
-            return;
-        }
-
         foreach ($this->files as $file) {
             if ($file->hasCoverArt) {
                 $this->artworkToSave->push(new ArtFile($file->getCoverArt(), $file->path));
@@ -94,7 +98,7 @@ class ArtExtractor
             // Store the file.
             $art = $this->artworkToSave->first();
             $art->storeFile();
-            
+
             // Save the db record.
             $artModel = new CoverArt(['hash' => $art->hash, 'mime_type' => $art->getMimeType()]);
             $artModel->save();
@@ -102,8 +106,8 @@ class ArtExtractor
             // Link covert art to tracks.
             $tracks = Track::whereIn('location', $this->files->pluck('path'))
                 ->update([
-                'cover_art_id' => $artModel->id
-            ]);
+                    'cover_art_id' => $artModel->id,
+                ]);
 
             return;
         }
@@ -121,7 +125,7 @@ class ArtExtractor
         CoverArt::insert($filesWithHashes->map(function ($f) {
             return [
                 'hash' => $f['art']->hash,
-                'mime_type' => $f['art']->getMimeType()
+                'mime_type' => $f['art']->getMimeType(),
             ];
         })->toArray());
 
