@@ -16,7 +16,7 @@ class TrackController extends Controller
             if ($track->hasCover()) {
                 $track->load('coverArt');
 
-                return Storage::response($track->getCoverUrl())
+                return Storage::disk(config('scan.cover_art_disk'))->response($track->getCoverUrl())
                     ->setPublic()
                     ->setEtag($track->coverArt->hash)
                     ->setMaxAge(86400)

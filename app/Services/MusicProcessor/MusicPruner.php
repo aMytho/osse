@@ -3,8 +3,8 @@
 namespace App\Services\MusicProcessor;
 
 use App\Models\Album;
-use App\Models\CoverArt;
 use App\Models\Artist;
+use App\Models\CoverArt;
 use App\Models\Track;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -13,8 +13,8 @@ class MusicPruner
 {
     /**
      * Create a new class instance.
-     * @param string $directory
-     * @param Collection<array-key,MusicMetadata> $filesInDir
+     *
+     * @param  Collection<array-key,MusicMetadata>  $filesInDir
      */
     public function __construct(private string $directory, private Collection $filesInDir)
     {
@@ -27,15 +27,15 @@ class MusicPruner
     }
 
     /**
-    * Deletes every file that used to be in this directory but isn't anymore.
-    */
+     * Deletes every file that used to be in this directory but isn't anymore.
+     */
     private function pruneTracks(): void
     {
         // All files that are in the directory from the LAST scan.
         // They may not be in the filesystem anymore.
         // TODO: Handle backslashes \. Windows uses those. IDK if this matters since you need WSL/mac/linux...
-        $tracksOld = Track::where('location', 'LIKE', $this->directory . '/%')
-            ->where('location', 'NOT LIKE', $this->directory . '/%/%')
+        $tracksOld = Track::where('location', 'LIKE', $this->directory.'/%')
+            ->where('location', 'NOT LIKE', $this->directory.'/%/%')
             ->select('id')
             ->get();
 
@@ -60,14 +60,15 @@ class MusicPruner
         // Delete the extraced art and then the DB entry.
         $covers = CoverArt::doesntHave('tracks')->get();
         foreach ($covers as $cover) {
-            Storage::delete('cover-art/' . $cover->hash);
+            Storage::disk(config('scan.cover_art_disk'))->delete('cover-art/'.$cover->hash);
         }
         CoverArt::whereIn('id', $covers->pluck('id'))->delete();
     }
 
     /**
      * Find any dirs that were in the scan list but no longer are and remove their tracks.
-     * @param Collection<array-key,mixed> $directoriesScannedNow
+     *
+     * @param  Collection<array-key,mixed>  $directoriesScannedNow
      */
     public static function pruneDirectoriesThatUsedToExist(Collection $directoriesScannedNow): void
     {
@@ -76,6 +77,7 @@ class MusicPruner
             // Get the dir names
             $dirs = $tracks->map(function ($t) {
                 $t->directory = dirname($t->location);
+
                 return $t;
             });
 

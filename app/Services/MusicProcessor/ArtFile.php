@@ -29,10 +29,10 @@ class ArtFile
     public function storeFile(): void
     {
         if ($this->file instanceof SplFileInfo) {
-            Storage::put('cover-art/' . $this->hash, file_get_contents($this->file->getRealPath()));
-            $this->mimeType = Storage::mimeType('cover-art/' . $this->hash) ?? null;
+            Storage::disk(config('scan.cover_art_disk'))->put('cover-art/'.$this->hash, file_get_contents($this->file->getRealPath()));
+            $this->mimeType = Storage::disk(config('scan.cover_art_disk'))->mimeType('cover-art/'.$this->hash) ?? null;
         } else {
-            Storage::put('cover-art/' . $this->hash, $this->file->getContents());
+            Storage::disk(config('scan.cover_art_disk'))->put('cover-art/'.$this->hash, $this->file->getContents());
             $this->mimeType = $this->file->getMimeType();
         }
     }

@@ -2,7 +2,11 @@
 
 namespace Tests\Feature\Jobs;
 
+use App\Events\ScanError;
+use App\Events\ScanFailed;
 use App\Jobs\ScanMusic;
+use App\Models\Track;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
@@ -26,7 +30,7 @@ class ScanMusicTest extends TestCase
         // This dir has 1 file.
         config(['scan.directories' => [base_path('tests/files/no_metadata')]]);
         ScanMusic::dispatchSync();
-        
+
         $this->assertDatabaseCount('tracks', 1);
     }
 
@@ -75,7 +79,7 @@ class ScanMusicTest extends TestCase
         ]);
         $this->assertDatabaseHas('album_artist', [
             'album_id' => 1,
-            'artist_id' => 1
+            'artist_id' => 1,
         ]);
     }
 
@@ -86,7 +90,7 @@ class ScanMusicTest extends TestCase
         $testFilePath = Storage::disk('test_files')->path('');
 
         // Scan in 2 files with metadata.
-        config(['scan.directories' => [$testFilePath . 'has_metadata']]);
+        config(['scan.directories' => [$testFilePath.'has_metadata']]);
         ScanMusic::dispatchSync();
 
         $this->assertDatabaseCount('artists', 1);
@@ -102,7 +106,7 @@ class ScanMusicTest extends TestCase
         // We set the scan dirs to a new dir with nothing in it to test the old tracks in deleted(unscanned) dirs are pruned.
         Storage::disk('test_files')->deleteDirectory('has_metadata');
         Storage::disk('test_files')->put('empty/foo', 'baz');
-        config(['scan.directories' => [$testFilePath . 'empty']]);
+        config(['scan.directories' => [$testFilePath.'empty']]);
         ScanMusic::dispatchSync();
 
         $this->assertDatabaseEmpty('artists');
@@ -118,14 +122,14 @@ class ScanMusicTest extends TestCase
         $testFilePath = Storage::disk('test_files')->path('');
 
         // Scan in 2 files with covers. They are the same cover.
-        config(['scan.directories' => [$testFilePath . 'covers']]);
+        config(['scan.directories' => [$testFilePath.'covers']]);
         ScanMusic::dispatchSync();
 
         // The ID is 1 since the art is the first row.
         // Since the files are the same, only 1 file should be extracted.
         $this->assertDatabaseHas('tracks', ['cover_art_id' => 1]);
         $this->assertDatabaseCount('cover_art', 1);
-        $this->assertEquals(count(Storage::disk('local')->files('cover-art')), 1);
+        $this->assertEquals(count(Storage::disk('test_cover_art')->files('cover-art')), 1);
     }
 
     public function test_track_covers_are_deleted_when_track_is_deleted(): void
@@ -135,7 +139,7 @@ class ScanMusicTest extends TestCase
         $testFilePath = Storage::disk('test_files')->path('');
 
         // Scan in 2 files with covers. They are the same cover.
-        config(['scan.directories' => [$testFilePath . 'covers']]);
+        config(['scan.directories' => [$testFilePath.'covers']]);
         ScanMusic::dispatchSync();
 
         $this->assertDatabaseCount('cover_art', 1);
@@ -143,22 +147,77 @@ class ScanMusicTest extends TestCase
         // Create an empty dir to scan. Since the old dir isn't included, its tracks will be deleted.
         config(['app.first' => true]);
         Storage::disk('test_files')->put('empty/foo', 'baz');
-        config(['scan.directories' => [$testFilePath . 'empty']]);
+        config(['scan.directories' => [$testFilePath.'empty']]);
         ScanMusic::dispatchSync();
 
         $this->assertDatabaseCount('cover_art', 0);
-        $this->assertEquals(count(Storage::disk('local')->files('cover-art')), 0);
+        $this->assertEquals(count(Storage::disk('test_cover_art')->files('cover-art')), 0);
     }
 
     public function test_scanning_a_invalid_directory_fails(): void
     {
         $this->mockStorage();
+        $this->mockEvents();
         config(['scan.directories' => ['/fake-directory']]);
 
         $this->expectException(DirectoryNotFoundException::class);
         ScanMusic::dispatchSync();
+        Event::assertDispatched(ScanFailed::class);
     }
 
-    // Test inserting a file, scan, then change it, then scan again.
+    public function test_scanning_an_invalid_file_emits_error_without_crashing(): void
+    {
+        $this->mockStorage();
+        $this->copyTestMusicFiles();
+        $this->mockEvents();
+        $testFilePath = Storage::disk('test_files')->path('');
+
+        // No errors yet.
+        Event::assertNotDispatched(ScanError::class);
+
+        // Test scanning an invalid file. This represents a file that has a music extension but isn't audio, as well as corrupted tags.
+        config(['scan.directories' => [$testFilePath.'invalid']]);
+        ScanMusic::dispatchSync();
+
+        // Should be 1 error, 0 tracks inserted, and no scan failed.
+        Event::assertDispatched(ScanError::class, 1);
+        Event::assertNotDispatched(ScanFailed::class);
+        $this->assertDatabaseEmpty('tracks');
+    }
+
+    public function test_fresh_scan_clears_old_data(): void
+    {
+        $this->mockStorage();
+        // Create some fake data from a previous scan.
+        Track::factory(5)
+            ->withArtists(1)
+            ->withAlbum()
+            ->withCoverArt()
+            ->create();
+
+        $this->assertDatabaseCount('tracks', 5);
+        $this->assertDatabaseCount('artists', 5);
+        $this->assertDatabaseCount('albums', 5);
+        $this->assertDatabaseCount('cover_art', 5);
+        $this->assertEquals(count(Storage::disk('test_cover_art')->files('cover-art')), 5);
+
+        // Run the scan on a test dir. The old data is replaced with the new ones.
+        $this->mockStorage();
+        $this->copyTestMusicFiles();
+        $testFilePath = Storage::disk('test_files')->path('');
+
+        // Scan in 2 files with cover metadata. Pass in true so it is a fresh scan.
+        // These files have the same cover art so only 1 is created.
+        config(['scan.directories' => [$testFilePath.'covers']]);
+        ScanMusic::dispatchSync(true);
+
+        $this->assertDatabaseCount('tracks', 2);
+        $this->assertDatabaseCount('artists', 1);
+        $this->assertDatabaseCount('albums', 0);
+        $this->assertDatabaseCount('cover_art', 1);
+        $this->assertEquals(count(Storage::disk('test_cover_art')->files('cover-art')), 1);
+    }
+
+    // TEST: inserting a file, scan, then change it, then scan again.
     // Prob need to delete it during that.
 }

@@ -44,8 +44,6 @@ class ScanControllerTest extends TestCase
 
     public function test_progress_works(): void
     {
-        $this->mockEvents();
-
         Cache::spy();
         config(['scan.directories' => [base_path('tests/files/no_metadata')]]);
 

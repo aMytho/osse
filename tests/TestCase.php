@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 abstract class TestCase extends BaseTestCase
 {
     use RefreshDatabase;
+
     protected User $user;
 
     protected function setUp(): void
@@ -23,46 +24,47 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-    * Allow jobs to run.
-    * If this method is not called, jobs will run async. This is usually a bad thing for testing.
-    */
+     * Allow jobs to run.
+     * If this method is not called, jobs will run async. This is usually a bad thing for testing.
+     */
     public function runJobs(): void
     {
         config(['queue.default' => 'sync']);
     }
 
     /**
-    * Prevents jobs from running. We fake the queue.
-    * You can still test laravel job logic, but nothing is executed. They don't actually run.
-    */
+     * Prevents jobs from running. We fake the queue.
+     * You can still test laravel job logic, but nothing is executed. They don't actually run.
+     */
     public function mockJobs(): void
     {
         Queue::fake();
     }
 
     /**
-    * Prevents events from firing.
-    */
+     * Prevents events from firing.
+     */
     public function mockEvents(): void
     {
         Event::fake();
     }
 
     /**
-    * Mock access to the filesystem.
-    */
+     * Mock access to the filesystem.
+     */
     public function mockStorage(): void
     {
         Storage::fake('test_files');
+        Storage::fake('test_cover_art');
         Storage::fake('local');
         Storage::fake('public');
     }
 
     /**
-    * Copies all files in the testing directory to our virual disk for testing.
-    * This is only neccessary if you need to modify a file.
-    * If you just need to scan the files, use the base_path and don't call this method!
-    */
+     * Copies all files in the testing directory to our virual disk for testing.
+     * This is only neccessary if you need to modify a file.
+     * If you just need to scan the files, use the base_path and don't call this method!
+     */
     public function copyTestMusicFiles(): void
     {   // Get all files in tests/files
         $sourceDir = base_path('tests/files');

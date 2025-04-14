@@ -2,30 +2,37 @@
 
 namespace App\Services\MusicProcessor;
 
+use App\Events\ScanError;
 use App\Models\Album;
 use App\Models\Artist;
 use App\Models\Track;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Kiwilan\Audio\Audio;
 
 class MusicProcessor
 {
-    private array $supportedExtensions = ["mp3", "wav", "ogg", "opus", "flac"];
+    private array $supportedExtensions = ['mp3', 'wav', 'ogg', 'opus', 'flac'];
+
     private Collection $files;
+
     /**
-     * @var Collection<int, MusicMetadata> $filesMetadata
+     * @var Collection<int, MusicMetadata>
      */
     private Collection $filesMetadata;
+
     private Carbon $date;
 
     public int $filesScanned = 0;
+
     public int $filesSkipped = 0;
 
     /**
      * Create a new class instance.
-     * @param Collection<array-key,mixed> $files
+     *
+     * @param  Collection<array-key,mixed>  $files
      */
     public function __construct(Collection $files)
     {
@@ -45,16 +52,27 @@ class MusicProcessor
                 return $f->location == $file->getRealPath() && $file->getMTime() == $f->scanned_at->timestamp;
             })) {
                 $this->filesSkipped += 1;
+
                 continue;
             }
 
-            // Read the audio file and extract the data.
-            $audio = Audio::read($file->getRealPath());
-            $metadata = new MusicMetadata($audio);
-            $metadata->extractProperties();
-            $metadata->extractMetadata();
+            // Read the audio file and extract the data. If anything does wrong, we only skip this one file.
+            try {
+                $audio = Audio::read($file->getRealPath());
+                $metadata = new MusicMetadata($audio);
+                $metadata->extractProperties();
+                $metadata->extractMetadata();
 
-            $this->filesMetadata->push($metadata);
+                $this->filesMetadata->push($metadata);
+            } catch (\Throwable $th) {
+                Log::error('Failed to scan '.$file->getRealPath().'. '.$th->getMessage());
+                ScanError::dispatch('Failed to scan '.$file->getRealPath().'. '.$th->getMessage());
+
+                // Mark the file as skipped.
+                $this->filesSkipped += 1;
+
+                continue;
+            }
         }
 
         // Insert/update existing relations (artists, albums, etc.)
@@ -74,7 +92,7 @@ class MusicProcessor
                 'track_number' => $m->trackNumber,
                 'disc_number' => $m->discNumber,
                 'scanned_at' => $m->dateScanned,
-                'created_at' => $this->date
+                'created_at' => $this->date,
             ])->toArray()
         );
 
@@ -182,7 +200,7 @@ class MusicProcessor
         Album::insert($newAlbums
             ->map(fn ($a) => [
                 'name' => $a,
-                'created_at' => $this->date
+                'created_at' => $this->date,
             ])
             ->toArray()
         );
@@ -202,7 +220,7 @@ class MusicProcessor
                 array_push($artistsToInsert, [
                     'album_id' => $album->id,
                     'artist_id' => $artist->id,
-                    'artist_order' => $artistOrder
+                    'artist_order' => $artistOrder,
                 ]);
                 $artistOrder++;
             }
@@ -211,11 +229,16 @@ class MusicProcessor
         DB::table('album_artist')->insert($artistsToInsert);
     }
 
+    /**
+     * @param  Collection<array-key,mixed>  $tracks
+     */
     private function linkArtistsToTracks(Collection $tracks): void
     {
         $artists = [];
         foreach ($this->filesMetadata as $file) {
-            if (count($file->artistIDs) == 0) return;
+            if (count($file->artistIDs) == 0) {
+                return;
+            }
 
             $artistOrder = 1;
             foreach ($file->artistIDs as $artistID) {
@@ -224,9 +247,14 @@ class MusicProcessor
             }
         }
 
-
         DB::table('track_artist')->insert($artists);
     }
+
+    /**
+     * Returns the files that were successfully scanned in. Any files with errors will not be included.
+     *
+     * @return Collection<int,MusicMetadata>
+     */
     public function getScannedFiles(): Collection
     {
         return $this->filesMetadata;
