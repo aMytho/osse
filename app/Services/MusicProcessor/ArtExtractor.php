@@ -32,6 +32,8 @@ class ArtExtractor
     {
         // If no files in this directory, skip this step.
         if ($this->files->isEmpty()) {
+            $this->artworkToSave = collect();
+
             return;
         }
 
