@@ -16,6 +16,15 @@ class ScanController extends Controller
         ScanMusic::dispatch();
     }
 
+    public function startScanFresh()
+    {
+        // If the job has been cancelled, clear that setting.
+        Cache::delete('scan_cancelled');
+
+        // Start the job, passing in force as true so all user data is deleted first.
+        ScanMusic::dispatch(true);
+    }
+
     public function progress()
     {
         if (Cache::has('scan_progress')) {

@@ -18,8 +18,8 @@ class ConfigController extends Controller
 
     public function logs()
     {
-        $log = storage_path('logs/laravel.log');
-        if (!File::exists($log)) {
+        $log = env('LOG_PATH', storage_path('logs/laravel.log'));
+        if (! File::exists($log)) {
             return response()->json(['message' => 'Log file not found'], 404);
         }
 
@@ -32,10 +32,10 @@ class ConfigController extends Controller
         $start = max(0, $totalLines - $limit);
 
         $file->seek($start);
-        while (!$file->eof()) {
+        while (! $file->eof()) {
             $lines[] = $file->fgets();
         }
 
-        return response(content: implode("", $lines));
+        return response(content: implode('', $lines));
     }
 }

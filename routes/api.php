@@ -6,8 +6,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\CoverArtController;
 use App\Http\Controllers\PlaylistController;
-use App\Http\Controllers\TrackController;
 use App\Http\Controllers\ScanController;
+use App\Http\Controllers\TrackController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', [ConfigController::class, 'ping']);
@@ -43,5 +43,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/scan', [ScanController::class, 'progress'])->name('scan.status');
     Route::post('/scan', [ScanController::class, 'startScan'])->name('scan.start');
+    Route::post('/scan/fresh', [ScanController::class, 'startScanFresh'])->name('scan.start-fresh');
     Route::post('/scan/cancel', [ScanController::class, 'cancel'])->name('scan.cancel');
 });
