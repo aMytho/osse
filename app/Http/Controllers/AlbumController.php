@@ -6,18 +6,19 @@ use App\Http\Resources\AlbumResponse;
 use App\Models\Album;
 use App\Models\Track;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class AlbumController extends Controller
 {
     public function index(Request $request)
     {
         if ($request->get('tracks') == true) {
-            $albums = Album::with(['tracks', 'tracks.artists', 'artists'])->get();
+            // The value of albums is this json encoded. Data is entered after scan.
+            // $albums = Album::with(['tracks', 'tracks.artists', 'artists'])->get();
+            return response(Cache::get('albumsWithTracks', []));
         } else {
-            $albums =  Album::all();
+            return response()->json(Album::all());
         }
-
-        return response()->json($albums);
     }
 
     public function show(Album $album, Request $request)
