@@ -7,6 +7,14 @@ osse-web/.angular
 osse-web/coverage
 osse-web/README.md
 
+.git
+.github
 vendor
 node_modules
+tests
 osse-broadcast
+production-setup.sh
+database/test_db.sqlite
+storage/app/public/*
+storage/app/private/*
+storage/logs/*

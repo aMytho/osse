@@ -20,7 +20,7 @@ FROM dunglas/frankenphp:1.5.0-php8.4-alpine
 RUN install-php-extensions redis
 
 # Install supervisord for managing queue workers
-RUN apk update && apk add --no-cache supervisor && rm -rf /var/cache/apk/*
+RUN apk update && apk add --no-cache supervisor vorbis-tools flac && rm -rf /var/cache/apk/*
 
 WORKDIR /app
 COPY composer.json composer.lock artisan ./
