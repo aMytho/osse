@@ -56,6 +56,21 @@ You will need the following tools installed:
 
 > You may be able to run osse with older versions of the above software. However, the above configuration has been tested and proven to work.
 
+These tools are optional, but recommended for full functionality.
+- orbis-tools 
+- flac
+
+These are available on most linux distros in the default package manager. See below examples. If your package manage isn't listed, you can search for it yourself.
+
+```
+sudo apt install vorbis-tools
+sudo brew install vorbis-tools
+
+sudo apt install flac
+sudo brew install flac
+```
+
+
 Clone this repository, the web client, and the broadcast server.
 
 ```
