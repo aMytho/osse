@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\ScanMusic;
+use App\Models\ScanDirectory;
 use Illuminate\Support\Facades\Cache;
 
 class ScanController extends Controller
@@ -28,9 +29,14 @@ class ScanController extends Controller
     public function progress()
     {
         if (Cache::has('scan_progress')) {
-            return response()->json(array_merge(Cache::get('scan_progress'), ['active' => true]));
+            $scanProgress = Cache::get('scan_progress');
+            $scanDirectories = ScanDirectory::where('scan_job_id', $scanProgress['job_id'])->get();
+
+            return response()->json(array_merge($scanProgress,
+                ['active' => true, 'directories' => $scanDirectories->map(fn ($d) => $d->toBroadcastArray())->toArray()]
+            ));
         } else {
-            return response()->json(['active' => false]);
+            return response()->json(['active' => false, 'directories' => config('scan.directories')]);
         }
     }
 

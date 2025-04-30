@@ -2,12 +2,16 @@
 
 namespace App\Jobs;
 
+use App\Enums\ScanDirStatus;
+use App\Enums\ScanStatus;
 use App\Events\ScanCancelled;
 use App\Events\ScanCompleted;
 use App\Events\ScanError;
 use App\Events\ScanFailed;
 use App\Events\ScanProgressed;
 use App\Events\ScanStarted;
+use App\Models\ScanDirectory;
+use App\Models\ScanJob;
 use App\Services\MusicProcessor\ArtExtractor;
 use App\Services\MusicProcessor\MusicProcessor;
 use App\Services\MusicProcessor\MusicPruner;
@@ -52,6 +56,20 @@ class ScanMusic implements ShouldBeUnique, ShouldQueue
     public $directoriesToScan;
 
     /**
+     * Job entry in the DB.
+     *
+     * @var ScanJob
+     */
+    public $jobEntry;
+
+    /**
+     * ID of the current dir entry in the DB.
+     *
+     * @var ScanDirectory
+     */
+    public $currentDirectoryEntry;
+
+    /**
      * Create a new job instance.
      *
      * @param  mixed  $freshScan  If true, all audio data will be deleted before scan.
@@ -87,6 +105,9 @@ class ScanMusic implements ShouldBeUnique, ShouldQueue
         if ($freshScan) {
             $this->clearOldData();
         }
+
+        // Store the scan job data in the DB.
+        $this->jobEntry = ScanJob::createScanJob($this->directoriesToScan);
     }
 
     /**
@@ -94,10 +115,13 @@ class ScanMusic implements ShouldBeUnique, ShouldQueue
      */
     public function handle(): void
     {
+        // Get the dirEntries from the DB. These are just used for emitting progress to the user.
+        $dirEntries = $this->jobEntry->directories;
+
         // Start the scan loop
         $directoryCounter = 0;
-        Cache::put('scan_progress', ['total_directories' => $this->directoriesToScan->count(), 'finished_count' => $directoryCounter]);
-        broadcast(new ScanStarted($this->directoriesToScan->count()));
+        Cache::put('scan_progress', ['total_directories' => $this->directoriesToScan->count(), 'finished_count' => $directoryCounter, 'job_id' => $this->jobEntry->id]);
+        broadcast(new ScanStarted($dirEntries->map(fn ($d) => $d->toBroadcastArray())->toArray()));
 
         foreach ($this->directoriesToScan as $dir) {
             // Check if the user cancelled the job mid-operation.
@@ -110,16 +134,32 @@ class ScanMusic implements ShouldBeUnique, ShouldQueue
                 return;
             }
 
+            // Log the entry
             Log::info('Processing '.$dir);
+            $directoryEntry = $dirEntries->where('path', $dir)
+                ->where('scan_job_id', $this->jobEntry->id)
+                ->first();
+            $this->currentDirectoryEntry = $directoryEntry;
+
+            // Set the status to scanning
+            $this->currentDirectoryEntry->status = ScanDirStatus::Scanning;
+            $this->currentDirectoryEntry->started_at = now();
+            $this->currentDirectoryEntry->save();
+
             $files = collect(File::files($dir, false));
             if ($files->isEmpty()) {
                 // Prune files, skip processing.
                 $this->pruneDirectory($dir, $files);
+
+                // Log/Store the dir status.
                 Log::info('Finished '.$dir.' with 0 files scanned and 0 files skipped.');
+                $this->currentDirectoryEntry->status = ScanDirStatus::Scanned;
+                $this->currentDirectoryEntry->finished_at = now();
+                $this->currentDirectoryEntry->save();
 
                 $directoryCounter++;
-                Cache::put('scan_progress', ['total_directories' => $this->directoriesToScan->count(), 'finished_count' => $directoryCounter]);
-                broadcast(new ScanProgressed(strval($dir), 0, 0, $this->directoriesToScan->count(), $directoryCounter, $this->directoriesToScan[$directoryCounter] ?? null));
+                Cache::put('scan_progress', ['total_directories' => $this->directoriesToScan->count(), 'finished_count' => $directoryCounter, 'job_id' => $this->jobEntry->id]);
+                broadcast(new ScanProgressed($this->currentDirectoryEntry->id, strval($dir), 0, 0, ScanDirStatus::Scanned->value));
 
                 continue;
             }
@@ -134,12 +174,19 @@ class ScanMusic implements ShouldBeUnique, ShouldQueue
             $this->pruneDirectory($dir, $processor->getAllFiles());
 
             Log::info('Finished '.$dir.' with '.$processor->filesScanned.' files scanned and '.$processor->filesSkipped.' files skipped.');
+            $this->currentDirectoryEntry->status = ScanDirStatus::Scanned;
+            $this->currentDirectoryEntry->files_scanned = $processor->filesScanned;
+            $this->currentDirectoryEntry->files_skipped = $processor->filesSkipped;
+            $this->currentDirectoryEntry->finished_at = now();
+            $this->currentDirectoryEntry->save();
 
             // Emit the event. We have to cast dir as a string, or it may interpert it as a class.
             // Only in php...
             $directoryCounter++;
-            Cache::put('scan_progress', ['total_directories' => $this->directoriesToScan->count(), 'finished_count' => $directoryCounter]);
-            broadcast(new ScanProgressed(strval($dir), $processor->filesScanned, $processor->filesSkipped, $this->directoriesToScan->count(), $directoryCounter, $this->directoriesToScan[$directoryCounter] ?? null));
+            Cache::put('scan_progress', ['total_directories' => $this->directoriesToScan->count(), 'finished_count' => $directoryCounter, 'job_id' => $this->jobEntry->id]);
+            broadcast(new ScanProgressed($this->currentDirectoryEntry->id, strval($dir), $processor->filesScanned, $processor->filesSkipped, ScanDirStatus::Scanned->value));
+
+            sleep(10);
         }
 
         // Prune any directories that used to exist, but were not in this scan list.
@@ -147,6 +194,9 @@ class ScanMusic implements ShouldBeUnique, ShouldQueue
         MusicPruner::pruneDirectoriesThatUsedToExist($this->directoriesToScan->values());
         Cache::forget('scan_progress');
         broadcast(new ScanCompleted($this->directoriesToScan->count()));
+
+        $this->jobEntry->status = ScanStatus::Completed;
+        $this->jobEntry->save();
     }
 
     /**
@@ -164,6 +214,8 @@ class ScanMusic implements ShouldBeUnique, ShouldQueue
         } catch (\Throwable $th) {
             Log::error('Error during scan prune files for directory '.$dirName.'. '.$th->getMessage());
             ScanError::dispatch('Error during scan prune files for directory '.$dirName.'. '.$th->getMessage());
+            $this->currentDirectoryEntry->status = ScanDirStatus::Errored;
+            $this->currentDirectoryEntry->save();
         }
     }
 
@@ -181,6 +233,8 @@ class ScanMusic implements ShouldBeUnique, ShouldQueue
         } catch (\Throwable $th) {
             Log::error('Error during scan music processing.'.$th->getMessage());
             ScanError::dispatch('Error during scan music processing'.$th->getMessage());
+            $this->currentDirectoryEntry->status = ScanDirStatus::Errored;
+            $this->currentDirectoryEntry->save();
         } finally {
             return $processor;
         }
@@ -199,6 +253,8 @@ class ScanMusic implements ShouldBeUnique, ShouldQueue
         } catch (\Throwable $th) {
             Log::error('Error during track artwork extraction'.$th->getMessage());
             ScanError::dispatch('Error during track artwork extraction.'.$th->getMessage());
+            $this->currentDirectoryEntry->status = ScanDirStatus::Errored;
+            $this->currentDirectoryEntry->save();
         }
     }
 
@@ -226,6 +282,9 @@ class ScanMusic implements ShouldBeUnique, ShouldQueue
         broadcast(new ScanFailed($exception?->getMessage() ?? 'Unknown Error'));
         Cache::forget('scan_cancelled');
         Cache::forget('scan_progress');
+
+        $this->jobEntry->status = ScanStatus::Failed;
+        $this->jobEntry->save();
     }
 
     /**
