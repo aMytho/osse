@@ -14,8 +14,7 @@ use Tests\TestCase;
 #[Group('ScanMusic')]
 class ScanControllerTest extends TestCase
 {
-
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
     }
@@ -48,13 +47,14 @@ class ScanControllerTest extends TestCase
         config(['scan.directories' => [base_path('tests/files/no_metadata')]]);
 
         // We have to run the job in this thread so it gets the cache spy instance.
-        new ScanMusic()->handle();
+        $job = new ScanMusic;
+        $job->handle();
 
         // Check that the cache events were stored.
         // We do this by examining the cache. Ideally we would make the HTTP request to the /scan route, but we don't know when the directories are being processed.
         Cache::shouldHaveReceived('put')->twice();
-        Cache::shouldHaveReceived('put')->with('scan_progress', ['total_directories' => 1, 'finished_count' => 0]);
-        Cache::shouldHaveReceived('put')->with('scan_progress', ['total_directories' => 1, 'finished_count' => 1]);
+        Cache::shouldHaveReceived('put')->with('scan_progress', ['total_directories' => 1, 'finished_count' => 0, 'job_id' => $job->jobEntry->id]);
+        Cache::shouldHaveReceived('put')->with('scan_progress', ['total_directories' => 1, 'finished_count' => 1, 'job_id' => $job->jobEntry->id]);
 
         // Check that the HTTP route now shows an inactive scan since its complete.
         // This is the only thing we can manually test for the route, but we tested the expected responses with the cache.
@@ -62,7 +62,7 @@ class ScanControllerTest extends TestCase
             ->get(route('scan.status'))
             ->assertOk()
             ->assertJson([
-                'active' => false
+                'active' => false,
             ]);
     }
 
@@ -76,7 +76,7 @@ class ScanControllerTest extends TestCase
 
         // We have to run the job in this thread so we can cancel after the job has been created.
         // If a scans are cancelled before the job is ran, it is reset and the job runs normally.
-        $job = new ScanMusic();
+        $job = new ScanMusic;
         $this->post(route('scan.cancel'));
 
         // Check that the scan was cancelled.
@@ -98,5 +98,4 @@ class ScanControllerTest extends TestCase
         // The scan shouldn't have been cancelled.
         Event::assertNotDispatched(ScanCancelled::class);
     }
-
 }
