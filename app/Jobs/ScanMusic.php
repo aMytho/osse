@@ -185,8 +185,6 @@ class ScanMusic implements ShouldBeUnique, ShouldQueue
             $directoryCounter++;
             Cache::put('scan_progress', ['total_directories' => $this->directoriesToScan->count(), 'finished_count' => $directoryCounter, 'job_id' => $this->jobEntry->id]);
             broadcast(new ScanProgressed($this->currentDirectoryEntry->id, strval($dir), $processor->filesScanned, $processor->filesSkipped, ScanDirStatus::Scanned->value));
-
-            sleep(10);
         }
 
         // Prune any directories that used to exist, but were not in this scan list.
