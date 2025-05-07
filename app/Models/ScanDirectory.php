@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * 
- *
  * @property int $id
  * @property int $scan_job_id
  * @property string $path
@@ -17,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $started_at
  * @property \Illuminate\Support\Carbon|null $finished_at
  * @property-read \App\Models\ScanJob $job
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanDirectory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanDirectory newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanDirectory query()
@@ -28,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanDirectory whereScanJobId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanDirectory whereStartedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanDirectory whereStatus($value)
+ *
  * @mixin \Eloquent
  */
 class ScanDirectory extends Model

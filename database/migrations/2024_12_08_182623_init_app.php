@@ -82,7 +82,6 @@ return new class extends Migration
             $table->enum('status', ['running', 'completed', 'failed', 'cancelled'])->default('running');
             $table->unsignedInteger('total_dirs')->default(0);
             $table->unsignedInteger('scanned_dirs')->default(0);
-            $table->unsignedInteger('total_files')->default(0);
         });
 
         Schema::create('scan_directories', function (Blueprint $table) {

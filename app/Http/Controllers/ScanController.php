@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\ScanMusic;
 use App\Models\ScanDirectory;
+use App\Models\ScanJob;
 use Illuminate\Support\Facades\Cache;
 
 class ScanController extends Controller
@@ -33,10 +34,14 @@ class ScanController extends Controller
             $scanDirectories = ScanDirectory::where('scan_job_id', $scanProgress['job_id'])->get();
 
             return response()->json(array_merge($scanProgress,
-                ['active' => true, 'directories' => $scanDirectories->map(fn ($d) => $d->toBroadcastArray())->toArray()]
+                [
+                    'active' => true,
+                    'directories' => $scanDirectories->map(fn ($d) => $d->toBroadcastArray())->toArray(),
+                    'rootDirectories' => config('scan.directories'),
+                ]
             ));
         } else {
-            return response()->json(['active' => false, 'directories' => config('scan.directories')]);
+            return response()->json(['active' => false, 'rootDirectories' => config('scan.directories')]);
         }
     }
 
@@ -45,5 +50,12 @@ class ScanController extends Controller
         // Stop the current execution. When the next dir is processed, it will exit.
         Cache::put('scan_cancelled', true);
         Cache::forget('scan_progress');
+    }
+
+    public function history()
+    {
+        // Returning all records is OK since most users just scan a few times and its all json data.
+        // We also clear old scans every week.
+        return ScanJob::with('directories')->orderBy('id', 'DESC')->get();
     }
 }

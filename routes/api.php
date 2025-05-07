@@ -45,4 +45,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/scan', [ScanController::class, 'startScan'])->name('scan.start');
     Route::post('/scan/fresh', [ScanController::class, 'startScanFresh'])->name('scan.start-fresh');
     Route::post('/scan/cancel', [ScanController::class, 'cancel'])->name('scan.cancel');
+    Route::get('/scan/history', [ScanController::class, 'history'])->name('scan.history');
 });

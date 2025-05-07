@@ -194,6 +194,7 @@ class ScanMusic implements ShouldBeUnique, ShouldQueue
         broadcast(new ScanCompleted($this->directoriesToScan->count()));
 
         $this->jobEntry->status = ScanStatus::Completed;
+        $this->jobEntry->finished_at = now();
         $this->jobEntry->save();
     }
 

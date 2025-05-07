@@ -6,17 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * 
- *
  * @property int $id
  * @property \Illuminate\Support\Carbon|null $started_at
  * @property \Illuminate\Support\Carbon|null $finished_at
  * @property string $status
  * @property int $total_dirs
  * @property int $scanned_dirs
- * @property int $total_files
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ScanDirectory> $directories
  * @property-read int|null $directories_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanJob newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanJob newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanJob query()
@@ -26,7 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanJob whereStartedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanJob whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanJob whereTotalDirs($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanJob whereTotalFiles($value)
+ *
  * @mixin \Eloquent
  */
 class ScanJob extends Model
@@ -37,7 +35,6 @@ class ScanJob extends Model
         'status',
         'total_dirs',
         'scanned_dirs',
-        'total_files',
     ];
 
     protected $casts = [
