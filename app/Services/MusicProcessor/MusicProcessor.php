@@ -5,6 +5,7 @@ namespace App\Services\MusicProcessor;
 use App\Events\ScanError;
 use App\Models\Album;
 use App\Models\Artist;
+use App\Models\ScanError as ScanErrorModel;
 use App\Models\Track;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -29,16 +30,19 @@ class MusicProcessor
 
     public int $filesSkipped = 0;
 
+    public int $scanDirId;
+
     /**
      * Create a new class instance.
      *
      * @param  Collection<array-key,mixed>  $files
      */
-    public function __construct(Collection $files)
+    public function __construct(Collection $files, int $scanDirID)
     {
         // First, filter out the filetypes. We only want audio.
         $this->files = $files->filter(fn ($f) => in_array($f->getExtension(), $this->supportedExtensions));
         $this->date = now();
+        $this->scanDirId = $scanDirID;
     }
 
     public function scan(): void
@@ -66,6 +70,7 @@ class MusicProcessor
                 $this->filesMetadata->push($metadata);
             } catch (\Throwable $th) {
                 Log::error('Failed to scan '.$file->getRealPath().'. '.$th->getMessage());
+                ScanErrorModel::insert(['scan_directory_id' => $this->scanDirId, 'error' => $th->getMessage(), 'created_at' => now()]);
                 ScanError::dispatch('Failed to scan '.$file->getRealPath().'. '.$th->getMessage());
 
                 // Mark the file as skipped.

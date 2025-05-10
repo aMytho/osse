@@ -14,10 +14,10 @@ class ScanStarted implements ShouldBroadcastNow
 
     /**
      * Create a new event instance.
+     *
+     * @param  array<string,string>  $directories  An array of ScanDirectory models
      */
-    public function __construct(public int $directories)
-    {
-    }
+    public function __construct(public array $directories) {}
 
     /**
      * Get the channels the event should broadcast on.

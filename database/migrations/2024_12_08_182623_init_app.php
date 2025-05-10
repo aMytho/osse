@@ -74,6 +74,33 @@ return new class extends Migration
             $table->foreignId('playlist_id');
             $table->timestamps();
         });
+
+        Schema::create('scan_jobs', function (Blueprint $table) {
+            $table->id();
+            $table->timestamp('started_at')->nullable();
+            $table->timestamp('finished_at')->nullable();
+            $table->enum('status', ['running', 'completed', 'failed', 'cancelled'])->default('running');
+            $table->unsignedInteger('total_dirs')->default(0);
+            $table->unsignedInteger('scanned_dirs')->default(0);
+        });
+
+        Schema::create('scan_directories', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('scan_job_id')->constrained()->onDelete('cascade');
+            $table->string('path');
+            $table->enum('status', ['pending', 'scanning', 'scanned', 'errored'])->default('pending');
+            $table->unsignedInteger('files_scanned')->default(0);
+            $table->unsignedInteger('files_skipped')->default(0);
+            $table->timestamp('started_at')->nullable();
+            $table->timestamp('finished_at')->nullable();
+        });
+
+        Schema::create('scan_errors', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('scan_directory_id')->constrained(table: 'scan_directories')->onDelete('cascade');
+            $table->longText('error');
+            $table->timestamp('created_at');
+        });
     }
 
     /**
