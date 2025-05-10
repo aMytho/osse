@@ -11,6 +11,7 @@ use App\Events\ScanFailed;
 use App\Events\ScanProgressed;
 use App\Events\ScanStarted;
 use App\Models\ScanDirectory;
+use App\Models\ScanError as ScanErrorModel;
 use App\Models\ScanJob;
 use App\Services\MusicProcessor\ArtExtractor;
 use App\Services\MusicProcessor\MusicProcessor;
@@ -212,6 +213,7 @@ class ScanMusic implements ShouldBeUnique, ShouldQueue
             $musicPruner->prune();
         } catch (\Throwable $th) {
             Log::error('Error during scan prune files for directory '.$dirName.'. '.$th->getMessage());
+            ScanErrorModel::insert(['scan_directory_id' => $this->currentDirectoryEntry->id, 'error' => $th->getMessage(), 'created_at' => now()]);
             ScanError::dispatch('Error during scan prune files for directory '.$dirName.'. '.$th->getMessage());
             $this->currentDirectoryEntry->status = ScanDirStatus::Errored;
             $this->currentDirectoryEntry->save();
@@ -226,11 +228,12 @@ class ScanMusic implements ShouldBeUnique, ShouldQueue
      */
     private function processMusic(Collection $files): MusicProcessor
     {
-        $processor = new MusicProcessor($files);
+        $processor = new MusicProcessor($files, $this->currentDirectoryEntry->id);
         try {
             $processor->scan();
         } catch (\Throwable $th) {
             Log::error('Error during scan music processing.'.$th->getMessage());
+            ScanErrorModel::insert(['scan_directory_id' => $this->currentDirectoryEntry->id, 'error' => $th->getMessage(), 'created_at' => now()]);
             ScanError::dispatch('Error during scan music processing'.$th->getMessage());
             $this->currentDirectoryEntry->status = ScanDirStatus::Errored;
             $this->currentDirectoryEntry->save();
@@ -251,6 +254,7 @@ class ScanMusic implements ShouldBeUnique, ShouldQueue
             $artProcessor->storeArt();
         } catch (\Throwable $th) {
             Log::error('Error during track artwork extraction'.$th->getMessage());
+            ScanErrorModel::insert(['scan_directory_id' => $this->currentDirectoryEntry->id, 'error' => $th->getMessage(), 'created_at' => now()]);
             ScanError::dispatch('Error during track artwork extraction.'.$th->getMessage());
             $this->currentDirectoryEntry->status = ScanDirStatus::Errored;
             $this->currentDirectoryEntry->save();

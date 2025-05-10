@@ -56,6 +56,6 @@ class ScanController extends Controller
     {
         // Returning all records is OK since most users just scan a few times and its all json data.
         // We also clear old scans every week.
-        return ScanJob::with('directories')->orderBy('id', 'DESC')->get();
+        return ScanJob::with(['directories', 'directories.errors'])->orderBy('id', 'DESC')->get();
     }
 }

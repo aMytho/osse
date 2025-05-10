@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -71,5 +72,10 @@ class ScanDirectory extends Model
             'filesScanned' => $this->files_scanned,
             'filesSkipped' => $this->files_skipped,
         ];
+    }
+
+    public function errors(): HasMany
+    {
+        return $this->hasMany(ScanError::class, 'scan_directory_id');
     }
 }

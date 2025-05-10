@@ -94,6 +94,13 @@ return new class extends Migration
             $table->timestamp('started_at')->nullable();
             $table->timestamp('finished_at')->nullable();
         });
+
+        Schema::create('scan_errors', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('scan_directory_id')->constrained(table: 'scan_directories')->onDelete('cascade');
+            $table->longText('error');
+            $table->timestamp('created_at');
+        });
     }
 
     /**
