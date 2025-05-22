@@ -2,18 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use Illuminate\Support\Facades\File;
 
 class ConfigController extends Controller
 {
+    public function ping()
+    {
+        return response()->make()->status(200);
+    }
+
     public function directories()
     {
         return config('scan.directories');
     }
 
-    public function ping()
+    public function queue()
     {
-        return response()->make()->status(200);
+        return response()->json([
+            'enabled' => Auth::user()->settings->enable_playback_session,
+        ]);
     }
 
     public function logs()
@@ -37,5 +45,13 @@ class ConfigController extends Controller
         }
 
         return response(content: implode('', $lines));
+    }
+
+    public function allSettings()
+    {
+        return response()->json([
+            'queueEnabled' => Auth::user()->settings->enable_playback_session,
+            'directories' => config('scan.directories'),
+        ]);
     }
 }

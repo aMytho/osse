@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\CoverArtController;
 use App\Http\Controllers\PlaylistController;
+use App\Http\Controllers\QueueController;
 use App\Http\Controllers\ScanController;
 use App\Http\Controllers\TrackController;
 use Illuminate\Support\Facades\Route;
@@ -16,7 +17,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::post('/sse', [AuthController::class, 'authorizeSSE'])->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/config', [ConfigController::class, 'allSettings']);
     Route::get('/config/directories', [ConfigController::class, 'directories']);
+    Route::get('/config/queue', [ConfigController::class, 'queue']);
     Route::get('/config/logs', [ConfigController::class, 'logs']);
     Route::get('/albums', [AlbumController::class, 'index']);
     Route::get('/albums/{album}', [AlbumController::class, 'show']);
@@ -46,4 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/scan/fresh', [ScanController::class, 'startScanFresh'])->name('scan.start-fresh');
     Route::post('/scan/cancel', [ScanController::class, 'cancel'])->name('scan.cancel');
     Route::get('/scan/history', [ScanController::class, 'history'])->name('scan.history');
+
+    Route::get('/queue', [QueueController::class, 'getQueue'])->name('queue.index');
+    Route::post('/queue', [QueueController::class, 'setQueue'])->name('queue.set');
 });

@@ -40,7 +40,7 @@ return new class extends Migration
             'username' => 'osse',
             'password' => 'cassidor',
         ]);
-        $user->save();
+        $user->saveQuietly();
     }
 
     /**
