@@ -42,6 +42,7 @@ class QueueController extends Controller
         $session->update([
             'tracks' => $trackIds,
             'active_track_index' => $request->validated('active_track', $trackIds[0] ?? null),
+            'track_position' => $request->validated('track_position', 0),
         ]);
     }
 

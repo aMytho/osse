@@ -23,6 +23,7 @@ class QueueRequest extends FormRequest
                 'gte:0',
                 'lt:'.count($this->input('ids', 0)),
             ],
+            'track_position' => 'nullable|int|min:0',
         ];
     }
 }
