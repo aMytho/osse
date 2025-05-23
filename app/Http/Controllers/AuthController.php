@@ -66,6 +66,9 @@ class AuthController extends Controller
             'id' => $user->id,
             'username' => $user->username,
             'queue' => $user->playbackSession,
+            'settings' => [
+                'queue' => $user->settings->enable_playback_session,
+            ],
         ]);
     }
 

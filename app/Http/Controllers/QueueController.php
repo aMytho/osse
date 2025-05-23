@@ -42,12 +42,16 @@ class QueueController extends Controller
         $session->update([
             'tracks' => $trackIds,
             'active_track_index' => $request->validated('active_track', $trackIds[0] ?? null),
-            'track_position' => $request->validated('track_position', 0),
         ]);
     }
 
+    /**
+     * Sets the active track and the position in that track (in seconds).
+     */
     public function setActiveTrack(QueueActiveTrackRequest $request)
     {
-        Auth::user()->playbackSession()->update($request->validated());
+        Auth::user()
+            ->playbackSession()
+            ->update($request->validated());
     }
 }

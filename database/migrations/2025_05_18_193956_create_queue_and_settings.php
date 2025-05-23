@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\PlaybackSession;
 use App\Models\UserSetting;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -32,6 +33,12 @@ return new class extends Migration
         ]);
 
         // Make playback session for osse.
+        $now = now();
+        PlaybackSession::insert([
+            'user_id' => 1,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
     }
 
     /**

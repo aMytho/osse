@@ -19,7 +19,7 @@ class QueueActiveTrackRequest extends FormRequest
 
         return [
             'active_track_index' => 'nullable|int|gte:0|lt:'.$trackCount,
-            'track_position' => 'nullable|number',
+            'track_position' => 'nullable|int',
         ];
     }
 }

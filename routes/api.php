@@ -20,7 +20,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/config', [ConfigController::class, 'allSettings']);
     Route::get('/config/directories', [ConfigController::class, 'directories']);
     Route::get('/config/queue', [ConfigController::class, 'queue']);
+    Route::post('/config/queue', [ConfigController::class, 'setQueueSetting']);
     Route::get('/config/logs', [ConfigController::class, 'logs']);
+
     Route::get('/albums', [AlbumController::class, 'index']);
     Route::get('/albums/{album}', [AlbumController::class, 'show']);
     Route::get('/albums/{album}/tracks', [AlbumController::class, 'tracks']);
@@ -51,5 +53,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/scan/history', [ScanController::class, 'history'])->name('scan.history');
 
     Route::get('/queue', [QueueController::class, 'getQueue'])->name('queue.index');
-    Route::post('/queue', [QueueController::class, 'setQueue'])->name('queue.set');
+    Route::post('/queue', [QueueController::class, 'setQueue'])->name('queue.update');
+    Route::post('/queue/active-track', [QueueController::class, 'setActiveTrack'])->name('queue.active-track.update');
 });

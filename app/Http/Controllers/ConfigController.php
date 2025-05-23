@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Auth;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 
 class ConfigController extends Controller
@@ -21,6 +22,15 @@ class ConfigController extends Controller
     {
         return response()->json([
             'enabled' => Auth::user()->settings->enable_playback_session,
+        ]);
+    }
+
+    public function setQueueSetting(Request $request)
+    {
+        $queue = $request->validate(['queue' => 'required|boolean'])['queue'];
+
+        Auth::user()->settings()->update([
+            'enable_playback_session' => $queue,
         ]);
     }
 

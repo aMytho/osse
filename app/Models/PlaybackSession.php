@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model; /**
+use Illuminate\Database\Eloquent\Model;
+
+/**
  * @property int $id
  * @property int $user_id
  * @property int $active_track_index
@@ -20,6 +22,10 @@ use Illuminate\Database\Eloquent\Model; /**
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PlaybackSession whereTrackPosition($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PlaybackSession whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PlaybackSession whereUserId($value)
+ *
+ * @property array<array-key, mixed>|null $tracks
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlaybackSession whereTracks($value)
  */
 class PlaybackSession extends Model
 {

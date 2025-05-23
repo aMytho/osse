@@ -32,6 +32,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUsername($value)
  *
  * @mixin \Eloquent
+ *
+ * @property-read \App\Models\PlaybackSession|null $playbackSession
+ * @property-read \App\Models\UserSetting|null $settings
  */
 class User extends Authenticatable
 {
