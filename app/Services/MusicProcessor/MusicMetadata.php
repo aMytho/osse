@@ -56,6 +56,7 @@ class MusicMetadata
         $this->size = $this->meta->getFileSize();
         $this->duration = $this->meta->getDurationSeconds();
         $this->bitrate = $this->meta->getBitrate();
+        // FIX: This is wrong.
         $this->dateScanned = Carbon::instance($this->meta->getModifiedAt() ?? now());
         $this->hasCoverArt = $this->audio->hasCover();
     }

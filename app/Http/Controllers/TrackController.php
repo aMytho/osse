@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TrackSearchRequest;
 use App\Models\Track;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Support\Str;
 
 class TrackController extends Controller
 {
@@ -40,71 +42,45 @@ class TrackController extends Controller
         return response()->json($tracks);
     }
 
-    public function stream(Track $track, Request $request)
+    public function stream(Track $track)
     {
-        set_time_limit(0);
-        $filePath = $track->location;
+        $id = Auth::user()->id;
 
-        if (! file_exists($filePath)) {
-            return response()->json(['error' => 'File not found'], 404);
+        // TODO: This is functional, but if the same user is litening to 2 devices with the same track, the client may not use the cached version.
+        // Modify so if the user recently preloaded this track (or loaded it normally, return the previous token)
+        $keys = Redis::keys('file_access:'.$id.':'.$track->id.':*');
+        if ($keys) {
+            // Get the token and url. We also refresh the token.
+            $token = substr(strrchr($keys[0], ':'), 1);
+
+            Redis::setex('file_access:'.$id.':'.$track->id.':'.$token, 1800, $track->location);
+
+            return response()->json([
+                'token' => $token,
+                'url' => config('broadcasting.osse-broadcast.url').'stream',
+            ]);
         }
 
-        $fileSize = filesize($filePath);
-        $mimeType = mime_content_type($filePath);
+        // Generate a unique token for auth and allow track access.
+        $token = Str::random(25);
+        $url = config('broadcasting.osse-broadcast.url').'stream?token='.$token.'&id='.$id;
+        // osse_database_file_access:1:1:abc123
+        Redis::setex('file_access:'.$id.':'.$track->id.':'.$token, 1800, $track->location);
 
-        $headers = [
-            'Content-Type' => $mimeType,
-            'Accept-Ranges' => 'bytes',
-            'Content-Length' => $fileSize,
-            'Cache-Control' => 'public, must-revalidate, max-age=0',
-        ];
-
-        if ($request->hasHeader('Range')) {
-            return $this->handleRangeRequest($request, $filePath, $fileSize, $mimeType);
-        }
-
-        return response()->stream(function () use ($filePath) {
-            readfile($filePath);
-        }, 200, $headers);
+        // Return the user the token. They already know the track id.
+        return response()->json([
+            'token' => $token,
+            'url' => config('broadcasting.osse-broadcast.url').'stream',
+        ]);
     }
 
-    private function handleRangeRequest(Request $request, $filePath, $fileSize, $mimeType)
+    /**
+     * Prevents the redis stream key for a track from being expired.
+     */
+    public function reAuthorizeStream(Track $track, Request $request)
     {
-        $range = $request->header('Range');
-        preg_match('/bytes=(\d+)-(\d+)?/', $range, $matches);
-
-        $start = intval($matches[1]);
-        $end = isset($matches[2]) ? intval($matches[2]) : $fileSize - 1;
-
-        if ($end >= $fileSize) {
-            $end = $fileSize - 1;
-        }
-
-        $length = $end - $start + 1;
-
-        $headers = [
-            'Content-Type' => $mimeType,
-            'Accept-Ranges' => 'bytes',
-            'Content-Length' => $length,
-            'Content-Range' => "bytes $start-$end/$fileSize",
-            'Cache-Control' => 'public, must-revalidate, max-age=0',
-        ];
-
-        $response = new StreamedResponse(function () use ($filePath, $start, $length) {
-            $file = fopen($filePath, 'rb');
-            fseek($file, $start);
-            $bytesLeft = $length;
-
-            while (! feof($file) && $bytesLeft > 0) {
-                $buffer = fread($file, min(8192, $bytesLeft));
-                echo $buffer;
-                flush();
-                $bytesLeft -= strlen($buffer);
-            }
-
-            fclose($file);
-        }, 206, $headers);
-
-        return $response;
+        // Clients can technically authorize any token here.
+        // This is fine because we are only trying to protect unauthed users from doing that.
+        Redis::setex('file_access:'.Auth::id().':'.$track->id.':'.$request->get('token', ''), 300, $track->location);
     }
 }
