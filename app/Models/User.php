@@ -75,8 +75,12 @@ class User extends Authenticatable
 
     protected static function booted()
     {
+        // TODO: move these to a static method creation or something like that.
         static::created(function (User $user) {
             $user->playbackSession()->create();
+            $user->settings()->create([
+                'enable_playback_session' => true,
+            ]);
         });
     }
 
