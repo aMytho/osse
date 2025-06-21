@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreConfigRequest;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -62,6 +63,13 @@ class ConfigController extends Controller
         return response()->json([
             'queueEnabled' => Auth::user()->settings->enable_playback_session,
             'directories' => config('scan.directories'),
+        ]);
+    }
+
+    public function storeAllSettings(StoreConfigRequest $request)
+    {
+        Auth::user()->settings()->update([
+            'enable_playback_session' => $request->validated('enableQueue'),
         ]);
     }
 }

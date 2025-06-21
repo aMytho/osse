@@ -18,6 +18,7 @@ Route::post('/sse', [AuthController::class, 'authorizeSSE'])->middleware('auth:s
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/config', [ConfigController::class, 'allSettings']);
+    Route::post('/config', [ConfigController::class, 'storeAllSettings']);
     Route::get('/config/directories', [ConfigController::class, 'directories']);
     Route::get('/config/queue', [ConfigController::class, 'queue']);
     Route::post('/config/queue', [ConfigController::class, 'setQueueSetting']);

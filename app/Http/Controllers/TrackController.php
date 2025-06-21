@@ -53,7 +53,7 @@ class TrackController extends Controller
             // Get the token and url. We also refresh the token.
             $token = substr(strrchr($keys[0], ':'), 1);
 
-            Redis::setex('file_access:'.$id.':'.$track->id.':'.$token, 1800, $track->location);
+            Redis::setex('file_access:'.$id.':'.$track->id.':'.$token, 86400, $track->location);
 
             return response()->json([
                 'token' => $token,
@@ -65,7 +65,7 @@ class TrackController extends Controller
         $token = Str::random(25);
         $url = config('broadcasting.osse-broadcast.url').'stream?token='.$token.'&id='.$id;
         // osse_database_file_access:1:1:abc123
-        Redis::setex('file_access:'.$id.':'.$track->id.':'.$token, 1800, $track->location);
+        Redis::setex('file_access:'.$id.':'.$track->id.':'.$token, 86400, $track->location);
 
         // Return the user the token. They already know the track id.
         return response()->json([
@@ -79,6 +79,7 @@ class TrackController extends Controller
      */
     public function reAuthorizeStream(Track $track, Request $request)
     {
+        // TODO: probably get rid of this if using 1 day auth.
         // Clients can technically authorize any token here.
         // This is fine because we are only trying to protect unauthed users from doing that.
         Redis::setex('file_access:'.Auth::id().':'.$track->id.':'.$request->get('token', ''), 300, $track->location);
