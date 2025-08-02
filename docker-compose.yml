@@ -24,6 +24,7 @@ services:
       - caddy_config:/config # Caddy data
       - "${OSSE_USER_DATA_PATH:?error}:/osse-data"
       - "${OSSE_MUSIC_DIR_1}:/mnt/music:ro" # This mounts a local music folder into the directory.
+      - "./certs/:/certs"
       # You can pass an empty folder if you just want to explore :)
       # NOTE: The music dir variables must also match the ones in osse_broadcast at the bottom of this file!
       # - "${OSSE_MUSIC_DIR_2}:/media/mnt:ro" # This mounts a local music folder into the directory. Uncomment if used.
