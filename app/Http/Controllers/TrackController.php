@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TrackSearchRequest;
 use App\Models\Track;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
@@ -72,16 +71,5 @@ class TrackController extends Controller
             'token' => $token,
             'url' => config('broadcasting.osse-broadcast.url').'stream',
         ]);
-    }
-
-    /**
-     * Prevents the redis stream key for a track from being expired.
-     */
-    public function reAuthorizeStream(Track $track, Request $request)
-    {
-        // TODO: probably get rid of this if using 1 day auth.
-        // Clients can technically authorize any token here.
-        // This is fine because we are only trying to protect unauthed users from doing that.
-        Redis::setex('file_access:'.Auth::id().':'.$track->id.':'.$request->get('token', ''), 300, $track->location);
     }
 }

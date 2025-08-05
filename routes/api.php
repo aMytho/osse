@@ -43,7 +43,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/tracks/search', [TrackController::class, 'search']);
     Route::get('/tracks/{track}/stream', [TrackController::class, 'stream']);
-    Route::post('/tracks/{track}/re-authorize', [TrackController::class, 'reAuthorizeStream']);
     Route::get('/tracks/{track}/cover', [TrackController::class, 'cover']);
 
     Route::get('/cover-art/{cover}', [CoverArtController::class, 'show']);
