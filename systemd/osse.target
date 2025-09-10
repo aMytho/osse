@@ -3,3 +3,6 @@ Description=Osse music server
 Requires=osse-frankenphp.service osse-queue.service osse-broadcast.service
 After=network-online.target
 Wants=network-online.target
+
+[Install]
+WantedBy=multi-user.target

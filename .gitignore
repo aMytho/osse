@@ -25,3 +25,4 @@ osse.db
 public/dist
 storage/osse_setup
 certs/
+user-conf/
