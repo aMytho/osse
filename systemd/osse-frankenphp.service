@@ -1,0 +1,12 @@
+[Unit]
+Description=Osse Frankenphp (server)
+PartOf=osse.target
+
+[Service]
+EnvironmentFile=/home/me/osse/.env
+ExecStart=/usr/local/bin/frankenphp run --config /home/me/osse/systemd/Caddyfile-https-mtls
+WorkingDirectory=/home/me/osse
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

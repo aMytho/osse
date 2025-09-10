@@ -18,3 +18,4 @@ database/test_db.sqlite
 storage/app/public/*
 storage/app/private/*
 storage/logs/*
+systemd/

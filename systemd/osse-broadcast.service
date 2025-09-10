@@ -1,0 +1,12 @@
+[Unit]
+Description=Osse Broadcast
+PartOf=osse.target
+
+[Service]
+EnvironmentFile=/home/me/osse/.env
+WorkingDirectory=/home/me/osse/osse-broadcast
+ExecStart=/home/me/osse/osse-broadcast/osse-broadcast
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

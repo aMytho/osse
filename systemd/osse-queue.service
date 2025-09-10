@@ -1,0 +1,12 @@
+[Unit]
+Description=Osse Queue Worker
+PartOf=osse.target
+
+[Service]
+EnvironmentFile=/home/me/osse/.env
+ExecStart=/home/me/.config/herd-lite/bin/php -d memory_limit=2G artisan queue:work --timeout=0 --memory=2048
+WorkingDirectory=/home/me/osse
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
