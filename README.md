@@ -19,6 +19,8 @@ Osse is a free and open source music player and server. This repository is the *
 
 Docker is the recommended method of installation. You can also use Podman. Alternatively, you can run Osse on your local machine by installing it's dependencies.
 
+Devices with constrained resources should use the manual installation for performance reasons. Systemd files are available in this repo.
+
 - [Docker/Podman installation](https://github.com/aMytho/osse/wiki/Installation-(Docker-Podman))
 - [Manual Installation](https://github.com/aMytho/osse/wiki/Installation-(Manual-System))
 
