@@ -1,15 +1,16 @@
 <?php
 
-use App\Http\Controllers\AlbumController;
-use App\Http\Controllers\ArtistController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ScanController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\TrackController;
+use App\Http\Controllers\QueueController;
 use App\Http\Controllers\ConfigController;
+use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\CoverArtController;
 use App\Http\Controllers\PlaylistController;
-use App\Http\Controllers\QueueController;
-use App\Http\Controllers\ScanController;
-use App\Http\Controllers\TrackController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\PermissionController;
 
 Route::get('/ping', [ConfigController::class, 'ping']);
 Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
@@ -56,4 +57,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/queue', [QueueController::class, 'getQueue'])->name('queue.index');
     Route::post('/queue', [QueueController::class, 'setQueue'])->name('queue.update');
     Route::post('/queue/active-track', [QueueController::class, 'setActiveTrack'])->name('queue.active-track.update');
+
+    // TODO: Add auth
+    Route::post('/admin/permissions/{user}/permissions/{permission}', [PermissionController::class, 'givePermission']);
+    Route::delete('/admin/permissions/{user}/permissions/{permission}', [PermissionController::class, 'removePermission']);
 });

@@ -5,28 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/**
- * @property int $id
- * @property \Illuminate\Support\Carbon|null $started_at
- * @property \Illuminate\Support\Carbon|null $finished_at
- * @property string $status
- * @property int $total_dirs
- * @property int $scanned_dirs
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ScanDirectory> $directories
- * @property-read int|null $directories_count
- *
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanJob newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanJob newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanJob query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanJob whereFinishedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanJob whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanJob whereScannedDirs($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanJob whereStartedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanJob whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanJob whereTotalDirs($value)
- *
- * @mixin \Eloquent
- */
 class ScanJob extends Model
 {
     protected $fillable = [

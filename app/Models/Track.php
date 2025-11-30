@@ -7,47 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-/**
- * @property int $id
- * @property string $title
- * @property int $duration
- * @property int $size
- * @property int|null $bitrate
- * @property string $location
- * @property int|null $album_id
- * @property int|null $year
- * @property int|null $track_number
- * @property int|null $disc_number
- * @property int|null $cover_art_id
- * @property \Illuminate\Support\Carbon $scanned_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Album|null $album
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Artist> $artists
- * @property-read int|null $artists_count
- * @property-read \App\Models\CoverArt|null $coverArt
- *
- * @method static \Database\Factories\TrackFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Track newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Track newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Track query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Track whereAlbumId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Track whereBitrate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Track whereCoverArtId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Track whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Track whereDiscNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Track whereDuration($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Track whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Track whereLocation($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Track whereScannedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Track whereSize($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Track whereTitle($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Track whereTrackNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Track whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Track whereYear($value)
- *
- * @mixin \Eloquent
- */
 class Track extends Model
 {
     /** @use HasFactory<\Database\Factories\TrackFactory> */

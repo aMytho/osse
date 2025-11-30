@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# WARNING: This is a legacy script. Only use it as a reference. It probably won't work.
+# Use docker or the manual install on the github wiki instead.
+
 # Script is used in docker production only. Don't modify anything here.
 
 # HTTPS support. Use one or the other (http or https), not both.
