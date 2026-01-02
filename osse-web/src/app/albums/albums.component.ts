@@ -20,7 +20,7 @@ import { ToastService } from '../toast-container/toast.service';
 export class AlbumsComponent implements OnInit {
   albums: WritableSignal<Album[]> = signal([]);
   filteredAlbums: WritableSignal<Album[]> = signal([]);
-  coverUrlBase: WritableSignal<string> = signal(this.configService.get('apiURL') + "api/tracks/ID/cover");
+  coverUrlBase: WritableSignal<string> = signal(this.configService.get('apiURL') + "tracks/ID/cover");
   loading: WritableSignal<boolean> = signal(true);
 
   search = mdiSearchWeb;

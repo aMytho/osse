@@ -16,7 +16,7 @@ export async function fetcher(url: string, args: Partial<FetcherArgs> = { method
   headers.append('Content-Type', 'application/json');
   headers.append('Accept', 'application/json');
 
-  return fetch((args.rootURL ?? LocatorService.injector.get(ConfigService).get('apiURL') + 'api/') + url, {
+  return fetch((args.rootURL ?? LocatorService.injector.get(ConfigService).get('apiURL')) + url, {
     method: args.method,
     headers: headers,
     body: args.body,

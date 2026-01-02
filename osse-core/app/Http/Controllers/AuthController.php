@@ -81,7 +81,7 @@ class AuthController extends Controller
     {
         $token = Str::random(25);
         $id = Auth::user()->id;
-        $url = config('broadcasting.osse-broadcast.url').'sse';
+        $url = config('broadcasting.osse-broadcast.sse');
         // Give broadcast permission rights for 60 seconds. They have to connect in that window.
         Redis::setex('sse_access:'.$id, 60, $token);
 

@@ -156,7 +156,7 @@ return [
     |
     */
 
-    'domain' => env('OSSE_HOST') ? '.' . env('OSSE_HOST') : env('SESSION_DOMAIN', '.localhost'),
+    'domain' => config('app.domain'),
 
     /*
     |--------------------------------------------------------------------------
@@ -169,7 +169,7 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE', false),
+    'secure' => env('SESSION_SECURE_COOKIE', true),
 
     /*
     |--------------------------------------------------------------------------

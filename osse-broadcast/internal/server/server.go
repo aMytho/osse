@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -21,13 +20,12 @@ func Start(host string, allowOrigin string) {
 	sseHandler := createSseSetup()
 
 	mux := http.NewServeMux()
-	// /sse is the only cors route.
 	mux.Handle("/sse", sseHandler)
 	mux.HandleFunc("/stream", createFilestreamSetup)
 
 	httpServer := &http.Server{
-		Addr:              host,
-		Handler:           cors(mux, allowOrigin),
+		Addr:              ":" + host,
+		Handler:           mux,
 		ReadHeaderTimeout: time.Second * 10,
 	}
 
@@ -116,7 +114,6 @@ func createFilestreamSetup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Make sure the file path is absolute (don't serve relatie files, although that should be impossible with how we do this.)
-	fmt.Println(filePath)
 	if filePath == "" {
 		http.Error(w, "invalid file path", http.StatusBadRequest)
 		return

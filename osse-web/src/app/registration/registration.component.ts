@@ -17,9 +17,6 @@ export class RegistrationComponent implements OnInit {
   public username: string = '';
   public password: string = '';
   public serverFound: WritableSignal<boolean> = signal(false);
-  public url: WritableSignal<string> = signal(window.location.hostname + ':8000');
-  public protocol: WritableSignal<string> = signal('http://');
-  public showConnectionInputs: WritableSignal<boolean> = signal(false);
   public waitingForResponse = signal(false);
 
   constructor(
@@ -28,26 +25,6 @@ export class RegistrationComponent implements OnInit {
     private router: Router,
     private authService: AuthService
   ) { }
-
-  public async saveURL() {
-    if (!this.url().endsWith("/")) {
-      this.url.update(u => u + "/");
-    }
-
-    // Check if the server URL is right.
-    try {
-      this.waitingForResponse.set(true);
-      await fetch(this.protocol().concat(this.url()) + 'api/ping');
-      // Save the URL
-      this.configService.save("apiURL", this.protocol().concat(this.url()));
-      this.notificationService.info("URL saved as " + this.configService.get("apiURL"));
-      this.serverFound.set(true);
-    } catch (e) {
-      this.notificationService.error('Failed to reach server. Confirm that the URL is correct and that the server is running.');
-    } finally {
-      this.waitingForResponse.set(false);
-    }
-  }
 
   public async register() {
     if (this.username.length == 0 || this.password.length == 0) {
@@ -93,7 +70,6 @@ export class RegistrationComponent implements OnInit {
     } catch (e) {
       // This should only happen in dev. If it fails, show the server URL inputs.
       this.notificationService.error('Failed to autodetect server URL. Please enter it.');
-      this.showConnectionInputs.set(true);
     }
   }
 }

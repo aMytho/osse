@@ -56,20 +56,19 @@ class TrackController extends Controller
 
             return response()->json([
                 'token' => $token,
-                'url' => config('broadcasting.osse-broadcast.url').'stream',
+                'url' => config('broadcasting.osse-broadcast.stream'),
             ]);
         }
 
         // Generate a unique token for auth and allow track access.
         $token = Str::random(25);
-        $url = config('broadcasting.osse-broadcast.url').'stream?token='.$token.'&id='.$id;
         // osse_database_file_access:1:1:abc123
         Redis::setex('file_access:'.$id.':'.$track->id.':'.$token, 86400, $track->location);
 
         // Return the user the token. They already know the track id.
         return response()->json([
             'token' => $token,
-            'url' => config('broadcasting.osse-broadcast.url').'stream',
+            'url' => config('broadcasting.osse-broadcast.stream'),
         ]);
     }
 }

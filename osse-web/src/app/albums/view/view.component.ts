@@ -176,7 +176,7 @@ export class ViewComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.album = signal(this.activatedRoute.snapshot.data['album']);
     this.filteredTracks.set(this.album().tracks);
-    this.bg.set(this.configService.get('apiURL') + "api/tracks/" + (this.album().tracks[0]?.id ?? -1) + '/cover')
+    this.bg.set(this.configService.get('apiURL') + "tracks/" + (this.album().tracks[0]?.id ?? -1) + '/cover')
 
     this.backgroundImageService.setBG(this.bg());
 

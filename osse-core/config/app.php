@@ -123,5 +123,6 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    'client_url' => env('OSSE_SERVER_URL', 'http://localhost:8080')
+    'domain' => env('OSSE_DOMAIN', 'osse.localhost'),
+    'full_url' => 'https://' . env('OSSE_DOMAIN', 'osse.localhost'),
 ];

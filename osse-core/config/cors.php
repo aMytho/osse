@@ -19,14 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        // Development angular routes
-        'http://localhost:4200',
-        // Production Routes
-        'http://' . env('OSSE_HOST', 'localhost'),
-        'https://' . env('OSSE_HOST', 'localhost'),
-        env('OSSE_URL_SERVER', "http://localhost")
-    ],
+    'allowed_origins' => [config('app.domain')],
 
     'allowed_origins_patterns' => [],
 
@@ -37,5 +30,4 @@ return [
     'max_age' => 600,
 
     'supports_credentials' => true,
-
 ];

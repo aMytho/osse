@@ -12,11 +12,13 @@ use App\Http\Controllers\TrackController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', [ConfigController::class, 'ping']);
-Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-Route::post('/sse', [AuthController::class, 'authorizeSSE'])->middleware('auth:sanctum');
 
+// Sanctum protected (authed users only)
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', [AuthController::class, 'user']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/sse', [AuthController::class, 'authorizeSSE']);
+
     Route::get('/config', [ConfigController::class, 'allSettings']);
     Route::post('/config', [ConfigController::class, 'storeAllSettings']);
     Route::get('/config/directories', [ConfigController::class, 'directories']);

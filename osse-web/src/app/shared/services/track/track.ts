@@ -166,6 +166,6 @@ export class Track {
   }
 
   get coverURL() {
-    return this.configService.get('apiURL') + "api/cover-art/" + this.track.cover_art_id;
+    return this.configService.get('apiURL') + "cover-art/" + this.track.cover_art_id;
   }
 }

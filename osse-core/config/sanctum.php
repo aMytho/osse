@@ -17,12 +17,7 @@ return [
 
     'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
         '%s%s',
-        'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1,'
-            // Production
-            . env('OSSE_HOST', 'localhost') . ':' . env('OSSE_SERVER_PORT', 80) . ','
-            // Also Production, but without the ports (defaults). Some browsers drop the :80 or :443.
-            . env('OSSE_HOST', 'localhost') . ','
-            . env('OSSE_HOST', 'localhost'),
+        config('app.domain'),
         Sanctum::currentApplicationUrlWithPort()
     ))),
 

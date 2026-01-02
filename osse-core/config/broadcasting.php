@@ -86,6 +86,7 @@ return [
     ],
 
     'osse-broadcast' => [
-        'url' => env('OSSE_BROADCAST_HOST', 'http://localhost:9003') . '/'
+        'sse' => config('app.full_url') . '/broadcast/sse',
+        'stream' => config('app.full_url') . '/broadcast/stream',
     ],
 ];

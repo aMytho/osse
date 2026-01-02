@@ -4,35 +4,6 @@
   <div>
     <p class="text-white">Welcome to the Osse music server!</p>
 
-    @if (showConnectionInputs()) {
-    <p class="text-white">To begin, enter the server URL. This should include the host and port. The default URL has
-      been filled in for you.</p>
-    <form #form="ngForm" (ngSubmit)="saveURL()" class="mt-4 flex flex-col gap-y-4">
-      <div class="flex flex-col gap-2">
-        <label for="protocol" class="text-white font-semibold">Protocol: </label>
-        <select class="select" id="protocol" name="protocol" [(ngModel)]="protocol">
-          <option value="http://" selected>HTTP (default)</option>
-          <option value="https://">HTTPS</option>
-        </select>
-      </div>
-
-      <div class="flex flex-col gap-2">
-        <label for="name" class="text-white font-semibold">Server IP: </label>
-        <input [(ngModel)]="url" required minlength="1" id="name" name="name" class="input" placeholder="localhost:8000"
-          autofocus>
-      </div>
-
-      <div class="basis-full">
-        <button class="btn btn-primary" [disabled]="!form.form.valid || false || waitingForResponse()">
-        Connect
-        @if (waitingForResponse()) {
-        <span class="ml-4 loading loading-dots loading-md"></span>
-        }
-        </button>
-      </div>
-    </form>
-    }
-
     @if (serverFound()) {
     <p class="text-white mt-4">Please login.</p>
 
@@ -60,11 +31,11 @@
     </form>
     }
 
-    @if (!serverFound() && !showConnectionInputs()) {
+    @if (!serverFound()) {
     <p class="animate-pulse text-white mt-4">Connecting to API...</p>
     }
 
-    @if (serverFound() || showConnectionInputs()) {
+    @if (serverFound()) {
     <p class="text-white mt-4 italic">Don't have an account yet? <a class="text-cyan-400 hover:text-cyan-500"
         href="/register">Create One</a></p>
     }
