@@ -1,0 +1,62 @@
+<div class="flex flex-col flex-wrap gap-2 bg-slate-600/60 rounded-lg p-4">
+  <div class="flex flex-wrap gap-x-8 gap-y-4">
+    <button (click)="showAlbumArt()" aria-label="Show Album Art">
+      <img class="bg-slate-300 rounded-lg backdrop-blur-xs w-60 h-60 flex items-end flex-wrap bg-cover drop-shadow-glow"
+        onerror="if (this.src !== 'assets/img/osse.webp') this.src = 'assets/img/osse.webp';" [src]="bg()" alt="">
+      </button>
+
+      <div class="grow flex flex-col">
+        <app-header [text]="title()"></app-header>
+        <p class="italic max-w-80 text-slate-300">{{ artist() || 'Unknown Artist' }}</p>
+
+        <div class="w-full mt-auto">
+          @if (showVisualizer()) {
+            <app-visualizer></app-visualizer>
+          }
+          <hr class="text-white" [ngClass]="{'mt-2': !showVisualizer()}">
+        </div>
+      </div>
+    </div>
+    <div class="grow flex flex-col text-white">
+      <div class="text-center text-white mt-auto">
+        <div class="flex justify-around text-xl gap-x-4">
+          @if (tracksCanBeRestored()) {
+            <button (click)="restoreTracks()" class="rounded-full px-2 py-1 hover:bg-emerald-300/15" title="Restore Tracks">
+              <app-icon rotate="90" [icon]="restore"></app-icon>
+            </button>
+          } @else {
+            <button (click)="clearTracks()" class="rounded-full px-2 py-1 hover:bg-red-300/15 disabled:cursor-not-allowed"
+              title="Clear Tracks" [disabled]="tracks().length == 0">
+            <app-icon rotate="90" [icon]="clear"></app-icon>
+          </button>
+        }
+        <button (click)="toggleRepeat()" class="rounded-full px-2 py-1 hover:bg-emerald-300/15"
+          [title]="repeatTooltip()">
+          <app-icon [active]="repeatActive()" rotate="90" [icon]="repeat()"></app-icon>
+        </button>
+        <button (click)="shuffleTracks()" title="Shuffle" class="rounded-full px-2 py-1 hover:bg-emerald-300/15">
+          <app-icon pull="left" [icon]="shuffle"></app-icon>
+        </button>
+        <button (click)="toggleConsume()" title="Consume" class="rounded-full px-2 py-1 hover:bg-emerald-300/15">
+          <app-icon [active]="consumeState()" pull="left" [icon]="consume"></app-icon>
+        </button>
+        <button (click)="showTrackInfo()" title="Info" class="rounded-full px-2 py-1 hover:bg-emerald-300/15">
+          <app-icon [icon]="info"></app-icon>
+        </button>
+        <button (click)="showPlayerSettings()" title="Player Settings"
+          class="rounded-full px-2 py-1 hover:bg-emerald-300/15">
+          <app-icon [icon]="settings"></app-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (tracks().length > 0) {
+  <div class="bg-slate-700/75 rounded-md mt-8 p-4 flex flex-col gap-y-4">
+    @for (track of tracks(); track track.uuid; let idx = $index) {
+      <app-track (onPlay)="playTrack(idx)" (onRemove)="removeTrack(idx)" (onPlaylistAdd)="addToPlaylist($event)"
+      [track]="track" [activeTrack]="trackService.activeTrack?.uuid == track.uuid"></app-track>
+    }
+  </div>
+}

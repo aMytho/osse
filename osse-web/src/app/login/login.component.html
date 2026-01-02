@@ -1,0 +1,72 @@
+<div>
+  <app-header [type]="2" text="Login"></app-header>
+
+  <div>
+    <p class="text-white">Welcome to the Osse music server!</p>
+
+    @if (showConnectionInputs()) {
+    <p class="text-white">To begin, enter the server URL. This should include the host and port. The default URL has
+      been filled in for you.</p>
+    <form #form="ngForm" (ngSubmit)="saveURL()" class="mt-4 flex flex-col gap-y-4">
+      <div class="flex flex-col gap-2">
+        <label for="protocol" class="text-white font-semibold">Protocol: </label>
+        <select class="select" id="protocol" name="protocol" [(ngModel)]="protocol">
+          <option value="http://" selected>HTTP (default)</option>
+          <option value="https://">HTTPS</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="name" class="text-white font-semibold">Server IP: </label>
+        <input [(ngModel)]="url" required minlength="1" id="name" name="name" class="input" placeholder="localhost:8000"
+          autofocus>
+      </div>
+
+      <div class="basis-full">
+        <button class="btn btn-primary" [disabled]="!form.form.valid || false || waitingForResponse()">
+        Connect
+        @if (waitingForResponse()) {
+        <span class="ml-4 loading loading-dots loading-md"></span>
+        }
+        </button>
+      </div>
+    </form>
+    }
+
+    @if (serverFound()) {
+    <p class="text-white mt-4">Please login.</p>
+
+    <form #loginForm="ngForm" (ngSubmit)="login()" class="mt-4 flex flex-wrap gap-2">
+      <div class="flex flex-col gap-2">
+        <label for="username" class="text-white font-semibold">Username</label>
+        <input type="text" placeholder="osse" class="input" id="username" [(ngModel)]="username" required minlength="1"
+          name="username" autofocus />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="password" class="text-white font-semibold">Password</label>
+        <input class="input" id="password" type="password" [(ngModel)]="password" required minlength="1" name="password"
+          name="username" autofocus placeholder="cassidor" />
+      </div>
+
+      <div class="basis-full mt-2">
+        <button class="btn btn-primary" [disabled]="!loginForm.form.valid || waitingForResponse()">
+        Login
+        </button>
+        @if (waitingForResponse()) {
+        <span class="ml-4 loading loading-dots loading-md"></span>
+        }
+      </div>
+    </form>
+    }
+
+    @if (!serverFound() && !showConnectionInputs()) {
+    <p class="animate-pulse text-white mt-4">Connecting to API...</p>
+    }
+
+    @if (serverFound() || showConnectionInputs()) {
+    <p class="text-white mt-4 italic">Don't have an account yet? <a class="text-cyan-400 hover:text-cyan-500"
+        href="/register">Create One</a></p>
+    }
+  </div>
+</div>

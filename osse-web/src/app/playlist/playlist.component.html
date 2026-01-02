@@ -1,0 +1,21 @@
+<div class="flex flex-wrap">
+  <button (click)="refreshPlaylistList()" class="py-2 bg-slate-500/45 active:bg-slate-500/40 grow rounded-none rounded-l-md text-lg">Refresh <app-icon
+      [icon]="refresh"></app-icon></button>
+  <button (click)="createPlaylist()" class="py-2 bg-slate-500/45 active:bg-slate-500/40 grow rounded-none rounded-r-md text-lg">New <app-icon
+      [icon]="plus"></app-icon></button>
+</div>
+<div class="mt-4">
+  <app-header text="Playlists"></app-header>
+  <div class="flex flex-col gap-y-1 bg-slate-600/60 rounded-lg p-4">
+    @for (playlist of playlists(); track $index) {
+    <div class="text-white text-lg p-2 border-y border-emerald-300 mx-4 flex justify-between">
+      <p>
+        <a routerLink="view/{{playlist.id}}">{{playlist.name}}</a>
+        <span class="ml-2 italic font-thin text-sm"> {{playlist.count}} tracks</span>
+      </p>
+    </div>
+    } @empty {
+    <p class="text-white">No Playlists were found.</p>
+    }
+  </div>
+</div>

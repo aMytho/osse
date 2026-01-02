@@ -1,0 +1,42 @@
+<app-header text="Settings"></app-header>
+
+<div class="bg-slate-600/60 rounded-lg px-4 pb-4 text-white">
+  <!-- Tab headers -->
+  <div class="flex flex-wrap border-b border-white mb-4 bg-emerald-300/5 -mx-4" role="tablist">
+    <button class="px-4 py-2 text-white transition-all duration-200 font-semibold max-sm:w-full"
+      [ngClass]="{'bg-emerald-500/30': activeTab() === 'scan'}" (click)="activeTab.set('scan')" role="tab"
+      [attr.aria-selected]="activeTab() == 'scan'" aria-controls="tab-scan" id="label-scan">
+      Scan
+    </button>
+    <button class="px-4 py-2 text-white transition-all duration-200 font-semibold max-sm:w-full"
+      [ngClass]="{'bg-emerald-500/30': activeTab() === 'scan-history'}" (click)="activeTab.set('scan-history')" role="tab"
+      [attr.aria-selected]="activeTab() == 'scan-history'" aria-controls="tab-scan-history" id="label-scan-history">
+      Scan History
+    </button>
+    <button class="px-4 py-2 text-white transition-all duration-200 font-semibold max-sm:w-full"
+      [ngClass]="{'bg-emerald-500/30': activeTab() === 'preferences'}" (click)="activeTab.set('preferences')" role="tab"
+      [attr.aria-selected]="activeTab() == 'preferences'" aria-controls="tab-preferences" id="label-preferences">
+      Preferences
+    </button>
+    <button class="px-4 py-2 text-white transition-all duration-200 font-semibold max-sm:w-full"
+      [ngClass]="{'bg-emerald-500/30': activeTab() === 'logs'}" (click)="activeTab.set('logs')" role="tab"
+      [attr.aria-selected]="activeTab() == 'logs'" aria-controls="tab-logs" id="label-logs">
+      Logs
+    </button>
+  </div>
+  @if (activeTab() === 'scan') {
+  <div class="space-y-12" role="tabpanel" aria-labelledby="label-scan" id="tab-scan">
+    <app-settings-scan></app-settings-scan>
+  </div>
+  } @else if (activeTab() === 'scan-history') {
+    <app-settings-scan-history></app-settings-scan-history>
+  } @else if (activeTab() === 'preferences') {
+  <div class="space-y-12 pb-12" role="tabpanel" aria-labelledby="label-preferences" id="tab-preferences">
+    <app-settings-preferences></app-settings-preferences>
+  </div>
+  } @else if (activeTab() === 'logs') {
+  <div class="space-y-12" role="tabpanel" aria-labelledby="label-logs" id="tab-logs">
+    <app-settings-logs></app-settings-logs>
+  </div>
+  }
+</div>

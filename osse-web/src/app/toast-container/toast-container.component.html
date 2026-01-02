@@ -1,0 +1,18 @@
+<section class="flex flex-col gap-y-2 max-w-[50vh]">
+  @for (toast of toastService.toasts(); track toast.id) {
+  <output role="status">
+    <button class="relative bg-slate-700 p-4 max-lg:p-3 rounded-md border-l-2 transition-opacity duration-300 w-full"
+      [ngClass]="{
+      'border-l-blue-300': toast.type == NotifyType.Info,
+      'border-l-red-300': toast.type == NotifyType.Error,
+      'opacity-0': toast.closed,
+      }" [ariaHidden]="toast.closed" (click)="removeToast(toast.id)">
+      <p class="text-white text-left">{{toast.message}}</p>
+      <div aria-hidden="true" class="absolute top-0 left-0 h-1 w-full bg-slate-400 rounded-t-md">
+      </div>
+      <div aria-hidden="true" class="absolute top-0 left-0 h-1 w-full bg-slate-300 rounded-t-md toast-animation-bar"
+        [ngStyle]="{'animation-duration': toast.duration + 's'}"></div>
+    </button>
+  </output>
+  }
+</section>

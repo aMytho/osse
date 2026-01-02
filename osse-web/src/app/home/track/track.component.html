@@ -1,0 +1,46 @@
+<div class="flex justify-between rounded-lg shadow-xs shadow-cyan-950" [ngClass]="{
+    'hover:bg-emerald-400/10  bg-slate-400/10': !activeTrack(),
+    'bg-slate-400/15 hover:bg-slate-400/20 border-r-emerald-400 border-b-emerald-400 border-r border-emerald-200 border-2': activeTrack()
+  }">
+  @if (mode == 'view') {
+  <div class="grow">
+    <button (click)="onPlay.emit()" class="w-full p-4" (contextmenu)="toggleViewWithEvent($event)"
+      [attr.aria-label]="'Play' + track.title + ' by ' + (track.artistPrimary()?.name ?? 'unknown artist')">
+      <p class="text-left">
+        <span class="font-semibold text-lg text-slate-50">{{ track.title }}
+        </span>
+        <span class="hidden"> - </span>
+        <br>
+        <span class="text-slate-300">
+          {{track.artistPrimary()?.name ?? ''}}
+        </span>
+      </p>
+    </button>
+  </div>
+  <div class="flex place-items-center p-4">
+    <div class="text-slate-100 font-semibold text-lg cursor-pointer">
+      <button type="button" (click)="toggleView()" title="Options" aria-label="Show Options Menu" accesskey="o">
+        <app-icon class="cursor-pointer fill-white hover:fill-emerald-300" pull="left" [icon]="dots"></app-icon>
+      </button>
+    </div>
+  </div>
+  } @else {
+  <div class="flex flex-wrap items-center place-items-center gap-x-2 w-full p-4">
+    <button class="btn btn-primary py-6 group" (click)="playTrack()" title="Play Track" aria-label="Play Track"
+      accesskey="p">
+      <app-icon class="group-hover:opacity-95" [icon]="play" align="middle"></app-icon>
+    </button>
+    <button class="btn btn-error btn-outline py-6 group" (click)="removeTrack()" title="Remove Track" aria-label="Remove Track"
+      accesskey="d">
+      <app-icon class="group-hover:opacity-95" [icon]="trash" align="middle"></app-icon>
+    </button>
+    <button class="btn btn-secondary btn-outline py-6 group" (click)="addToPlaylist()" title="Add to Playlist"
+      aria-label="Add to Playlist" accesskey="a">
+      <app-icon class="group-hover:opacity-95" [icon]="playlist" align="middle"></app-icon>
+    </button>
+    <button class="btn btn-neutral btn-soft py-6 group" (click)="toggleView()" title="Cancel" aria-label="Cancel" accesskey="c">
+      <app-icon class="group-hover:opacity-95" [icon]="cancel" align="middle"></app-icon>
+    </button>
+  </div>
+  }
+</div>

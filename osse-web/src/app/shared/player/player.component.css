@@ -1,0 +1,717 @@
+#track-title-container {
+    overflow: hidden;    /* Hides the scrollbar */
+}
+
+#track-title-container p {
+    animation: scroll-text 10s linear infinite;
+}
+
+@keyframes scroll-text {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Animate the point (cursor) movement */
+#point {
+    transition-duration: 1s;
+    transition-property: left;
+}
+
+/*
+    A linear gradient with variables for each percent
+    CSS variables and properties support transitions in updated browsers
+*/
+#rendered {
+    background: rgb(2,0,36);
+    background: linear-gradient(
+        90deg,
+        var(--bar-c-0) 0%, var(--bar-c-1) 1%, var(--bar-c-2) 2%,
+        var(--bar-c-3) 3%, var(--bar-c-4) 4%, var(--bar-c-5) 5%,
+        var(--bar-c-6) 6%, var(--bar-c-7) 7%, var(--bar-c-8) 8%,
+        var(--bar-c-9) 9%, var(--bar-c-10) 10%, var(--bar-c-11) 11%,
+        var(--bar-c-12) 12%, var(--bar-c-13) 13%, var(--bar-c-14) 14%,
+        var(--bar-c-15) 15%, var(--bar-c-16) 16%, var(--bar-c-17) 17%,
+        var(--bar-c-18) 18%, var(--bar-c-19) 19%, var(--bar-c-20) 20%,
+        var(--bar-c-21) 21%, var(--bar-c-22) 22%, var(--bar-c-23) 23%,
+        var(--bar-c-24) 24%, var(--bar-c-25) 25%, var(--bar-c-26) 26%,
+        var(--bar-c-27) 27%, var(--bar-c-28) 28%, var(--bar-c-29) 29%,
+        var(--bar-c-30) 30%, var(--bar-c-31) 31%, var(--bar-c-32) 32%,
+        var(--bar-c-33) 33%, var(--bar-c-34) 34%, var(--bar-c-35) 35%,
+        var(--bar-c-36) 36%, var(--bar-c-37) 37%, var(--bar-c-38) 38%,
+        var(--bar-c-39) 39%, var(--bar-c-40) 40%, var(--bar-c-41) 41%,
+        var(--bar-c-42) 42%, var(--bar-c-43) 43%, var(--bar-c-44) 44%,
+        var(--bar-c-45) 45%, var(--bar-c-46) 46%, var(--bar-c-47) 47%,
+        var(--bar-c-48) 48%, var(--bar-c-49) 49%, var(--bar-c-50) 50%,
+        var(--bar-c-51) 51%, var(--bar-c-52) 52%, var(--bar-c-53) 53%,
+        var(--bar-c-54) 54%, var(--bar-c-55) 55%, var(--bar-c-56) 56%,
+        var(--bar-c-57) 57%, var(--bar-c-58) 58%, var(--bar-c-59) 59%,
+        var(--bar-c-60) 60%, var(--bar-c-61) 61%, var(--bar-c-62) 62%,
+        var(--bar-c-63) 63%, var(--bar-c-64) 64%, var(--bar-c-65) 65%,
+        var(--bar-c-66) 66%, var(--bar-c-67) 67%, var(--bar-c-68) 68%,
+        var(--bar-c-69) 69%, var(--bar-c-70) 70%, var(--bar-c-71) 71%,
+        var(--bar-c-72) 72%, var(--bar-c-73) 73%, var(--bar-c-74) 74%,
+        var(--bar-c-75) 75%, var(--bar-c-76) 76%, var(--bar-c-77) 77%,
+        var(--bar-c-78) 78%, var(--bar-c-79) 79%, var(--bar-c-80) 80%,
+        var(--bar-c-81) 81%, var(--bar-c-82) 82%, var(--bar-c-83) 83%,
+        var(--bar-c-84) 84%, var(--bar-c-85) 85%, var(--bar-c-86) 86%,
+        var(--bar-c-87) 87%, var(--bar-c-88) 88%, var(--bar-c-89) 89%,
+        var(--bar-c-90) 90%, var(--bar-c-91) 91%, var(--bar-c-92) 92%,
+        var(--bar-c-93) 93%, var(--bar-c-94) 94%, var(--bar-c-95) 95%,
+        var(--bar-c-96) 96%, var(--bar-c-97) 97%, var(--bar-c-98) 98%,
+        var(--bar-c-99) 99%
+        );
+
+    transition: 500ms ease-in;
+    transition-property:
+        --bar-c-0, --bar-c-1, --bar-c-2,
+        --bar-c-3, --bar-c-4, --bar-c-5,
+        --bar-c-6, --bar-c-7, --bar-c-8,
+        --bar-c-9, --bar-c-10, --bar-c-11,
+        --bar-c-12, --bar-c-13, --bar-c-14,
+        --bar-c-15, --bar-c-16, --bar-c-17,
+        --bar-c-18, --bar-c-19, --bar-c-20,
+        --bar-c-21, --bar-c-22, --bar-c-23,
+        --bar-c-24, --bar-c-25, --bar-c-26,
+        --bar-c-27, --bar-c-28, --bar-c-29,
+        --bar-c-30, --bar-c-31, --bar-c-32,
+        --bar-c-33, --bar-c-34, --bar-c-35,
+        --bar-c-36, --bar-c-37, --bar-c-38,
+        --bar-c-39, --bar-c-40, --bar-c-41,
+        --bar-c-42, --bar-c-43, --bar-c-44,
+        --bar-c-45, --bar-c-46, --bar-c-47,
+        --bar-c-48, --bar-c-49, --bar-c-50,
+        --bar-c-51, --bar-c-52, --bar-c-53,
+        --bar-c-54, --bar-c-55, --bar-c-56,
+        --bar-c-57, --bar-c-58, --bar-c-59,
+        --bar-c-60, --bar-c-61, --bar-c-62,
+        --bar-c-63, --bar-c-64, --bar-c-65,
+        --bar-c-66, --bar-c-67, --bar-c-68,
+        --bar-c-69, --bar-c-70, --bar-c-71,
+        --bar-c-72, --bar-c-73, --bar-c-74,
+        --bar-c-75, --bar-c-76, --bar-c-77,
+        --bar-c-78, --bar-c-79, --bar-c-80,
+        --bar-c-81, --bar-c-82, --bar-c-83,
+        --bar-c-84, --bar-c-85, --bar-c-86,
+        --bar-c-87, --bar-c-88, --bar-c-89,
+        --bar-c-90, --bar-c-91, --bar-c-92,
+        --bar-c-93, --bar-c-94, --bar-c-95,
+        --bar-c-96, --bar-c-97, --bar-c-98,
+        --bar-c-99;
+    }
+
+@property --point-played {
+    syntax: "<color>";
+    inherits: false;
+    initial-value: rgb(110, 231, 183);
+}
+
+@property --point-buffered {
+    syntax: "<color>";
+    inherits: false;
+    initial-value: rgb(156, 163, 175);
+}
+
+/* Define properties */
+@property --bar-c-0 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-1 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-2 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-3 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-4 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-5 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-6 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-7 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-8 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-9 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-10 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-11 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-12 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-13 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-14 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-15 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-16 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-17 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-18 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-19 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-20 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-21 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-22 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-23 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-24 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-25 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-26 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-27 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-28 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-29 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-30 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-31 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-32 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-33 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-34 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-35 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-36 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-37 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-38 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-39 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-40 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-41 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-42 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-43 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-44 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-45 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-46 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-47 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-48 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-49 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-50 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-51 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-52 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-53 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-54 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-55 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-56 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-57 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-58 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-59 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-60 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-61 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-62 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-63 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-64 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-65 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-66 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-67 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-68 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-69 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-70 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-71 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-72 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-73 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-74 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-75 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-76 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-77 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-78 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-79 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-80 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-81 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-82 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-83 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-84 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-85 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-86 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-87 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-88 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-89 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-90 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-91 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-92 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-93 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-94 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-95 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-96 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-97 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-98 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }
+
+  @property --bar-c-99 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: transparent;
+  }

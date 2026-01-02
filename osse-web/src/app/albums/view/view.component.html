@@ -1,0 +1,71 @@
+<div class="text-white">
+  <div class="flex justify-center flex-wrap gap-x-12 gap-y-8">
+    <div class="basis-2/5 flex place-content-center">
+      <button (click)="showAlbumArt()" aria-label="Show album art">
+        <img
+          class="bg-slate-300 rounded-lg backdrop-blur-xs w-40 h-40 bg-cover drop-shadow-glow cursor-pointer border border-white border-solid"
+          [src]="bg()" alt="" onerror="if (this.src !== 'assets/img/osse.webp') this.src = 'assets/img/osse.webp';">
+      </button>
+    </div>
+    <div>
+      <app-header class="font-bold text-6xl" [text]="album().name"></app-header>
+      <div class="flex flex-wrap justify-between items-center gap-8">
+        <div class="flex flex-wrap gap-4">
+        <p class="italic font-light">
+          {{album().artist[0]?.name ?? albumTrackArtist() ?? "Unknown Artist"}}
+        </p>
+        <p class="font-light">{{totalDuration}} Minutes</p>
+        @if (album().album.year) {
+        <p class="font-light">{{album().album.year}}</p>
+        }
+        </div>
+      </div>
+      <button (click)="addAll()" class="btn btn-primary mt-6">
+        Play All
+      </button>
+    </div>
+  </div>
+  <div class="mt-4">
+    <div class="flex flex-wrap justify-between mx-2 gap-2">
+      <p class="self-center max-sm:hidden">{{album().tracks.length}} Tracks</p>
+      <div class="flex flex-wrap items-center gap-x-1 gap-y-2">
+        <div class="flex items-center gap-x-1">
+          <label for="filter">
+            <app-icon aria-hidden="true" class="md:hidden cursor-pointer hover:text-emerald-300" pull="left"
+              [icon]="filter"></app-icon>
+            <span class="max-md:hidden">Filter: </span>
+          </label>
+          <select id="filter" [(ngModel)]="chosenFilter" class="select select-neutral" (change)="sortTracks()">
+            <option [value]="filterType.TrackNumber" selected>Track Number (default)</option>
+            <option [value]="filterType.DiscNumber">Disc Number</option>
+            <option [value]="filterType.Alphabetical">Alphabetical</option>
+            <option [value]="filterType.Random">Random</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-x-1">
+          <label for="search"><app-icon aria-label="Search" class="cursor-pointer hover:text-emerald-300" pull="left"
+              [icon]="search"></app-icon></label>
+          <input (input)="filterTracks($event)" class="input input-neutral" type="text" id="search"
+            placeholder="Never gonna give you up..." (click)="sortTracks()">
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-around gap-x-2 my-2" [ngClass]="{'pointer-events-none opacity-45 my-1': !editing()}">
+      <button (click)="clearSelectedTracks()"
+        class="font-semibold text-lg text-white hover:text-red-500 p-2 rounded-md bg-transparent group">
+        Close
+        <app-icon [icon]="close"></app-icon></button>
+      <button (click)="addSelectedTracksToPlaylist()"
+        class="font-semibold text-lg text-white p-2 rounded-md bg-transparent">Add to Playlist<app-icon
+          [icon]="pencil"></app-icon></button>
+      <button (click)="playSelectedTracks()"
+        class="font-semibold text-lg text-white p-2 rounded-md bg-transparent">Play<app-icon
+          [icon]="play"></app-icon></button>
+    </div>
+    <div>
+      <app-track-matrix [tracks]="filteredTracks()" (onClick)="addTrack($event)"
+        (onModeChanged)="handleModeChange($event)" (onEmptySelection)="handleEmptySelection()"></app-track-matrix>
+    </div>
+  </div>
+</div>

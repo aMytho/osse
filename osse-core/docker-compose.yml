@@ -68,4 +68,3 @@ volumes:
   valkey_data:
   caddy_data:
   caddy_config:
-

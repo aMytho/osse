@@ -1,0 +1,20 @@
+<div class="mt-4 text-white">
+  <div class="grid grid-cols-2 p-4">
+    @if (trackInfo) {
+    <p>Title: </p>
+    <p>{{trackInfo.title}}</p>
+    <p>Duration: </p>
+    <p>{{trackInfo.durationFormatted}}</p>
+    <p>Artist: </p>
+    <p>{{trackInfo.artistNames()}}</p>
+    <p>Track Number: </p>
+    <p>{{trackInfo.trackNumber ?? 'None'}}</p>
+    <p>Disc Number: </p>
+    <p>{{trackInfo.discNumber ?? 'None'}}</p>
+    }
+  </div>
+
+  <div class="flex place-content-end gap-x-2 mt-2">
+    <button class="btn btn-neutral" (click)="close()">Close</button>
+  </div>
+</div>
