@@ -2,7 +2,7 @@
 echo -e "\n🎵 Osse Music Server\n"
 
 if [ "$EUID" -ne 0 ]; then
-  echo "🔐 Osse needs elevated privileges to bind to ports 80/443."
+  echo "🔐 Osse needs elevated privileges to bind to ports 80/443 and to give the web server write access to osse config."
   echo "You may be prompted for your (sudo) password."
   sudo -v
 fi
@@ -16,6 +16,22 @@ fi
 set -a
 source .env
 set +a
+
+# Make sure osse config dir exists
+eval "LARAVEL_STORAGE_PATH=$LARAVEL_STORAGE_PATH"
+DB_DATABASE="$LARAVEL_STORAGE_PATH/database.sqlite"
+mkdir $LARAVEL_STORAGE_PATH -p
+mkdir "$LARAVEL_STORAGE_PATH"/storage -p
+mkdir "$LARAVEL_STORAGE_PATH"/logs -p
+touch "$LARAVEL_STORAGE_PATH"/logs/laravel.log
+mkdir "$LARAVEL_STORAGE_PATH"/framework/cache -p
+mkdir "$LARAVEL_STORAGE_PATH"/framework/sessions -p
+mkdir "$LARAVEL_STORAGE_PATH"/framework/views -p
+touch "$DB_DATABASE"
+
+# Make them read/writable
+# TODO: Figure out which user needs what access.
+sudo chmod -R 755 "$LARAVEL_STORAGE_PATH"
 
 require() {
     command -v "$1" >/dev/null 2>&1 || {
@@ -93,7 +109,7 @@ copy_api_env() {
     fi
 
     # Add user vars to end of api env
-    echo -e "OSSE_DIRECTORIES=\"$OSSE_DIRECTORIES\"\nALLOW_REGISTRATION=\"$OSSE_ALLOW_REGISTRATION\"" >> osse-core/.env
+    echo -e "OSSE_DIRECTORIES=\"$OSSE_DIRECTORIES\"\nALLOW_REGISTRATION=\"$OSSE_ALLOW_REGISTRATION\"\nLARAVEL_STORAGE_PATH=\"$LARAVEL_STORAGE_PATH\"\nDB_DATABASE=\"$DB_DATABASE\"" >> osse-core/.env
     echo "Osse .env file generated"
 }
 
@@ -129,13 +145,22 @@ run_broadcast() {
     PIDS+=($!)
 }
 
+run_api_queue() {
+    # Osse queue needs a special ini file to increase memory limit.
+    echo "🚀 Starting Osse Queue"
+    (PHP_INI_SCAN_DIR="$PWD/deployment" cd osse-core && frankenphp php-cli artisan queue:work --timeout=0 --memory=2048)
+    PIDS+=($!)
+}
+
 case "$1" in
     dev)
         copy_api_env
         generate_caddy
+        run_api_migrations
         start_broadcast
         start_frontend_dev
         start_frankenphp
+        run_api_queue
         wait
         ;;
     run)
@@ -144,10 +169,10 @@ case "$1" in
         generate_caddy
         run_broadcast
         start_frankenphp
+        run_api_queue
         wait
         ;;
     build)
-        run_api_migrations
         build_frontend
         build_broadcast
         copy_api_env
