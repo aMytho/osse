@@ -17,8 +17,10 @@ jobs:
       with:
         php-version: '8.4'
     - uses: actions/checkout@v4
+    - name: Move to osse-core
+      run: cd osse-core
     - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      run: php -r "file_exists('.env') || copy('.env.testing', '.env');"
     - name: Install Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
     - name: Generate key

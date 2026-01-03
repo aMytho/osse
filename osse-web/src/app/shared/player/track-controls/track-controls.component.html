@@ -1,0 +1,9 @@
+<div class="flex gap-x-3 text-lg items-center">
+  <button (click)="onPreviousTrack()" class="rounded-full px-2 py-1 hover:bg-emerald-300/15">
+    <app-icon [icon]="back"></app-icon>
+  </button>
+  <app-play-pause></app-play-pause>
+  <button (click)="onNextTrack()" class="rounded-full px-2 py-1 hover:bg-emerald-300/15">
+    <app-icon [icon]="forward"></app-icon>
+  </button>
+</div>

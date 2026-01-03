@@ -1,0 +1,67 @@
+@media (width >=640px) {
+
+  #loading-bar,
+  #background-loading-bar {
+    width: calc(100% - 8rem);
+  }
+}
+
+@media (max-width: 640px) {
+
+  #loading-bar,
+  #background-loading-bar {
+    width: 100%;
+  }
+}
+
+
+/* Top loading bar */
+.loading-bar {
+  animation: loading-animation 2s ease-out forwards;
+  animation-play-state: running;
+  transform-origin: left;
+  will-change: transform;
+}
+
+#loading-bar:not(.loading-bar) {
+  transform: scaleX(0);
+}
+
+/* Bottom loading bar */
+
+.background-loading-bar {
+  animation: loading-fade-in 1s;
+  animation-play-state: running;
+  will-change: opacity;
+}
+
+#background-loading-bar:not(.background-loading-bar) {
+  opacity: 0;
+}
+
+/* This is for the fade out used by both bars. */
+.opacity-transition {
+  transition: opacity 500ms linear;
+}
+
+/* Main bar loading animtion */
+@keyframes loading-animation {
+  0% {
+    transform: scaleX(0);
+  }
+
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+/* Background fade in animation */
+@keyframes loading-fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

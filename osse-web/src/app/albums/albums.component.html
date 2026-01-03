@@ -1,0 +1,55 @@
+<app-header text="Albums"></app-header>
+<div class="flex flex-wrap justify-between mx-2 gap-2 items-center text-white mb-4">
+  <p class="self-center">{{loading() ? 'Loading' : albums().length}} Albums</p>
+  <div class="flex flex-wrap items-center gap-x-1 gap-y-2">
+    <div class="flex items-center gap-x-1">
+      <label for="search"><app-icon aria-label="Search" class="cursor-pointer hover:text-emerald-300" pull="left"
+          [icon]="search"></app-icon></label>
+      <input (input)="filterAlbums($event)" class="bg-transparent border border-emerald-300 rounded-md py-1 px-2 shrink"
+        type="text" id="search" placeholder="Album search...">
+    </div>
+  </div>
+</div>
+@if (!loading()) {
+<div class="w-full flex flex-wrap items-center justify-around gap-x-12 gap-y-6 sm:pl-16 bg-slate-600/60 rounded-lg p-4">
+  @for (album of filteredAlbums(); track $index) {
+  <div
+    class="text-white flex flex-col items-center w-60 group relative bg-slate-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-200 hover:drop-shadow-xl">
+
+    <!-- Album Cover -->
+    <a routerLink="view/{{album.id}}" class="block w-full h-60">
+      <img [src]="coverUrlBase().replace('ID', album.tracks[0]?.id?.toString() ?? '-1')" alt="" loading="lazy"
+        class="w-full h-full object-cover rounded-t-lg hover:border hover:border-emerald-300 hover:border-solid hover:brightness-105 hover:filter"
+        onerror="if (this.src !== 'assets/img/osse.webp') this.src = 'assets/img/osse.webp';">
+    </a>
+
+    <!-- Info & Actions -->
+    <div class="w-full p-3 max-sm:p-2 flex flex-col items-center">
+      <a routerLink="view/{{album.id}}" class="w-full">
+        <p class="text-center text-base max-sm:text-sm font-semibold truncate w-full" title="{{album.name}}">
+          {{album.name}}
+        </p>
+        <p class="text-sm max-sm:text-xs text-slate-300 truncate w-full text-center h-[1.4286rem]"
+          title="{{album.tracks[0]?.artistNames() ?? ''}}">
+          {{album.tracks[0]?.artistNames() ?? ''}}
+        </p>
+      </a>
+      <!-- Hover Actions -->
+      <div class="flex gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity touch-show">
+        <button class="btn btn-primary" title="Play" (click)="playAlbum(album.id)">
+          <app-icon [icon]="play"></app-icon> Play All
+        </button>
+      </div>
+    </div>
+  </div>
+  } @empty {
+  <div class="w-full bg-slate-600/60 rounded-lg p-4">
+    <p class="text-white">No Albums Exist...</p>
+  </div>
+  }
+</div>
+} @else {
+<div class="w-full bg-slate-600/60 rounded-lg p-4">
+  <p class="text-white">Loading Albums</p>
+</div>
+}

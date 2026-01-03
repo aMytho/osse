@@ -1,0 +1,11 @@
+<div>
+  @if (loadingPlaylists()) {
+    <p class="animate-pulse">Fetching playlist information...</p>
+  } @else {
+    @if (playlists().length == 0) {
+      <app-create-new-playlist-for-tracks [tracks]="tracks" (onClose)="close()"></app-create-new-playlist-for-tracks>
+    } @else {
+      <app-add-multiple-tracks-to-playlist [tracks]="tracks" (onClose)="close()"></app-add-multiple-tracks-to-playlist>
+    }
+  }
+</div>

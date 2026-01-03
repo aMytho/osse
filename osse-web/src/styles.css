@@ -1,0 +1,70 @@
+/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+@plugin "daisyui" {
+  themes: night --default;
+}
+
+@layer utilities {
+  .drop-shadow-glow {
+    --tw-drop-shadow: drop-shadow(0 0px 10px rgba(255, 255, 255, 0.35)) drop-shadow(0 0px 35px rgba(255, 255, 255, 0.2));
+    --tw-filter: var(--tw-drop-shadow);
+    filter: var(--tw-filter);
+  }
+}
+
+@layer base {
+  ::placeholder {
+    @apply text-slate-400 opacity-70;
+  }
+}
+
+html {
+  @apply bg-inherit;
+}
+
+:root {
+  --tw-text-base-size: 1.05rem;
+  --color-primary: HSL(165, 50%, 55%);
+}
+
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+  vertical-align: text-bottom !important;
+}
+
+.loading-matrix {
+  @apply animate-pulse pointer-events-none;
+}
+
+dialog::backdrop {
+  background-color: black !important;
+  opacity: 0.7 !important;
+  padding: 0;
+  margin: 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+input.input:focus {
+  outline: 1px solid oklch(90.5% 0.093 164.15) !important;
+  border-color: transparent;
+}
+
+.toggle:checked+.label {
+  color: white;
+  transition: color 0.3s ease;
+}
+
+.toggle:not(:checked)+.label {
+  color: color-mix(in oklab, currentColor 85%, transparent);
+  transition: color 0.3s ease;
+}

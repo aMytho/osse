@@ -1,0 +1,129 @@
+<app-header [type]="2" text="Scan Tracks"></app-header>
+
+@if (fetchingScanStatus()) {
+<p class="animate-pulse">Fetching scan status. Please wait...</p>
+}
+@if (!fetchingScanStatus() && !scanInProgress()) {
+<h3 class="divider">
+  Scan Settings
+</h3>
+
+@if (scanCompleted()) {
+  <div class="alert alert-success rounded-md" role="alert">
+    <p>Scan completed, enjoy!</p>
+  </div>
+}
+
+<p class="my-2 ml-2">You can start a track scan from the web GUI. This will scan the below directories as listed in
+  your .env file. Each directory will be scanned recursively. This means each directory should not be the parent of a directory listed here.</p>
+<p class="my-2 ml-2">For example, if I have 20 folders in the "Music" directory, I would simply use the "Music" directory, not 20 separate entries.</p>
+
+<div class="flex flex-wrap gap-8">
+  <fieldset class="fieldset bg-base-100 border-base-300 rounded-box w-64 border p-4 gap-4">
+    <button class="btn btn-primary" [disabled]="scanInProgress() || waitingForScanConfirmation() || rootDirectories().length == 0" (click)="requestScan()">
+      Start Scan
+      @if(waitingForScanConfirmation()) {
+      <span class="loading loading-dots loading-md"></span>
+      }
+    </button>
+
+    <legend class="fieldset-legend">Scan Options</legend>
+    <label class="label">
+      <input type="checkbox" class="toggle toggle-accent" [(ngModel)]="freshScan" />
+      Fresh Scan *
+    </label>
+  </fieldset>
+
+  <ul class="mb-2 ml-4 list-disc list-inside grid grid-cols-3 max-lg:grid-cols-2 max-sm:grid-cols-1 place-self-center">
+    @for (dir of rootDirectories(); track $index) {
+    <li class="my-1">{{dir}}</li>
+    } @empty {
+    <li class="my-1">No directories found...</li>
+    }
+  </ul>
+</div>
+
+<p class="mt-2 font-light italic">
+  *A fresh scan will empty the entire database before scanning. You should only use this option if a metadata update has occured (such as adding new fields to tracks), or if you are having issues with the scanner.
+</p>
+}
+
+@if (!fetchingScanStatus() && scanInProgress()) {
+  <h3 class="divider">
+    Active Scan
+  </h3>
+
+  <div class="alert alert-info rounded-md" role="alert">
+    <p>A scan is in-progress, please don't leave this page. <span class="loading loading-dots loading-md ml-2"></span></p>
+  </div>
+
+  <div class="mt-4">
+    <div class="px-8 flex">
+      <progress class="w-full progress progress-secondary"
+        [value]="amountOfDirectoriesComplete()" [max]="scanProgress().length">
+      </progress>
+    </div>
+    <p class="my-2">Scanned {{amountOfDirectoriesComplete()}} of {{totalAmountOfDirectoriesToScan()}} directories.</p>
+
+    <button class="btn btn-error" [disabled]="waitingForCancelConfirmation()" (click)="cancelScan()">Cancel Scan</button>
+    @if (waitingForCancelConfirmation()) {
+      <p>Scan cancel request has been sent. It will be cancelled before the next directory is scanned.</p>
+    }
+  </div>
+
+  <p class="my-2">The directories will be scanned in the below order. Depending the the speed of the storage drive and
+    network connection, this may take some time.</p>
+
+  <ul class="timeline timeline-vertical">
+    @for (dir of scanProgress(); track $index) {
+    <li>
+      @if (!$first) {
+      <hr [ngClass]="{'bg-white': dirScannedOrScanning(dir.status)}" />
+      }
+      <div [class]="{'animate-pulse': dirIsScanning(dir.status)}" class="timeline-start timeline-box">{{dir.path}}</div>
+      <div class="timeline-middle">
+        @if (dirIsScanning(dir.status)) {
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" class="h-5 w-5">
+            <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2" fill="white" />
+          </svg>
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" [attr.fill]="getScanColor(dir.status)" class="h-5 w-5">
+            <path fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+              clip-rule="evenodd" />
+          </svg>
+        }
+      </div>
+      <p class="timeline-end">Scanned {{dir.filesScanned}} files and skipped {{dir.filesSkipped}}.</p>
+      @if (!$last) {
+        <hr [ngClass]="{'bg-white': dirScanned(dir.status)}" />
+      }
+    </li>
+    }
+  </ul>
+}
+
+@if (scanLogs()) {
+  <h3 class="divider">
+    Scan Log
+  </h3>
+
+  <p>
+    Below is a log of all directory events in the current scan.
+  </p>
+
+  <pre role="status" class="p-4 mb-8 mt-2 mx-2 bg-slate-800 overflow-auto">{{scanLogs()}}</pre>
+}
+
+@if (scanErrorMessages()) {
+  <h3 class="divider">
+    Scan Errors
+  </h3>
+
+  <p>
+    Below is a list of all errors that have occured during the current scan.
+    In most cases, these simply affect a single file and the rest of the directory will process normally.
+  </p>
+
+  <pre role="status" class="p-4 mb-8 mt-2 mx-2 bg-slate-800 overflow-auto">{{scanErrorMessages()}}</pre>
+}

@@ -1,6 +1,0 @@
-[submodule "osse-web"]
-	path = osse-web
-	url = https://github.com/aMytho/osse-web
-[submodule "osse-broadcast"]
-	path = osse-broadcast
-	url = https://github.com/aMytho/osse-broadcast

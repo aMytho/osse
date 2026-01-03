@@ -1,0 +1,8 @@
+<div class="flex gap-x-8 items-center">
+  <button (click)="onMuteToggle()" class="rounded-full px-2 py-1 hover:bg-emerald-300/15" aria-label="Toggle mute">
+    <app-icon class="cursor-pointer hover:fill-slate-200" [icon]="volumeIcon()"></app-icon>
+  </button>
+
+  <input #volume (change)="onVolumeSet()" (input)="onVolumeChange($event)" (wheel)="adjustVolumeByScroll($event)"
+    type="range" name="volume" min="0" max="1" step="0.01" class="range range-primary">
+</div>

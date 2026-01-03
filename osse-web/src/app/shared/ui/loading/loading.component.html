@@ -1,0 +1,9 @@
+<div aria-hidden="true" class="fixed z-20 sm:top-0 sm:pl-32 max-sm:top-[3.7rem] w-full h-1"
+  [class.hidden]="!componentReady()">
+  <div id="loading-bar" class="absolute h-1 bg-blue-400 opacity-transition" [class.loading-bar]="isLoading()"
+    [style.opacity]="opacity()">
+  </div>
+  <div id="background-loading-bar" class="absolute h-1 bg-blue-300 opacity-transition"
+    [class.background-loading-bar]="isFastEndToLoading()" (animationend)="resetAnimations()">
+  </div>
+</div>

@@ -1,0 +1,40 @@
+<div class="text-white bg-slate-600/95 p-4 rounded-md relative">
+  <p class="font-semibold text-xl">Advanced Controls</p>
+  <button (click)="onClose.emit()" aria-label="Close advanced controls" title="Close"
+    class="absolute top-4 right-4"><app-icon [icon]="close"></app-icon></button>
+  <div class="flex flex-wrap gap-8">
+    <div>
+      <p>Duration</p>
+      <app-duration></app-duration>
+    </div>
+
+    <div>
+      <p>Rewind/Fast Forward</p>
+      <app-jump-controls></app-jump-controls>
+    </div>
+
+    <div>
+      <p>Volume</p>
+      <app-volume></app-volume>
+    </div>
+
+    <div>
+      <p>Pan (L/R)</p>
+      <app-pan-controls></app-pan-controls>
+    </div>
+
+    <div>
+      <p>Speed (0-2)</p>
+      <app-speed-controls></app-speed-controls>
+    </div>
+
+    <div>
+      <p>Track Controls</p>
+      <app-track-controls></app-track-controls>
+    </div>
+    <div>
+      <p>Clear Queue</p>
+      <app-clear-queue-controls></app-clear-queue-controls>
+    </div>
+  </div>
+</div>

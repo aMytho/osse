@@ -1,0 +1,98 @@
+<app-header [type]="2" text="Preferences"></app-header>
+
+<form [formGroup]="preferencesForm" (ngSubmit)="onSubmit()">
+<div class="grid grid-cols-2 max-md:grid-cols-1 gap-x-20 gap-y-4">
+  <div>
+    <h3 class="text-lg"><app-icon [icon]="imageIcon"></app-icon> Background Image</h3>
+    <p class="my-2">
+    When a track or album is playing, Osse will dispay the cover art in the background.
+    This may cause contrast issues with certain covers.
+    </p>
+  </div>
+
+  <div class="flex items-center gap-2">
+  <input type="checkbox" class="toggle toggle-primary" formControlName="showBackgroundArt" id="showBackgroundArt" />
+  <label class="label" for="showBackgroundArt">
+    Show background images
+  </label>
+  </div>
+</div>
+
+<div class="divider"></div>
+<div class="grid grid-cols-2 max-md:grid-cols-1 gap-x-20 gap-y-4">
+  <div>
+    <h3 class="text-lg"><app-icon [icon]="visualizerIcon"></app-icon> Visualizer </h3>
+    <p class="my-2">
+    When a track is playing, Osse will dispay a music visualizer. This is generated in real-time.
+    This may cause performance issues with certain devices.</p>
+  </div>
+
+  <div class="pt-8 flex flex-col gap-y-4">
+    <div class="flex items-center gap-2">
+      <input type="checkbox" class="toggle toggle-primary" formControlName="showVisualizer" id="showVisualizer" />
+      <label class="label" for="showVisualizer">
+        Enable visualiser
+      </label>
+    </div>
+
+    <div class="w-full max-w-xs">
+      <label for="test">Visualizer Samples</label>
+      <input type="range" min="1" max="10" value="1" class="range" step="1" formControlName="visualizerSamples"  />
+      <div class="flex justify-between px-2.5 mt-2 text-xs" aria-hidden="true">
+        <span>|</span>
+        <span>|</span>
+        <span>|</span>
+        <span>|</span>
+        <span>|</span>
+        <span>|</span>
+        <span>|</span>
+        <span>|</span>
+        <span>|</span>
+        <span>|</span>
+      </div>
+      <div class="flex justify-between px-2.5 mt-2 text-xs" aria-hidden="true">
+        <span>1</span>
+        <span>2</span>
+        <span>3</span>
+        <span>4</span>
+        <span>5</span>
+        <span>6</span>
+        <span>7</span>
+        <span>8</span>
+        <span>9</span>
+        <span>10</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+<div class="grid grid-cols-2 max-md:grid-cols-1 gap-x-20 gap-y-4">
+  <div>
+    <h3 class="text-lg">
+      <app-icon [icon]="queueIcon"></app-icon> Save Queue
+    </h3>
+    <p class="my-2">Osse can save your queue to the server. This allows you to pick up where you left off when Osse is closed and reopened.
+    This is an <b>account level</b> setting.</p>
+  </div>
+
+  <div class="flex items-center gap-2">
+    <input type="checkbox" checked="checked" class="toggle toggle-primary" formControlName="enableQueue" id="enableQueue" />
+    <label class="label" for="enableQueue">
+      Enable Queue
+    </label>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<button class="btn btn-primary float-right" [disabled]="waitingForResponse()">
+  Save Changes
+  @if (waitingForResponse()) {
+    <span class="loading loading-dots loading-md float-right"></span>
+  } @else {
+  <app-icon [icon]="saveIcon" class="fill-black!"></app-icon>
+  }
+</button>
+
+</form>

@@ -1,0 +1,33 @@
+<app-header [type]="2" text="Scan History"></app-header>
+
+@if (isLoading()) {
+<p class="animate-pulse">Fetching history. Please wait...</p>
+}
+
+<div class="flex flex-col gap-4">
+  <p>Scans are listed with the most recent first. Scans are cleared on a weekly basis.</p>
+  @for (job of jobs(); track $index) {
+  <div class="p-2 border-b border-b-primary">
+    <p class="text-xl">Scan {{job.id}}: {{job.directories.length}} directories scanned.</p>
+    <p class="italic mb-4 mt-2">{{job.started_at}} - {{job.finished_at}}</p>
+    @for (dir of job.directories; track $index) {
+    <div class="pl-2">
+    <p class="text-slate-50">{{dir.path}} - {{dir.files_scanned}} files scanned | {{dir.files_skipped}} files skipped. Status: {{dir.status}}</p>
+      @if (dir.errors.length > 0) {
+        @if (!dir.show) {
+        <button class="btn btn-secondary btn-soft my-2" (click)="dir.show = true">Show Errors</button>
+        }
+        @if (dir.show) {
+        <button class="btn btn-secondary btn-soft my-2" (click)="dir.show = false">Hide Errors</button>
+        @for (err of dir.errors; track $index) {
+          <pre class="p-4 mx-2 my-1 bg-slate-800 text-red-400 overflow-auto border-l border-r-red-300">{{err.error}}</pre>
+        }
+        }
+      }
+    </div>
+    }
+  </div>
+  } @empty {
+  <p>No scans were found...</p>
+  }
+</div>

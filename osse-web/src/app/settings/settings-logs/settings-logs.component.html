@@ -1,0 +1,14 @@
+<app-header [type]="2" text="Logs"></app-header>
+
+<p class="my-2 ml-2">Below are the current application logs. The last 500 lines are shown.</p>
+
+@if (!showLogs()) {
+<div class="bg-slate-800 h-[40rem]">
+  <button class="w-full h-full py-8" (click)="viewLogs()" aria-label="Show Logs">
+    Click to show logs (verbose, may include sensitive info)
+  </button>
+</div>
+} @else {
+<button class="btn btn-primary" (click)="refreshLogs()">Refresh Logs</button>
+<pre class="p-4 mb-8 mt-2 mx-2 bg-slate-800 overflow-auto h-[40rem]">{{logs()}}</pre>
+}
