@@ -40,11 +40,11 @@ https://${OSSE_DOMAIN} {
         reverse_proxy 127.0.0.1:${OSSE_BROADCAST_PORT}
     }
 
-    # Web frontend
+    # Web frontend (this is replaced in the root osse script as it changes based on env)
     handle {
         root * osse-web/dist/osse-web/browser/
-        try_files {path} /index.html
-        file_server
+
+        WEB_FRONTEND_TEMPLATE
     }
 
     encode zstd br gzip
