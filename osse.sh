@@ -64,7 +64,7 @@ generate_caddy() {
     envsubst < deployment/Caddyfile.template > Caddyfile
 
     # Use angular dev server in dev, use build files in prod.
-    if [ "$OSSE_ENV" = "dev" ]; then
+    if [ "$OSSE_ENV" = "local" ]; then
         REPLACE="reverse_proxy http://localhost:4200"
     else
         REPLACE="try_files {path} /index.html\nfile_server"
