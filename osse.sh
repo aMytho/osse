@@ -109,7 +109,7 @@ copy_api_env() {
     fi
 
     # Add user vars to end of api env
-    echo -e "OSSE_DIRECTORIES=\"$OSSE_DIRECTORIES\"\nALLOW_REGISTRATION=\"$OSSE_ALLOW_REGISTRATION\"\nLARAVEL_STORAGE_PATH=\"$LARAVEL_STORAGE_PATH\"\nDB_DATABASE=\"$DB_DATABASE\"" >> osse-core/.env
+    echo -e "OSSE_DOMAIN=\"$OSSE_DOMAIN\"\nOSSE_DIRECTORIES=\"$OSSE_DIRECTORIES\"\nALLOW_REGISTRATION=\"$OSSE_ALLOW_REGISTRATION\"\nLARAVEL_STORAGE_PATH=\"$LARAVEL_STORAGE_PATH\"\nDB_DATABASE=\"$DB_DATABASE\"" >> osse-core/.env
     echo "Osse .env file generated"
 }
 

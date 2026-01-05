@@ -34,7 +34,6 @@ https://${OSSE_DOMAIN} {
         }
     }
 
-
     # Broadcast server
     handle_path /broadcast/* {
         reverse_proxy 127.0.0.1:${OSSE_BROADCAST_PORT}
