@@ -179,12 +179,16 @@ case "$1" in
         build_broadcast
         copy_api_env
         ;;
+    build_env)
+        generate_caddy
+        copy_api_env
+        ;;
     # Access php cli
     php-cli)
         cd osse-core && frankenphp php-cli "${@:2}"
     ;;
     *)
-        echo "Usage: ./osse {dev|run|build}"
+        echo "Usage: ./osse {dev|run|build|build_env}"
         exit 1
         ;;
 esac

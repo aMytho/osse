@@ -1,0 +1,53 @@
+services:
+  server:
+    build:
+      context: ./osse-core
+      dockerfile: Dockerfile
+    container_name: osse-server
+    ports:
+      - "${OSSE_DOCKER_PORT}:443"
+    volumes:
+      - ${LARAVEL_STORAGE_PATH}:/data
+      - ./Caddyfile:/app/Caddyfile
+    environment:
+      OSSE_ENV: ${OSSE_ENV}
+      OSSE_DOMAIN: ${OSSE_DOMAIN}
+      LARAVEL_STORAGE_PATH: /data
+      DB_DATABASE: /data/database.sqlite
+      REDIS_HOST: 'valkey'
+      REDIS_PORT: 6379
+      SANCTUM_STATEFUL_DOMAINS: "${OSSE_DOMAIN}:${OSSE_DOCKER_PORT},${OSSE_DOMAIN}"
+      OSSE_DOCKER_BROADCAST_URL: "${OSSE_DOMAIN}:${OSSE_DOCKER_PORT}"
+    depends_on:
+      - broadcast
+      - valkey
+      # - web-builder # TODO: fix this
+    command: ["frankenphp", "run", "--config", "Caddyfile"]
+    tty: true
+
+  broadcast:
+    build:
+      context: ./osse-broadcast
+      dockerfile: Dockerfile
+    container_name: osse-broadcast
+    ports:
+      - "${OSSE_BROADCAST_PORT}:${OSSE_BROADCAST_PORT}"
+    environment:
+      OSSE_DOMAIN: ${OSSE_DOMAIN}
+      OSSE_BROADCAST_PORT: ${OSSE_BROADCAST_PORT}
+      OSSE_REDIS_HOST: ${OSSE_REDIS_HOST}
+      OSSE_REDIS_PORT: 6379
+
+  web-builder:
+    build:
+      context: ./osse-web
+      dockerfile: Dockerfile
+    image: osse-web:latest
+    # builder only used at build time
+    command: ["true"]
+
+  valkey:
+    image: valkey/valkey:9.0.1-alpine3.23
+    container_name: osse-valkey
+    ports:
+      - "${OSSE_REDIS_PORT}:6379"
