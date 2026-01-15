@@ -9,6 +9,7 @@ services:
     volumes:
       - ${LARAVEL_STORAGE_PATH}:/data
       - ./Caddyfile:/app/Caddyfile
+      - ${OSSE_DIRECTORIES}:/music:ro
     environment:
       OSSE_ENV: ${OSSE_ENV}
       OSSE_DOMAIN: ${OSSE_DOMAIN}
@@ -18,18 +19,23 @@ services:
       REDIS_PORT: 6379
       SANCTUM_STATEFUL_DOMAINS: "${OSSE_DOMAIN}:${OSSE_DOCKER_PORT},${OSSE_DOMAIN}"
       OSSE_DOCKER_BROADCAST_URL: "${OSSE_DOMAIN}:${OSSE_DOCKER_PORT}"
+      OSSE_DIRECTORIES: '/music'
+      OSSE_BROADCAST_HOST: 'broadcast'
+      LARAVEL_STORAGE_PATH: '/data'
+      DB_DATABASE: "/data/database.sqlite"
     depends_on:
       - broadcast
       - valkey
       # - web-builder # TODO: fix this
-    command: ["frankenphp", "run", "--config", "Caddyfile"]
-    tty: true
+    command: ["./osse-core/run-core.sh"]
 
   broadcast:
     build:
       context: ./osse-broadcast
       dockerfile: Dockerfile
     container_name: osse-broadcast
+    volumes:
+      - ${OSSE_DIRECTORIES}:/music:ro
     ports:
       - "${OSSE_BROADCAST_PORT}:${OSSE_BROADCAST_PORT}"
     environment:

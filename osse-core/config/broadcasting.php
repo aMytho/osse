@@ -86,7 +86,7 @@ return [
     ],
 
     'osse-broadcast' => [
-        'sse' => config('app.full_url') . '/broadcast/sse',
-        'stream' => config('app.full_url') . '/broadcast/stream',
+        'sse' => config('app.docker_url', config('app.full_url')) . '/broadcast/sse',
+        'stream' => config('app.docker_url', config('app.full_url')) . '/broadcast/stream',
     ],
 ];

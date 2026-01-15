@@ -26,7 +26,6 @@ RUN composer install --optimize-autoloader --no-dev
 
 # ---------- permissions ----------
 RUN mkdir -p /data && chown -R www-data:www-data /data
+RUN chmod +x run-core.sh
 
 WORKDIR /app
-
-CMD ["frankenphp", "run", "--config", "Caddyfile"]

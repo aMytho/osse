@@ -125,4 +125,5 @@ return [
 
     'domain' => env('OSSE_DOMAIN', 'osse.localhost'),
     'full_url' => 'https://' . env('OSSE_DOMAIN', 'osse.localhost'),
+    'docker_url' => env('OSSE_DOCKER_BROADCAST_URL') ? 'https://' . env('OSSE_DOCKER_BROADCAST_URL') : null
 ];

@@ -36,7 +36,7 @@ https://${OSSE_DOMAIN} {
 
     # Broadcast server
     handle_path /broadcast/* {
-        reverse_proxy 127.0.0.1:${OSSE_BROADCAST_PORT}
+        BROADCAST_TEMPLATE
     }
 
     # Web frontend (this is replaced in the root osse script as it changes based on env)
