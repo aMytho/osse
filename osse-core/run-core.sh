@@ -6,8 +6,6 @@ php artisan config:cache
 php artisan event:cache
 php artisan migrate
 
-
 cd ..
-
 
 frankenphp run --config Caddyfile

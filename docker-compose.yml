@@ -10,12 +10,12 @@ services:
       - ${LARAVEL_STORAGE_PATH}:/data
       - ./Caddyfile:/app/Caddyfile
       - ${OSSE_DIRECTORIES}:/music:ro
-    environment:
+    environment: &osse-env
       OSSE_ENV: ${OSSE_ENV}
       OSSE_DOMAIN: ${OSSE_DOMAIN}
       LARAVEL_STORAGE_PATH: /data
       DB_DATABASE: /data/database.sqlite
-      REDIS_HOST: 'valkey'
+      REDIS_HOST: valkey
       REDIS_PORT: 6379
       SANCTUM_STATEFUL_DOMAINS: "${OSSE_DOMAIN}:${OSSE_DOCKER_PORT},${OSSE_DOMAIN}"
       OSSE_DOCKER_BROADCAST_URL: "${OSSE_DOMAIN}:${OSSE_DOCKER_PORT}"
@@ -29,6 +29,29 @@ services:
       # - web-builder # TODO: fix this
     command: ["./osse-core/run-core.sh"]
 
+  queue:
+    build:
+      context: ./osse-core
+      dockerfile: Dockerfile
+    container_name: osse-queue
+    volumes:
+      - ${LARAVEL_STORAGE_PATH}:/data
+      - ${OSSE_DIRECTORIES}:/music:ro
+    environment: *osse-env
+    depends_on:
+      - valkey
+      - server
+    working_dir: /app/osse-core
+    command: [
+      "php",
+      "-d", "memory_limit=2G",
+      "artisan",
+      "queue:work",
+      "--sleep=1",
+      "--tries=3",
+      "--timeout=0"
+    ]
+
   broadcast:
     build:
       context: ./osse-broadcast
@@ -41,7 +64,7 @@ services:
     environment:
       OSSE_DOMAIN: ${OSSE_DOMAIN}
       OSSE_BROADCAST_PORT: ${OSSE_BROADCAST_PORT}
-      OSSE_REDIS_HOST: ${OSSE_REDIS_HOST}
+      OSSE_REDIS_HOST: valkey
       OSSE_REDIS_PORT: 6379
 
   web-builder:
