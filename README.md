@@ -17,10 +17,8 @@ Osse is a free and open source music player and server. This repository is the *
 
 > Interested in helping us test? Use the below instructions for an installation.
 
- Systemd files are available in this repo (outdated)
-
 - [Manual Installation](https://github.com/aMytho/osse/wiki/Installation-(Manual-System))
-- [Docker/Podman installation (outdated)](https://github.com/aMytho/osse/wiki/Installation-(Docker-Podman))
+- [Docker/Podman installation](https://github.com/aMytho/osse/wiki/Installation-(Docker-Podman))
 
 ## Providing Feedback
 
