@@ -1,0 +1,55 @@
+<div class="sm:px-4 pb-1">
+  <div class="min-h-14 h-full w-full grid grid-cols-6 gap-x-4">
+    <div class="w-full flex lg:justify-between md:gap-x-8 gap-x-4 items-center max-sm:col-span-4 max-lg:col-span-3 col-span-2">
+      <div class="flex gap-x-4 items-center grow overflow-hidden">
+        <a routerLink="/" class="max-md:hidden">
+          <img
+            class="bg-slate-300 rounded-md min-w-14 h-14 inline-block bg-cover border border-white border-solid"
+            [src]="bg()" alt="" onerror="if (this.src !== 'assets/img/osse.webp') this.src = 'assets/img/osse.webp';">
+        </a>
+        <div class="grow">
+          <div id="track-title-container"
+            class="w-full relative whitespace-nowrap overflow-hidden font-semibold text-lg">
+            <p class="whitespace-nowrap w-min overflow-hidden text-ellipsis" #trackTitleElement aria-live="polite"
+              role="status" aria-atomic="true">
+              {{trackTitle()}}
+            </p>
+          </div>
+          <p class="italic whitespace-nowrap overflow-hidden text-ellipsis">{{artistTitle()}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center lg:col-span-2">
+      <div class="max-sm:hidden">
+        <app-track-controls></app-track-controls>
+      </div>
+      <div class="sm:hidden">
+        <app-play-pause></app-play-pause>
+      </div>
+    </div>
+    <div class="flex items-center gap-x-4 sm:col-span-2">
+      <div class="basis-1/4 flex gap-x-4 max-lg:hidden grow">
+        <p>{{ currentTime() || '0:00' }}</p>
+        <div class="w-full flex flex-col items-center justify-around gap-y-1"
+          [ngClass]="{'pointer-events-none': !playerService.isPlaying()}">
+          <div #progressContainer id="progressContainer" (mousedown)="onSetPosition($event)"
+            class="relative w-full z-10 h-2 flex items-center bg-slate-700/40 cursor-pointer">
+            <div #rendered id="rendered" class="absolute w-full h-2 rounded-l-lg rounded-r-lg"></div>
+            <!-- <div id="loaded" class="bg-emerald-300 h-2 rounded-l-lg"></div> -->
+            <div #point id="point" class="absolute w-4 h-4 rounded-lg bg-cyan-300 hover:bg-cyan-400 -ml-2 z-20"
+              (mousedown)="onMouseDown($event)" (drag)="onMouseMove($event)"></div>
+          </div>
+        </div>
+        <p>{{ totalDuration() || '0:00' }}</p>
+      </div>
+      <button (click)="popoverControls.showModal()" class="ml-auto rounded-full px-2 py-1 hover:bg-emerald-300/15"
+        title="Toggle advanced controls">
+        <app-icon [icon]="verticalDots"></app-icon>
+      </button>
+    </div>
+  </div>
+  <dialog id="popover" #popoverControls class="mb-20 sm:ml-32 ml-4 px-4 bg-transparent m-auto w-auto"
+    (click)="onBackdropClick($event)">
+    <app-popover-controls (onClose)="popoverControls.close()"></app-popover-controls>
+  </dialog>
+</div>

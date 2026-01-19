@@ -1,0 +1,51 @@
+{
+    frankenphp
+    admin off
+    auto_https disable_redirects
+    storage file_system {
+        root $HOME/.local/share/caddy
+    }
+}
+
+https://${OSSE_DOMAIN} {
+    # Laravel sanctum
+    handle_path /api/sanctum/csrf-cookie {
+        root * osse-core/public
+        php_server {
+            env REQUEST_URI sanctum/csrf-cookie
+            try_files {path} index.php
+        }
+    }
+
+    # Laravel login
+    handle_path /api/login {
+        root * osse-core/public
+        php_server {
+            env REQUEST_URI login
+            try_files {path} index.php
+        }
+    }
+
+    # Laravel API (all other backend routes)
+    handle_path /api/* {
+        root * osse-core/public
+        php_server {
+            try_files {path} index.php
+        }
+    }
+
+    # Broadcast server
+    handle_path /broadcast/* {
+        BROADCAST_TEMPLATE
+    }
+
+    # Web frontend (this is replaced in the root osse script as it changes based on env)
+    handle {
+        root * osse-web/dist/osse-web/browser/
+
+        WEB_FRONTEND_TEMPLATE
+    }
+
+    encode zstd br gzip
+}
+

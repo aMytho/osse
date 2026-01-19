@@ -1,0 +1,13 @@
+<div class="flex gap-x-8 items-center">
+  <button (click)="onSpeedReset()" class="rounded-full px-2 py-1 hover:bg-emerald-300/15"
+    aria-label="Reset speed to default">
+    <app-icon class="cursor-pointer hover:fill-slate-200" [icon]="reset"></app-icon>
+  </button>
+
+  <div class="flex items-center gap-x-2">
+    <p aria-label="0 is slow">0</p>
+    <input #speed (change)="onSpeedChange($event)" (input)="onSpeedChange($event)" (wheel)="adjustSpeedByScroll($event)"
+      type="range" name="speed" min="0" max="2" step="0.1" class="range range-secondary">
+    <p aria-label="2 is fast">2</p>
+  </div>
+</div>

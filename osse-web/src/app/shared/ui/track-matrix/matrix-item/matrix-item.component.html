@@ -1,0 +1,30 @@
+<div class="h-full text-white">
+  @if (mode() == TrackMatrixMode.View) {
+  <button (click)="determineClickTypeAndEmitEvent($event)" (contextmenu)="toggleSelected(); $event.preventDefault()"
+    class="flex gap-x-2 items-center rounded-md px-4 py-2 hover:bg-slate-700 w-full h-full border-x border-emerald-300">
+    @if (track().trackNumber != null && visibleTrackInfo()?.includes(trackField.TrackNumber)) {
+    <p class="font-extralight">{{track().trackNumber}}</p>
+    }
+
+    @if (visibleTrackInfo()?.includes(trackField.Title)) {
+    <p class="text-lg font-semibold">{{track().title}}</p>
+    }
+    @if (visibleTrackInfo()?.includes(trackField.Artist)) {
+    <p class="font-light text-slate-300 ml-auto">{{track().artistPrimary()?.name ?? "Unknown Artist"}}</p>
+    }
+    @if (visibleTrackInfo()?.includes(trackField.Duration)) {
+    <p>{{track().durationFormatted}}</p>
+    }
+  </button>
+  } @else if (mode() == TrackMatrixMode.Select) {
+  <button (click)="toggleSelected()"
+    class="flex gap-x-2 items-center rounded-md px-4 py-4 w-full h-full border border-dashed border-emerald-300"
+    [ngClass]="{
+      'bg-emerald-600/45 hover:bg-emerald-700/45': selected(),
+      'hover:bg-slate-700': !selected()
+    }">
+    <p class="text-lg font-semibold">{{track().title}}</p>
+    <p class="font-light text-slate-300 ml-auto">{{track().artistPrimary()?.name ?? "Unknown Artist"}}</p>
+  </button>
+  }
+</div>

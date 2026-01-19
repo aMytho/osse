@@ -1,0 +1,46 @@
+<div
+  class="z-10 w-full sm:w-32 fixed top-0 sm:bottom-0 left-0 right-0 sm:right-auto flex flex-row sm:flex-col justify-center bg-slate-900/70 max-sm:bg-slate-900/90 text-white py-4 max-sm:py-2 px-6 max-sm:border-b sm:border-r border-0 border-solid border-emerald-200 from-emerald-200 to-emerald-50">
+  <div class="flex flex-row flex-wrap sm:flex-col gap-x-4 sm:gap-y-4 grow justify-end"
+    [ngClass]="{'max-sm:hidden': !mobileMenuOpen()}">
+    <a class="border-solid border-transparent border hover:border-emerald-300 rounded-lg hover:bg-emerald-300/15 cursor-pointer p-2 max-sm:basis-full"
+      routerLink="/home" routerLinkActive="bg-emerald-200/15 " ariaCurrentWhenActive="page"
+      (click)="mobileMenuOpen.set(false)">Home</a>
+    <a class="border-solid border-transparent border hover:border-emerald-300 rounded-lg hover:bg-emerald-300/15 cursor-pointer p-2 max-sm:basis-full"
+      routerLink="/tracks" routerLinkActive="bg-emerald-200/15" ariaCurrentWhenActive="page"
+      (click)="mobileMenuOpen.set(false)">Tracks</a>
+    <a class="border-solid border-transparent border hover:border-emerald-300 rounded-lg hover:bg-emerald-300/15 cursor-pointer p-2 max-sm:basis-full"
+      routerLink="/playlists" routerLinkActive="bg-emerald-200/15" ariaCurrentWhenActive="page"
+      (click)="mobileMenuOpen.set(false)">Playlists</a>
+    <a class="border-solid border-transparent border hover:border-emerald-300 rounded-lg hover:bg-emerald-300/15 cursor-pointer p-2 max-sm:basis-full"
+      routerLink="/albums" routerLinkActive="bg-emerald-200/15" ariaCurrentWhenActive="page"
+      (click)="mobileMenuOpen.set(false)">Albums</a>
+  </div>
+  <div class="flex flex-col gap-y-4 text-center grow sm:justify-end max-sm:pl-2"
+    [ngClass]="{'max-sm:hidden': !mobileMenuOpen()}">
+    <a class="border-solid border-transparent border hover:border-emerald-300 rounded-lg hover:bg-emerald-300/15 cursor-pointer p-2"
+      (click)="mobileMenuOpen.set(false)" routerLink="/settings" routerLinkActive="bg-emerald-200/15"
+      ariaCurrentWhenActive="page" aria-label="Settings">
+      <app-icon class="cursor-pointer text-white hover:text-emerald-300" [icon]="gear"></app-icon>
+    </a>
+    @if (showLogoutButton()) {
+    <button
+      class="border-solid border-transparent border hover:border-emerald-300 rounded-lg hover:bg-emerald-300/15 cursor-pointer p-2"
+      (click)="mobileMenuOpen.set(false); logout();" ariaCurrentWhenActive="page" aria-label="Logout">
+      <app-icon class="cursor-pointer text-white hover:text-emerald-300" [icon]="exit"></app-icon>
+    </button>
+    }
+  </div>
+  <div class="hidden max-sm:flex gap-y-4 text-center grow justify-between sm:justify-end max-sm:pl-2"
+    [ngClass]="{'max-sm:flex-col': mobileMenuOpen()}">
+    @if (!mobileMenuOpen()) {
+    <a class="border-solid border-transparent border hover:border-emerald-300 rounded-lg hover:bg-emerald-300/15 cursor-pointer p-2"
+      routerLink="/home" routerLinkActive="bg-emerald-200/15" ariaCurrentWhenActive="page" aria-label="Home">
+      <app-icon class="cursor-pointer text-white hover:text-emerald-300" [icon]="home"></app-icon>
+    </a>
+    }
+    <button (click)="toggleMenu()" aria-label="Toggle Menu"
+      class="border-solid border-transparent border hover:border-emerald-300 rounded-lg hover:bg-emerald-300/15 cursor-pointer p-2">
+      <app-icon class="cursor-pointer text-white hover:text-emerald-300" [icon]="mobileMenuIcon()"></app-icon>
+    </button>
+  </div>
+</div>

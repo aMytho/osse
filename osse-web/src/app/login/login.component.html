@@ -1,0 +1,43 @@
+<div>
+  <app-header [type]="2" text="Login"></app-header>
+
+  <div>
+    <p class="text-white">Welcome to the Osse music server!</p>
+
+    @if (serverFound()) {
+    <p class="text-white mt-4">Please login.</p>
+
+    <form #loginForm="ngForm" (ngSubmit)="login()" class="mt-4 flex flex-wrap gap-2">
+      <div class="flex flex-col gap-2">
+        <label for="username" class="text-white font-semibold">Username</label>
+        <input type="text" placeholder="osse" class="input" id="username" [(ngModel)]="username" required minlength="1"
+          name="username" autofocus />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="password" class="text-white font-semibold">Password</label>
+        <input class="input" id="password" type="password" [(ngModel)]="password" required minlength="1" name="password"
+          name="username" autofocus placeholder="cassidor" />
+      </div>
+
+      <div class="basis-full mt-2">
+        <button class="btn btn-primary" [disabled]="!loginForm.form.valid || waitingForResponse()">
+        Login
+        </button>
+        @if (waitingForResponse()) {
+        <span class="ml-4 loading loading-dots loading-md"></span>
+        }
+      </div>
+    </form>
+    }
+
+    @if (!serverFound()) {
+    <p class="animate-pulse text-white mt-4">Connecting to API...</p>
+    }
+
+    @if (serverFound()) {
+    <p class="text-white mt-4 italic">Don't have an account yet? <a class="text-cyan-400 hover:text-cyan-500"
+        href="/register">Create One</a></p>
+    }
+  </div>
+</div>

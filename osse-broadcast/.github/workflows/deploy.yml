@@ -1,0 +1,40 @@
+name: Build Go Project
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build Go Binary
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Install Dependencies
+        run: go mod tidy
+
+      - name: Build for Linux (x86_64)
+        run: |
+          GOOS=linux GOARCH=amd64 go build -o bin/osse-broadcast-linux-amd64
+
+      - name: Build for Linux (ARM64)
+        run: |
+          GOOS=linux GOARCH=arm64 go build -o bin/osse-broadcast-linux-arm64
+
+      - name: Upload Binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-binaries
+          path: bin/

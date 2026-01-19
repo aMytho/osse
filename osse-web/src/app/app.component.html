@@ -1,0 +1,17 @@
+<app-loading></app-loading>
+<app-navigation></app-navigation>
+<div class="px-8 sm:pl-4 grow sm:ml-36 ml-0 mt-20 mb-20 sm:mt-8" id="outlet" #outlet>
+  <router-outlet />
+</div>
+<div class="fixed right-4 bottom-1/4">
+  <div class="relative">
+    <app-toast-container />
+  </div>
+</div>
+<div
+  class="sm:ml-32 ml-0 px-4 py-2 max-sm:py-1 fixed bottom-0 right-0 left-0 min-h-16 bg-slate-900 text-white border-solid border-t border-emerald-200 from-emerald-200 to-emerald-50 transition ease-in-out duration-300"
+  [ngClass]="{'bg-slate-800!': playerState(), 'hidden': !showPlayer()}">
+  <app-player></app-player>
+</div>
+
+<app-modal></app-modal>

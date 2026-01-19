@@ -1,0 +1,75 @@
+<div [ngClass]="{'animate-pulse pointer-events-none': !ready()}">
+  <app-header [text]="playlist()?.name ?? 'Loading'"></app-header>
+
+  <div class="flex flex-wrap" role="tablist">
+    <button class="py-2 bg-slate-500/45 grow rounded-none rounded-l-md text-lg active:bg-slate-500/40" [ngClass]="{'btn-soft bg-slate-400/15! ': !showViewTab()}" (click)="activeTab.set('view')" role="tab"
+      [attr.aria-selected]="showViewTab()" aria-controls="tab-view" id="label-view">
+      View
+    </button>
+    <button class="bg-slate-400/45 grow rounded-none text-lg active:bg-slate-500/40" [ngClass]="{'btn-soft bg-slate-400/15! ': !showAddTracksTab()}" (click)="activeTab.set('addTracks')" role="tab"
+      [attr.aria-selected]="showAddTracksTab()" aria-controls="tab-addTracks" id="label-addTracks">
+      Add Tracks
+    </button>
+    <button class="bg-slate-400/45 grow rounded-none rounded-r-md text-lg active:bg-slate-500/40" [ngClass]="{'btn-soft bg-slate-400/15! ': !showModifyTab()}" (click)="activeTab.set('modify')" role="tab"
+      [attr.aria-selected]="showModifyTab()" aria-controls="tab-modify" id="label-modify">
+      Modify
+    </button>
+  </div>
+
+  <div class="mt-4" aria-hidden="true"></div>
+
+  @if (playlist()) {
+  <div [ngClass]="{'animate-pulse pointer-events-none': waitingOnRequest()}">
+    <div [class.hidden]="!showViewTab()" role="tabpanel" aria-labelledby="label-view" id="tab-view">
+      <div class="flex justify-around gap-x-2 my-2">
+        <button (click)="closePlaylistTrackSelector()"
+          [ngClass]="{'pointer-events-none opacity-45 my-1': !showTrackSelectionMenu()}"
+          class="font-semibold text-lg text-white hover:text-red-500 p-2 rounded-md bg-transparent group">
+          Close
+          <app-icon [icon]="close"></app-icon></button>
+        <button (click)="removeTracksFromPlaylist()"
+          [ngClass]="{'pointer-events-none opacity-45 my-1': !showTrackSelectionMenu()}"
+          class="font-semibold text-lg text-white p-2 rounded-md bg-transparent">Remove from Playlist
+          <app-icon [icon]="trash"></app-icon></button>
+        <button (click)="playAll()"
+          class="font-semibold text-lg text-white p-2 rounded-md bg-transparent">Play All
+          <app-icon [icon]="play"></app-icon></button>
+      </div>
+
+      <p>Click on a track to add it to the queue. Right click (or hold) a track to enable additional options.
+      </p>
+      <app-track-matrix [tracks]="playlist()!.tracks" (onClick)="addTrack($event)"
+        (onModeChanged)="onTrackMatrixModeChange($event)"></app-track-matrix>
+    </div>
+
+    <div [class.hidden]="!showAddTracksTab()" role="tabpanel" aria-labelledby="label-addTracks" id="tab-addTracks">
+      <app-playlist-add-tracks (addTracks)="addTracksToPlaylist($event)"
+        [playlistID]="playlist()!.id"></app-playlist-add-tracks>
+    </div>
+
+    <div [class.hidden]="!showModifyTab()" role="tabpanel" class="bg-slate-400/15 rounded-lg p-4"
+      aria-labelledby="label-modify" id="tab-modify">
+      <form #form="ngForm" (ngSubmit)="edit()" class="mt-2">
+        <div>
+          <app-header [type]="2" text="Modify Playlist"></app-header>
+        </div>
+        <div class="flex flex-col gap-2">
+          <label for="name" class="text-white font-semibold">Playlist Name: </label>
+          <input [(ngModel)]="model.name" required minlength="1" id="name" name="name" class="input">
+        </div>
+
+        <p class="text-red-500 font-semibold my-2" [hidden]="!(model.name.length == 0)">The playlist name must be at
+          least 1 character.</p>
+
+        <button class="mt-4 btn btn-primary" [disabled]="!form.form.valid || false">Save</button>
+      </form>
+      <div class="divider">
+        Delete
+      </div>
+      <p class="my-2">Deleting a playlist is a permanant action that cannot be undone.</p>
+      <button class="btn btn-error btn-soft mt-2" (click)="delete()">Delete Playlist</button>
+    </div>
+
+  </div>
+  }
+</div>

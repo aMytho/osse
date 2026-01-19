@@ -1,0 +1,20 @@
+<div class="mt-4 text-white">
+  <div class="flex flex-wrap gap-y-4 gap-x-8 p-4">
+    <label class="inline-flex items-center space-x-2">
+      <span>Enable Visualizer: </span>
+      <input type="checkbox" name="show-visualizer" id="show-visualizer" [checked]="showVisualizer()"
+        (input)="showVisualizer.set(!showVisualizer())" class="toggle toggle-primary">
+    </label>
+
+    <label class="inline-flex items-center space-x-2">
+      <span>Visualizer Samples: </span>
+      <input #samples type="number" name="visualizer-samples" id="visualizer-samples" [value]="visualizerSamples()"
+        min="0" max="10" class="input" placeholder="1">
+    </label>
+  </div>
+
+  <div class="flex place-content-end gap-x-2 mt-2">
+    <button class="btn btn-ghost btn-neutral" (click)="close()">Close</button>
+    <button class="btn btn-primary" (click)="save()">Save</button>
+  </div>
+</div>

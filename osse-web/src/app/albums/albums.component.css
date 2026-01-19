@@ -1,0 +1,6 @@
+/* On mobile, always show buttons */
+@media (hover: none) and (pointer: coarse) {
+  .touch-show {
+    opacity: 1 !important;
+  }
+}
