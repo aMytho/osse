@@ -72,7 +72,7 @@ generate_caddy() {
     sed -i "s+WEB_FRONTEND_TEMPLATE+$REPLACE+" Caddyfile
 
     # Use localhost in prod, broadcast container in docker.
-    if [[ -v $OSSE_DOCKER_PORT ]]; then
+    if [ -z $OSSE_DOCKER_PORT ]; then
         REPLACE="reverse_proxy 127.0.0.1:${OSSE_BROADCAST_PORT}"
     else
         REPLACE="reverse_proxy broadcast:${OSSE_BROADCAST_PORT}"
