@@ -15,7 +15,7 @@ use Kiwilan\Audio\Audio;
 
 class MusicProcessor
 {
-    private array $supportedExtensions = ['mp3', 'wav', 'ogg', 'opus', 'flac'];
+    private array $supportedExtensions = ['mp3', 'wav', 'ogg', 'opus', 'flac', 'm4a'];
 
     private Collection $files;
 
