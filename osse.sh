@@ -109,12 +109,12 @@ copy_api_env() {
     cp osse-core/.env.example osse-core/.env
 
     # Replace the app key
-    if [ -z "$OSSE_ENCRYPTION_KEY" ]; then
-        if [ -z $OSSE_DOCKER_PORT ]; then
+    if [[ -z "$OSSE_ENCRYPTION_KEY" || "$OSSE_ENCRYPTION_KEY" == "APP_KEY=" ]]; then
+        if [[ -z "$OSSE_DOCKER_PORT" ]]; then
             (cd osse-core && frankenphp php-cli artisan key:generate)
         fi
     else
-        sed -i "s+APP_KEY.*+$OSSE_ENCRYPTION_KEY+" osse-core/.env
+        sed -i '/^APP_KEY=/c\'"$OSSE_ENCRYPTION_KEY" osse-core/.env
     fi
 
     sed -i "s+APP_ENV.*+APP_ENV=$OSSE_ENV+" osse-core/.env
