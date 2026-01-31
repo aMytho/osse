@@ -33,6 +33,12 @@ export class AddMultipleTracksToPlaylistComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.playlists.set(await this.playlistService.getAll());
+
+    // Auto select first playlist
+    let firstPlaylist = this.playlists().at(0);
+    if (firstPlaylist) {
+      this.model.set(firstPlaylist.id);
+    }
   }
 }
 
