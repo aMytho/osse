@@ -110,11 +110,14 @@ copy_api_env() {
 
     # Replace the app key
     if [ -z "$OSSE_ENCRYPTION_KEY" ]; then
-        (cd osse-core && frankenphp php-cli artisan key:generate)
+        if [ -z $OSSE_DOCKER_PORT ]; then
+            (cd osse-core && frankenphp php-cli artisan key:generate)
+        fi
     else
         sed -i "s+APP_KEY.*+$OSSE_ENCRYPTION_KEY+" osse-core/.env
-        sed -i "s+APP_ENV.*+APP_ENV=$OSSE_ENV+" osse-core/.env
     fi
+
+    sed -i "s+APP_ENV.*+APP_ENV=$OSSE_ENV+" osse-core/.env
 
     # Add user vars to end of api env
     APIENV1="OSSE_DOMAIN=\"$OSSE_DOMAIN\"\nOSSE_DIRECTORIES=\"$OSSE_DIRECTORIES\"\nALLOW_REGISTRATION=\"$OSSE_ALLOW_REGISTRATION\""
