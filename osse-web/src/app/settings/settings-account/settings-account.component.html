@@ -1,0 +1,27 @@
+<app-header [type]="2" text="Account"></app-header>
+
+<div class="grid grid-cols-2 max-md:grid-cols-1 gap-x-20 gap-y-4">
+  <div>
+    <h3 class="text-lg"><app-icon [icon]="passwordIcon"></app-icon> Account Password</h3>
+    <p class="my-2">You can update your password from this page. Passwords must be at least 8 characters. Passwords can be reset with a server side command.</p>
+  </div>
+
+  <form #loginForm="ngForm" (ngSubmit)="savePassword()">
+    <div class="flex items-center gap-2">
+      <div class="flex flex-col gap-2">
+        <label for="password" class="text-white font-semibold">Password</label>
+        <input class="input" id="password" type="password" [(ngModel)]="password"  required minlength="8" name="password"
+          name="username" autofocus placeholder="super secret password" />
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label for="password" class="text-white font-semibold">Confirm Password</label>
+        <input class="input" id="password" type="password" [(ngModel)]="passwordConfirmation" required minlength="8" name="passwordConfirmation"
+          name="username" autofocus placeholder="super secret password" />
+      </div>
+    </div>
+
+    <button class="btn btn-primary mt-2" [disabled]="!loginForm.form.valid">Save</button>
+  </form>
+</div>
+

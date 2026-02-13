@@ -19,6 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/sse', [AuthController::class, 'authorizeSSE']);
+    Route::post('/auth/set-password', [AuthController::class, 'setPassword']);
 
     Route::get('/config', [ConfigController::class, 'allSettings']);
     Route::post('/config', [ConfigController::class, 'storeAllSettings']);
