@@ -36,7 +36,7 @@ export class SettingsAccountComponent {
     if (req.ok) {
       this.notification.info('Password set');
     } else {
-      console.log(req);
+      this.notification.error('Password not set. Check that it meets the requirements');
     }
   }
 }
