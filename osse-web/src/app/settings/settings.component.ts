@@ -7,10 +7,11 @@ import { SettingsLogsComponent } from './settings-logs/settings-logs.component';
 import { SettingsScanComponent } from "./settings-scan/settings-scan.component";
 import { SettingsScanHistoryComponent } from './settings-scan-history/settings-scan-history.component';
 import { SettingsPreferencesComponent } from "./settings-preferences/settings-preferences.component";
+import { SettingsAccountComponent } from './settings-account/settings-account.component';
 
 @Component({
   selector: 'app-settings',
-  imports: [HeaderComponent, CommonModule, SettingsLogsComponent, SettingsScanComponent, SettingsScanHistoryComponent, SettingsPreferencesComponent],
+  imports: [HeaderComponent, CommonModule, SettingsLogsComponent, SettingsScanComponent, SettingsScanHistoryComponent, SettingsPreferencesComponent, SettingsAccountComponent],
   templateUrl: './settings.component.html',
   styles: ``,
   changeDetection: ChangeDetectionStrategy.OnPush

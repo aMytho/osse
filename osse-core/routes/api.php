@@ -1,15 +1,16 @@
 <?php
 
-use App\Http\Controllers\AlbumController;
-use App\Http\Controllers\ArtistController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ScanController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\TrackController;
+use App\Http\Controllers\QueueController;
 use App\Http\Controllers\ConfigController;
+use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\CoverArtController;
 use App\Http\Controllers\PlaylistController;
-use App\Http\Controllers\QueueController;
-use App\Http\Controllers\ScanController;
-use App\Http\Controllers\TrackController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\PermissionController;
 
 Route::get('/ping', [ConfigController::class, 'ping']);
 
@@ -18,6 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/sse', [AuthController::class, 'authorizeSSE']);
+    Route::post('/auth/set-password', [AuthController::class, 'setPassword']);
 
     Route::get('/config', [ConfigController::class, 'allSettings']);
     Route::post('/config', [ConfigController::class, 'storeAllSettings']);

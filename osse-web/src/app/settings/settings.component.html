@@ -23,6 +23,11 @@
       [attr.aria-selected]="activeTab() == 'logs'" aria-controls="tab-logs" id="label-logs">
       Logs
     </button>
+    <button class="px-4 py-2 text-white transition-all duration-200 font-semibold max-sm:w-full"
+      [ngClass]="{'bg-emerald-500/30': activeTab() === 'account'}" (click)="activeTab.set('account')" role="tab"
+      [attr.aria-selected]="activeTab() == 'account'" aria-controls="account-logs" id="account-logs">
+      Account
+    </button>
   </div>
   @if (activeTab() === 'scan') {
   <div class="space-y-12" role="tabpanel" aria-labelledby="label-scan" id="tab-scan">
@@ -37,6 +42,10 @@
   } @else if (activeTab() === 'logs') {
   <div class="space-y-12" role="tabpanel" aria-labelledby="label-logs" id="tab-logs">
     <app-settings-logs></app-settings-logs>
+  </div>
+  } @else if (activeTab() === 'account') {
+  <div class="space-y-12" role="tabpanel" aria-labelledby="label-logs" id="tab-logs">
+    <app-settings-account></app-settings-account>
   </div>
   }
 </div>

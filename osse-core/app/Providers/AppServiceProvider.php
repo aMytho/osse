@@ -3,11 +3,10 @@
 namespace App\Providers;
 
 use App\Jobs\ScanMusic;
-use App\Models\Album;
-use Illuminate\Queue\Events\JobProcessed;
-use Illuminate\Support\Facades\Cache;
+use App\Jobs\GenerateAlbumResponse;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Queue\Events\JobProcessed;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
         Queue::after(function (JobProcessed $event) {
             if ($event->job->resolveName() == ScanMusic::class) {
                 // When the scan job completes, regenerate cached queries.
-                Cache::put('albumsWithTracks', json_encode(Album::with(['tracks', 'tracks.artists', 'artists'])->get()));
+                GenerateAlbumResponse::dispatch();
             }
         });
     }

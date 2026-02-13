@@ -89,4 +89,17 @@ class AuthController extends Controller
         // The user should know their ID, but the client side doesn't have a clean way to get that yet.
         return response()->json(['token' => $token, 'userID' => $id, 'url' => $url]);
     }
+
+    public function setPassword(Request $request)
+    {
+        $data = $request->validate([
+            'password' => 'required|string|min:8',
+        ]);
+
+        $user = Auth::user();
+        $user->password = $data['password'];
+        $user->save();
+
+        return response(status: 200);
+    }
 }

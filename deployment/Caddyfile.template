@@ -26,6 +26,15 @@ https://${OSSE_DOMAIN} {
         }
     }
 
+    # Laravel login
+    handle_path /api/register {
+        root * osse-core/public
+        php_server {
+            env REQUEST_URI register
+            try_files {path} index.php
+        }
+    }
+
     # Laravel API (all other backend routes)
     handle_path /api/* {
         root * osse-core/public

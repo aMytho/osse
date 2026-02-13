@@ -6,31 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/**
- * @property int $id
- * @property int $scan_job_id
- * @property string $path
- * @property string $status
- * @property int $files_scanned
- * @property int $files_skipped
- * @property \Illuminate\Support\Carbon|null $started_at
- * @property \Illuminate\Support\Carbon|null $finished_at
- * @property-read \App\Models\ScanJob $job
- *
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanDirectory newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanDirectory newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanDirectory query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanDirectory whereFilesScanned($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanDirectory whereFilesSkipped($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanDirectory whereFinishedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanDirectory whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanDirectory wherePath($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanDirectory whereScanJobId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanDirectory whereStartedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanDirectory whereStatus($value)
- *
- * @mixin \Eloquent
- */
 class ScanDirectory extends Model
 {
     protected $fillable = [
