@@ -3,7 +3,7 @@
 <div class="grid grid-cols-2 max-md:grid-cols-1 gap-x-20 gap-y-4">
   <div>
     <h3 class="text-lg"><app-icon [icon]="passwordIcon"></app-icon> Account Password</h3>
-    <p class="my-2">You can update your password from this page. Passwords must be at least 8 characters. Passwords can be reset with a server side command.</p>
+    <p class="my-2">You can update your password from this page. Passwords must be at least 8 characters. Passwords can be reset with a server side command <span class="bg-slate-800/60 p-0.5 rounded-sm">osse.sh php-cli artisan app:set-password</span>.</p>
   </div>
 
   <form #loginForm="ngForm" (ngSubmit)="savePassword()">
